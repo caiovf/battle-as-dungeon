@@ -1,0 +1,92 @@
+# Masmorra Relógio — versão Godot
+
+Port completo do protótipo 3.6 (Phaser) para **Godot 4.3**.
+
+## Como abrir e jogar
+
+1. Baixe o Godot 4.3 (ou mais novo da série 4) em godotengine.org: a versão padrão, não a .NET.
+2. Descompacte este zip numa pasta.
+3. Abra o Godot e clique em **Importar**. Escolha o arquivo `project.godot` desta pasta.
+4. Aperte **F5** (ou o botão ▶ no canto superior direito) para jogar.
+
+Na primeira abertura, o Godot leva alguns segundos importando as fontes.
+
+## Controles
+
+**Masmorra**
+- Clique ou toque num bloco do mapa para pôr a armadilha escolhida.
+- Clique numa armadilha já colocada para vendê-la.
+- Clique no coração para soar a badalada.
+- `1`–`7` escolhem a armadilha. `Q W E R T Y U I O` soltam monstros.
+- `B` badalada · `P` ou `Espaço` pausa · `G` grimório · `C` classes do guardião · `F` tela cheia.
+
+**Luta do guardião**
+- `A`/`D` ou setas: andar.
+- `W`, `↑` ou `Espaço`: pular.
+- `J`: atacar (segurar repete).
+- `K`: dash.
+- `U`, `I`, `O` (ou `1`, `2`, `3`): as 3 habilidades.
+- `P`: pausa.
+- **No celular (estilo MOBA):** encoste o polegar em qualquer lugar da metade esquerda da tela e aparece um analógico. Arraste para os lados para andar e empurre para cima para pular. Na direita fica o botão grande de ataque, com pular, dash e as 3 habilidades em arco em volta. A recarga aparece girando no botão, com os segundos no meio, e os pontinhos dourados mostram o nível da habilidade. Tudo é semitransparente por cima da arena e aceita vários dedos ao mesmo tempo. No computador, o mouse também funciona nesses controles.
+- Para ajustar tamanho, transparência e posição dos botões, mexa no topo de `scripts/touch_pad.gd`.
+
+## Guardião, classes e lendários
+
+- Depois que você escolhe o guardião, ele evolui a cada herói derrotado. Com **+30%, +65% e +110%** de evolução liberam novas classes (4 por guardião, no estilo Grand Chase). Troque no botão **Guardião** da barra de cima, fora da luta.
+- Cada classe muda arma, ataque básico, velocidade, pulos, armadura, passiva e as 3 habilidades. O nível das habilidades fica guardado, mesmo trocando de classe.
+- São **13 lendários**. Cada um tem um poder no corredor e golpes próprios na arena.
+- O painel de baixo separa **o que os heróis sabem da masmorra** de **o que os lendários sabem do guardião**.
+
+## Onde mexer
+
+| Arquivo | O que tem |
+|---|---|
+| `scripts/data.gd` | **Todos os números de balanceamento** e as tabelas: armadilhas, monstros, heróis, eventos, grimório, guardiões, classes (`CLASSES`), habilidades (`SKILLS`) e lendários (`LEG_ARENA`). Comece por aqui. |
+| `scripts/main.gd` | A masmorra: caminho aleatório, ondas, adaptação dos heróis, contras escondidos, combate em grupo, fama, energia absorvida. |
+| `scripts/arena.gd` | A luta de ação: ataque em 4 tempos com hit stop, classes, habilidades, passivas, golpes dos lendários e como eles aprendem o seu jeito de lutar. |
+| `scripts/touch_pad.gd` | Controle virtual de toque da luta (analógico flutuante e botões em arco). |
+| `scripts/ui.gd` | Interface: barra do topo, bandeja, painel "O que os heróis sabem", telas de escolha, grimório, botões de toque. |
+| `scripts/art.gd` | Desenha os sprites de `art/` (âncoras, animação, escala ×2 sem borrar). |
+| `art/` | Toda a pixel art em PNG: tiles, armadilhas, monstros, heróis, guardiões, lendários, cenário da arena e efeitos. |
+| `tools/gen_art.py`, `tools/rig.py`, `tools/arena_art.py`, `tools/fx_art.py`, `tools/ui_icons.py` | O "código-fonte" da arte. `rig.py` monta guardiões e lendários em camadas (corpo, braços, arma, cabeça). Mude e rode `python3 tools/gen_art.py` (precisa de Python 3 e Pillow) para gerar os PNGs de novo. |
+| `docs/GUIA-ANIMACAO.md` | Guia de arte e animação tirado das referências. Siga ao criar personagem novo. |
+| `tools/showcase.py` | Gera a prancha de prévia com todos os sprites. |
+| `tests/sim.gd` | Robô que joga uma run e uma luta para cada classe de guardião. |
+
+## Gerar o executável
+
+O projeto já vem com as configurações de exportação para Windows e Linux (`export_presets.cfg`). No editor, vá em *Projeto → Exportar*, escolha **Windows** e clique em *Exportar projeto*. Na primeira vez, o Godot pede para baixar os modelos de exportação; é só aceitar. O resultado é um único `.exe` com tudo dentro.
+
+## Testar no celular
+
+- **Android:** em *Projeto → Exportar*, adicione Android. Siga o assistente para baixar os templates e configurar o SDK.
+- **Navegador (Vercel, itch.io):** o projeto já tem a exportação *Web* configurada, sem threads, então roda em qualquer hospedagem estática. Em *Projeto → Exportar*, escolha **Web** e exporte para `build/web/`. Para publicar com GitHub + Vercel, suba o conteúdo de `build/web/` num repositório e importe na Vercel com *Framework Preset: Other* (o passo a passo está em `build/web/README.md`, que acompanha o `vercel.json`). Também dá para subir no itch.io como jogo HTML5.
+
+O projeto já usa o renderizador *Compatibilidade*, que funciona na web e em celulares mais simples.
+
+## Rodar o teste automático
+
+No terminal, dentro da pasta do projeto:
+
+```
+godot --headless --fixed-fps 60 -s res://tests/sim.gd
+```
+
+Teste de balanceamento da arena (todos os lendários, relógio de 80s e 200s, 1º, 2º e 4º lendário). Troque o guardião com a variável `BAL_G` (minotauro, lich ou dragao):
+
+```
+BAL_G=lich godot --headless --fixed-fps 60 -s res://tests/balance.gd
+```
+
+O dano dos lendários acompanha o relógio com que você entra na sala: cada golpe tira uma fatia do seu tempo, então guardar muito tempo não deixa a luta fácil. Os números ficam em `data.gd → CFG` (`LEG_DMG_REF`, `LEG_DMG_GROWTH`, `LEG_ARENA_HP`).
+
+## Arte
+
+Estilo pixel art inspirado em Risk of Rain, Moon Hunters, Starbound e Noitu Love 2: contorno escuro grosso, cores vivas com brilho nas bordas, cenário sombrio com luz de tocha.
+
+- Tiles de 20×20 e personagens de 16–48 px, sempre desenhados em ×2.
+- Se quiser redesenhar à mão, abra os PNGs de `art/` no Aseprite ou no LibreSprite e salve por cima. Mantenha o mesmo tamanho, ou rode o gerador para atualizar `art/meta.json` (onde ficam os pés de cada sprite).
+
+## Créditos
+
+Fontes Press Start 2P, Pixelify Sans e Alegreya Sans, sob a licença SIL Open Font License (arquivos em `fonts/`).

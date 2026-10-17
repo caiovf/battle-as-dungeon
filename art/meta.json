@@ -1,0 +1,3986 @@
+{
+"arena/astra_atk0": {
+"ax": 34,
+"ay": 45,
+"h": 56,
+"w": 64
+},
+"arena/astra_atk1": {
+"ax": 34,
+"ay": 44,
+"h": 56,
+"w": 64
+},
+"arena/astra_atk2": {
+"ax": 34,
+"ay": 45,
+"h": 56,
+"w": 64
+},
+"arena/astra_hurt": {
+"ax": 34,
+"ay": 44,
+"h": 56,
+"w": 64
+},
+"arena/astra_idle0": {
+"ax": 34,
+"ay": 44,
+"h": 56,
+"w": 64
+},
+"arena/astra_idle1": {
+"ax": 34,
+"ay": 44,
+"h": 56,
+"w": 64
+},
+"arena/astra_run0": {
+"ax": 34,
+"ay": 45,
+"h": 56,
+"w": 64
+},
+"arena/astra_run1": {
+"ax": 34,
+"ay": 43,
+"h": 56,
+"w": 64
+},
+"arena/astra_run2": {
+"ax": 34,
+"ay": 45,
+"h": 56,
+"w": 64
+},
+"arena/astra_run3": {
+"ax": 34,
+"ay": 43,
+"h": 56,
+"w": 64
+},
+"arena/astra_tele": {
+"ax": 34,
+"ay": 45,
+"h": 56,
+"w": 64
+},
+"arena/borin_atk0": {
+"ax": 34,
+"ay": 45,
+"h": 56,
+"w": 64
+},
+"arena/borin_atk1": {
+"ax": 34,
+"ay": 45,
+"h": 56,
+"w": 64
+},
+"arena/borin_atk2": {
+"ax": 34,
+"ay": 56,
+"h": 56,
+"w": 64
+},
+"arena/borin_hurt": {
+"ax": 34,
+"ay": 44,
+"h": 56,
+"w": 64
+},
+"arena/borin_idle0": {
+"ax": 34,
+"ay": 44,
+"h": 56,
+"w": 64
+},
+"arena/borin_idle1": {
+"ax": 34,
+"ay": 44,
+"h": 56,
+"w": 64
+},
+"arena/borin_run0": {
+"ax": 34,
+"ay": 45,
+"h": 56,
+"w": 64
+},
+"arena/borin_run1": {
+"ax": 34,
+"ay": 43,
+"h": 56,
+"w": 64
+},
+"arena/borin_run2": {
+"ax": 34,
+"ay": 45,
+"h": 56,
+"w": 64
+},
+"arena/borin_run3": {
+"ax": 34,
+"ay": 43,
+"h": 56,
+"w": 64
+},
+"arena/borin_tele": {
+"ax": 34,
+"ay": 45,
+"h": 56,
+"w": 64
+},
+"arena/bram_atk0": {
+"ax": 34,
+"ay": 45,
+"h": 56,
+"w": 64
+},
+"arena/bram_atk1": {
+"ax": 34,
+"ay": 44,
+"h": 56,
+"w": 64
+},
+"arena/bram_atk2": {
+"ax": 34,
+"ay": 45,
+"h": 56,
+"w": 64
+},
+"arena/bram_hurt": {
+"ax": 34,
+"ay": 44,
+"h": 56,
+"w": 64
+},
+"arena/bram_idle0": {
+"ax": 34,
+"ay": 44,
+"h": 56,
+"w": 64
+},
+"arena/bram_idle1": {
+"ax": 34,
+"ay": 44,
+"h": 56,
+"w": 64
+},
+"arena/bram_run0": {
+"ax": 34,
+"ay": 45,
+"h": 56,
+"w": 64
+},
+"arena/bram_run1": {
+"ax": 34,
+"ay": 43,
+"h": 56,
+"w": 64
+},
+"arena/bram_run2": {
+"ax": 34,
+"ay": 45,
+"h": 56,
+"w": 64
+},
+"arena/bram_run3": {
+"ax": 34,
+"ay": 43,
+"h": 56,
+"w": 64
+},
+"arena/bram_tele": {
+"ax": 34,
+"ay": 45,
+"h": 56,
+"w": 64
+},
+"arena/dragao_0_atk0": {
+"ax": 21,
+"ay": 35,
+"h": 38,
+"w": 48
+},
+"arena/dragao_0_atk1": {
+"ax": 21,
+"ay": 34,
+"h": 38,
+"w": 48
+},
+"arena/dragao_0_atk2": {
+"ax": 21,
+"ay": 35,
+"h": 38,
+"w": 48
+},
+"arena/dragao_0_atk3": {
+"ax": 21,
+"ay": 34,
+"h": 38,
+"w": 48
+},
+"arena/dragao_0_cast": {
+"ax": 21,
+"ay": 33,
+"h": 38,
+"w": 48
+},
+"arena/dragao_0_fall": {
+"ax": 21,
+"ay": 34,
+"h": 38,
+"w": 48
+},
+"arena/dragao_0_hurt": {
+"ax": 21,
+"ay": 34,
+"h": 38,
+"w": 48
+},
+"arena/dragao_0_idle0": {
+"ax": 21,
+"ay": 34,
+"h": 38,
+"w": 48
+},
+"arena/dragao_0_idle1": {
+"ax": 21,
+"ay": 34,
+"h": 38,
+"w": 48
+},
+"arena/dragao_0_idle2": {
+"ax": 21,
+"ay": 35,
+"h": 38,
+"w": 48
+},
+"arena/dragao_0_idle3": {
+"ax": 21,
+"ay": 35,
+"h": 38,
+"w": 48
+},
+"arena/dragao_0_jump": {
+"ax": 21,
+"ay": 33,
+"h": 38,
+"w": 48
+},
+"arena/dragao_0_run0": {
+"ax": 21,
+"ay": 35,
+"h": 38,
+"w": 48
+},
+"arena/dragao_0_run1": {
+"ax": 21,
+"ay": 33,
+"h": 38,
+"w": 48
+},
+"arena/dragao_0_run2": {
+"ax": 21,
+"ay": 34,
+"h": 38,
+"w": 48
+},
+"arena/dragao_0_run3": {
+"ax": 21,
+"ay": 35,
+"h": 38,
+"w": 48
+},
+"arena/dragao_0_run4": {
+"ax": 21,
+"ay": 33,
+"h": 38,
+"w": 48
+},
+"arena/dragao_0_run5": {
+"ax": 21,
+"ay": 34,
+"h": 38,
+"w": 48
+},
+"arena/dragao_1_atk0": {
+"ax": 21,
+"ay": 35,
+"h": 38,
+"w": 48
+},
+"arena/dragao_1_atk1": {
+"ax": 21,
+"ay": 34,
+"h": 38,
+"w": 48
+},
+"arena/dragao_1_atk2": {
+"ax": 21,
+"ay": 35,
+"h": 38,
+"w": 48
+},
+"arena/dragao_1_atk3": {
+"ax": 21,
+"ay": 34,
+"h": 38,
+"w": 48
+},
+"arena/dragao_1_cast": {
+"ax": 21,
+"ay": 33,
+"h": 38,
+"w": 48
+},
+"arena/dragao_1_fall": {
+"ax": 21,
+"ay": 34,
+"h": 38,
+"w": 48
+},
+"arena/dragao_1_hurt": {
+"ax": 21,
+"ay": 34,
+"h": 38,
+"w": 48
+},
+"arena/dragao_1_idle0": {
+"ax": 21,
+"ay": 34,
+"h": 38,
+"w": 48
+},
+"arena/dragao_1_idle1": {
+"ax": 21,
+"ay": 34,
+"h": 38,
+"w": 48
+},
+"arena/dragao_1_idle2": {
+"ax": 21,
+"ay": 35,
+"h": 38,
+"w": 48
+},
+"arena/dragao_1_idle3": {
+"ax": 21,
+"ay": 35,
+"h": 38,
+"w": 48
+},
+"arena/dragao_1_jump": {
+"ax": 21,
+"ay": 33,
+"h": 38,
+"w": 48
+},
+"arena/dragao_1_run0": {
+"ax": 21,
+"ay": 35,
+"h": 38,
+"w": 48
+},
+"arena/dragao_1_run1": {
+"ax": 21,
+"ay": 33,
+"h": 38,
+"w": 48
+},
+"arena/dragao_1_run2": {
+"ax": 21,
+"ay": 34,
+"h": 38,
+"w": 48
+},
+"arena/dragao_1_run3": {
+"ax": 21,
+"ay": 35,
+"h": 38,
+"w": 48
+},
+"arena/dragao_1_run4": {
+"ax": 21,
+"ay": 33,
+"h": 38,
+"w": 48
+},
+"arena/dragao_1_run5": {
+"ax": 21,
+"ay": 34,
+"h": 38,
+"w": 48
+},
+"arena/dragao_2_atk0": {
+"ax": 21,
+"ay": 35,
+"h": 38,
+"w": 48
+},
+"arena/dragao_2_atk1": {
+"ax": 21,
+"ay": 34,
+"h": 38,
+"w": 48
+},
+"arena/dragao_2_atk2": {
+"ax": 21,
+"ay": 35,
+"h": 38,
+"w": 48
+},
+"arena/dragao_2_atk3": {
+"ax": 21,
+"ay": 34,
+"h": 38,
+"w": 48
+},
+"arena/dragao_2_cast": {
+"ax": 21,
+"ay": 33,
+"h": 38,
+"w": 48
+},
+"arena/dragao_2_fall": {
+"ax": 21,
+"ay": 34,
+"h": 38,
+"w": 48
+},
+"arena/dragao_2_hurt": {
+"ax": 21,
+"ay": 34,
+"h": 38,
+"w": 48
+},
+"arena/dragao_2_idle0": {
+"ax": 21,
+"ay": 34,
+"h": 38,
+"w": 48
+},
+"arena/dragao_2_idle1": {
+"ax": 21,
+"ay": 34,
+"h": 38,
+"w": 48
+},
+"arena/dragao_2_idle2": {
+"ax": 21,
+"ay": 35,
+"h": 38,
+"w": 48
+},
+"arena/dragao_2_idle3": {
+"ax": 21,
+"ay": 35,
+"h": 38,
+"w": 48
+},
+"arena/dragao_2_jump": {
+"ax": 21,
+"ay": 33,
+"h": 38,
+"w": 48
+},
+"arena/dragao_2_run0": {
+"ax": 21,
+"ay": 35,
+"h": 38,
+"w": 48
+},
+"arena/dragao_2_run1": {
+"ax": 21,
+"ay": 33,
+"h": 38,
+"w": 48
+},
+"arena/dragao_2_run2": {
+"ax": 21,
+"ay": 34,
+"h": 38,
+"w": 48
+},
+"arena/dragao_2_run3": {
+"ax": 21,
+"ay": 35,
+"h": 38,
+"w": 48
+},
+"arena/dragao_2_run4": {
+"ax": 21,
+"ay": 33,
+"h": 38,
+"w": 48
+},
+"arena/dragao_2_run5": {
+"ax": 21,
+"ay": 34,
+"h": 38,
+"w": 48
+},
+"arena/dragao_3_atk0": {
+"ax": 21,
+"ay": 35,
+"h": 38,
+"w": 48
+},
+"arena/dragao_3_atk1": {
+"ax": 21,
+"ay": 34,
+"h": 38,
+"w": 48
+},
+"arena/dragao_3_atk2": {
+"ax": 21,
+"ay": 35,
+"h": 38,
+"w": 48
+},
+"arena/dragao_3_atk3": {
+"ax": 21,
+"ay": 34,
+"h": 38,
+"w": 48
+},
+"arena/dragao_3_cast": {
+"ax": 21,
+"ay": 33,
+"h": 38,
+"w": 48
+},
+"arena/dragao_3_fall": {
+"ax": 21,
+"ay": 34,
+"h": 38,
+"w": 48
+},
+"arena/dragao_3_hurt": {
+"ax": 21,
+"ay": 34,
+"h": 38,
+"w": 48
+},
+"arena/dragao_3_idle0": {
+"ax": 21,
+"ay": 34,
+"h": 38,
+"w": 48
+},
+"arena/dragao_3_idle1": {
+"ax": 21,
+"ay": 34,
+"h": 38,
+"w": 48
+},
+"arena/dragao_3_idle2": {
+"ax": 21,
+"ay": 35,
+"h": 38,
+"w": 48
+},
+"arena/dragao_3_idle3": {
+"ax": 21,
+"ay": 35,
+"h": 38,
+"w": 48
+},
+"arena/dragao_3_jump": {
+"ax": 21,
+"ay": 33,
+"h": 38,
+"w": 48
+},
+"arena/dragao_3_run0": {
+"ax": 21,
+"ay": 35,
+"h": 38,
+"w": 48
+},
+"arena/dragao_3_run1": {
+"ax": 21,
+"ay": 33,
+"h": 38,
+"w": 48
+},
+"arena/dragao_3_run2": {
+"ax": 21,
+"ay": 34,
+"h": 38,
+"w": 48
+},
+"arena/dragao_3_run3": {
+"ax": 21,
+"ay": 35,
+"h": 38,
+"w": 48
+},
+"arena/dragao_3_run4": {
+"ax": 21,
+"ay": 33,
+"h": 38,
+"w": 48
+},
+"arena/dragao_3_run5": {
+"ax": 21,
+"ay": 34,
+"h": 38,
+"w": 48
+},
+"arena/flame_0": {
+"ax": 5.0,
+"ay": 14,
+"h": 14,
+"w": 10
+},
+"arena/flame_1": {
+"ax": 5.0,
+"ay": 14,
+"h": 14,
+"w": 10
+},
+"arena/flame_2": {
+"ax": 5.0,
+"ay": 14,
+"h": 14,
+"w": 10
+},
+"arena/garrick_atk0": {
+"ax": 34,
+"ay": 45,
+"h": 56,
+"w": 64
+},
+"arena/garrick_atk1": {
+"ax": 34,
+"ay": 44,
+"h": 56,
+"w": 64
+},
+"arena/garrick_atk2": {
+"ax": 34,
+"ay": 46,
+"h": 56,
+"w": 64
+},
+"arena/garrick_hurt": {
+"ax": 34,
+"ay": 44,
+"h": 56,
+"w": 64
+},
+"arena/garrick_idle0": {
+"ax": 34,
+"ay": 44,
+"h": 56,
+"w": 64
+},
+"arena/garrick_idle1": {
+"ax": 34,
+"ay": 44,
+"h": 56,
+"w": 64
+},
+"arena/garrick_run0": {
+"ax": 34,
+"ay": 45,
+"h": 56,
+"w": 64
+},
+"arena/garrick_run1": {
+"ax": 34,
+"ay": 43,
+"h": 56,
+"w": 64
+},
+"arena/garrick_run2": {
+"ax": 34,
+"ay": 45,
+"h": 56,
+"w": 64
+},
+"arena/garrick_run3": {
+"ax": 34,
+"ay": 43,
+"h": 56,
+"w": 64
+},
+"arena/garrick_tele": {
+"ax": 34,
+"ay": 45,
+"h": 56,
+"w": 64
+},
+"arena/ignis_atk0": {
+"ax": 34,
+"ay": 46,
+"h": 56,
+"w": 64
+},
+"arena/ignis_atk1": {
+"ax": 34,
+"ay": 45,
+"h": 56,
+"w": 64
+},
+"arena/ignis_atk2": {
+"ax": 34,
+"ay": 46,
+"h": 56,
+"w": 64
+},
+"arena/ignis_hurt": {
+"ax": 34,
+"ay": 45,
+"h": 56,
+"w": 64
+},
+"arena/ignis_idle0": {
+"ax": 34,
+"ay": 45,
+"h": 56,
+"w": 64
+},
+"arena/ignis_idle1": {
+"ax": 34,
+"ay": 45,
+"h": 56,
+"w": 64
+},
+"arena/ignis_run0": {
+"ax": 34,
+"ay": 47,
+"h": 56,
+"w": 64
+},
+"arena/ignis_run1": {
+"ax": 34,
+"ay": 45,
+"h": 56,
+"w": 64
+},
+"arena/ignis_run2": {
+"ax": 34,
+"ay": 47,
+"h": 56,
+"w": 64
+},
+"arena/ignis_run3": {
+"ax": 34,
+"ay": 45,
+"h": 56,
+"w": 64
+},
+"arena/ignis_tele": {
+"ax": 34,
+"ay": 46,
+"h": 56,
+"w": 64
+},
+"arena/kael_atk0": {
+"ax": 34,
+"ay": 45,
+"h": 56,
+"w": 64
+},
+"arena/kael_atk1": {
+"ax": 34,
+"ay": 44,
+"h": 56,
+"w": 64
+},
+"arena/kael_atk2": {
+"ax": 34,
+"ay": 45,
+"h": 56,
+"w": 64
+},
+"arena/kael_hurt": {
+"ax": 34,
+"ay": 44,
+"h": 56,
+"w": 64
+},
+"arena/kael_idle0": {
+"ax": 34,
+"ay": 44,
+"h": 56,
+"w": 64
+},
+"arena/kael_idle1": {
+"ax": 34,
+"ay": 44,
+"h": 56,
+"w": 64
+},
+"arena/kael_run0": {
+"ax": 34,
+"ay": 45,
+"h": 56,
+"w": 64
+},
+"arena/kael_run1": {
+"ax": 34,
+"ay": 43,
+"h": 56,
+"w": 64
+},
+"arena/kael_run2": {
+"ax": 34,
+"ay": 45,
+"h": 56,
+"w": 64
+},
+"arena/kael_run3": {
+"ax": 34,
+"ay": 43,
+"h": 56,
+"w": 64
+},
+"arena/kael_tele": {
+"ax": 34,
+"ay": 45,
+"h": 56,
+"w": 64
+},
+"arena/lich_0_atk0": {
+"ax": 19,
+"ay": 42,
+"h": 44,
+"w": 40
+},
+"arena/lich_0_atk1": {
+"ax": 19,
+"ay": 42,
+"h": 44,
+"w": 40
+},
+"arena/lich_0_atk2": {
+"ax": 19,
+"ay": 42,
+"h": 44,
+"w": 40
+},
+"arena/lich_0_atk3": {
+"ax": 19,
+"ay": 42,
+"h": 44,
+"w": 40
+},
+"arena/lich_0_cast": {
+"ax": 19,
+"ay": 42,
+"h": 44,
+"w": 40
+},
+"arena/lich_0_fall": {
+"ax": 19,
+"ay": 42,
+"h": 44,
+"w": 40
+},
+"arena/lich_0_hurt": {
+"ax": 19,
+"ay": 42,
+"h": 44,
+"w": 40
+},
+"arena/lich_0_idle0": {
+"ax": 19,
+"ay": 43,
+"h": 44,
+"w": 40
+},
+"arena/lich_0_idle1": {
+"ax": 19,
+"ay": 42,
+"h": 44,
+"w": 40
+},
+"arena/lich_0_idle2": {
+"ax": 19,
+"ay": 41,
+"h": 44,
+"w": 40
+},
+"arena/lich_0_idle3": {
+"ax": 19,
+"ay": 42,
+"h": 44,
+"w": 40
+},
+"arena/lich_0_jump": {
+"ax": 19,
+"ay": 42,
+"h": 44,
+"w": 40
+},
+"arena/lich_0_run0": {
+"ax": 19,
+"ay": 42,
+"h": 44,
+"w": 40
+},
+"arena/lich_0_run1": {
+"ax": 19,
+"ay": 42,
+"h": 44,
+"w": 40
+},
+"arena/lich_0_run2": {
+"ax": 19,
+"ay": 42,
+"h": 44,
+"w": 40
+},
+"arena/lich_0_run3": {
+"ax": 19,
+"ay": 42,
+"h": 44,
+"w": 40
+},
+"arena/lich_0_run4": {
+"ax": 19,
+"ay": 42,
+"h": 44,
+"w": 40
+},
+"arena/lich_0_run5": {
+"ax": 19,
+"ay": 42,
+"h": 44,
+"w": 40
+},
+"arena/lich_1_atk0": {
+"ax": 19,
+"ay": 43,
+"h": 44,
+"w": 40
+},
+"arena/lich_1_atk1": {
+"ax": 19,
+"ay": 43,
+"h": 44,
+"w": 40
+},
+"arena/lich_1_atk2": {
+"ax": 19,
+"ay": 43,
+"h": 44,
+"w": 40
+},
+"arena/lich_1_atk3": {
+"ax": 19,
+"ay": 43,
+"h": 44,
+"w": 40
+},
+"arena/lich_1_cast": {
+"ax": 19,
+"ay": 43,
+"h": 44,
+"w": 40
+},
+"arena/lich_1_fall": {
+"ax": 19,
+"ay": 43,
+"h": 44,
+"w": 40
+},
+"arena/lich_1_hurt": {
+"ax": 19,
+"ay": 43,
+"h": 44,
+"w": 40
+},
+"arena/lich_1_idle0": {
+"ax": 19,
+"ay": 44,
+"h": 44,
+"w": 40
+},
+"arena/lich_1_idle1": {
+"ax": 19,
+"ay": 43,
+"h": 44,
+"w": 40
+},
+"arena/lich_1_idle2": {
+"ax": 19,
+"ay": 42,
+"h": 44,
+"w": 40
+},
+"arena/lich_1_idle3": {
+"ax": 19,
+"ay": 43,
+"h": 44,
+"w": 40
+},
+"arena/lich_1_jump": {
+"ax": 19,
+"ay": 43,
+"h": 44,
+"w": 40
+},
+"arena/lich_1_run0": {
+"ax": 19,
+"ay": 43,
+"h": 44,
+"w": 40
+},
+"arena/lich_1_run1": {
+"ax": 19,
+"ay": 43,
+"h": 44,
+"w": 40
+},
+"arena/lich_1_run2": {
+"ax": 19,
+"ay": 43,
+"h": 44,
+"w": 40
+},
+"arena/lich_1_run3": {
+"ax": 19,
+"ay": 43,
+"h": 44,
+"w": 40
+},
+"arena/lich_1_run4": {
+"ax": 19,
+"ay": 43,
+"h": 44,
+"w": 40
+},
+"arena/lich_1_run5": {
+"ax": 19,
+"ay": 43,
+"h": 44,
+"w": 40
+},
+"arena/lich_2_atk0": {
+"ax": 19,
+"ay": 42,
+"h": 44,
+"w": 40
+},
+"arena/lich_2_atk1": {
+"ax": 19,
+"ay": 42,
+"h": 44,
+"w": 40
+},
+"arena/lich_2_atk2": {
+"ax": 19,
+"ay": 42,
+"h": 44,
+"w": 40
+},
+"arena/lich_2_atk3": {
+"ax": 19,
+"ay": 42,
+"h": 44,
+"w": 40
+},
+"arena/lich_2_cast": {
+"ax": 19,
+"ay": 42,
+"h": 44,
+"w": 40
+},
+"arena/lich_2_fall": {
+"ax": 19,
+"ay": 42,
+"h": 44,
+"w": 40
+},
+"arena/lich_2_hurt": {
+"ax": 19,
+"ay": 42,
+"h": 44,
+"w": 40
+},
+"arena/lich_2_idle0": {
+"ax": 19,
+"ay": 43,
+"h": 44,
+"w": 40
+},
+"arena/lich_2_idle1": {
+"ax": 19,
+"ay": 42,
+"h": 44,
+"w": 40
+},
+"arena/lich_2_idle2": {
+"ax": 19,
+"ay": 41,
+"h": 44,
+"w": 40
+},
+"arena/lich_2_idle3": {
+"ax": 19,
+"ay": 42,
+"h": 44,
+"w": 40
+},
+"arena/lich_2_jump": {
+"ax": 19,
+"ay": 42,
+"h": 44,
+"w": 40
+},
+"arena/lich_2_run0": {
+"ax": 19,
+"ay": 42,
+"h": 44,
+"w": 40
+},
+"arena/lich_2_run1": {
+"ax": 19,
+"ay": 42,
+"h": 44,
+"w": 40
+},
+"arena/lich_2_run2": {
+"ax": 19,
+"ay": 42,
+"h": 44,
+"w": 40
+},
+"arena/lich_2_run3": {
+"ax": 19,
+"ay": 42,
+"h": 44,
+"w": 40
+},
+"arena/lich_2_run4": {
+"ax": 19,
+"ay": 42,
+"h": 44,
+"w": 40
+},
+"arena/lich_2_run5": {
+"ax": 19,
+"ay": 42,
+"h": 44,
+"w": 40
+},
+"arena/lich_3_atk0": {
+"ax": 19,
+"ay": 43,
+"h": 44,
+"w": 40
+},
+"arena/lich_3_atk1": {
+"ax": 19,
+"ay": 43,
+"h": 44,
+"w": 40
+},
+"arena/lich_3_atk2": {
+"ax": 19,
+"ay": 43,
+"h": 44,
+"w": 40
+},
+"arena/lich_3_atk3": {
+"ax": 19,
+"ay": 43,
+"h": 44,
+"w": 40
+},
+"arena/lich_3_cast": {
+"ax": 19,
+"ay": 43,
+"h": 44,
+"w": 40
+},
+"arena/lich_3_fall": {
+"ax": 19,
+"ay": 43,
+"h": 44,
+"w": 40
+},
+"arena/lich_3_hurt": {
+"ax": 19,
+"ay": 43,
+"h": 44,
+"w": 40
+},
+"arena/lich_3_idle0": {
+"ax": 19,
+"ay": 44,
+"h": 44,
+"w": 40
+},
+"arena/lich_3_idle1": {
+"ax": 19,
+"ay": 43,
+"h": 44,
+"w": 40
+},
+"arena/lich_3_idle2": {
+"ax": 19,
+"ay": 42,
+"h": 44,
+"w": 40
+},
+"arena/lich_3_idle3": {
+"ax": 19,
+"ay": 43,
+"h": 44,
+"w": 40
+},
+"arena/lich_3_jump": {
+"ax": 19,
+"ay": 43,
+"h": 44,
+"w": 40
+},
+"arena/lich_3_run0": {
+"ax": 19,
+"ay": 43,
+"h": 44,
+"w": 40
+},
+"arena/lich_3_run1": {
+"ax": 19,
+"ay": 43,
+"h": 44,
+"w": 40
+},
+"arena/lich_3_run2": {
+"ax": 19,
+"ay": 43,
+"h": 44,
+"w": 40
+},
+"arena/lich_3_run3": {
+"ax": 19,
+"ay": 43,
+"h": 44,
+"w": 40
+},
+"arena/lich_3_run4": {
+"ax": 19,
+"ay": 43,
+"h": 44,
+"w": 40
+},
+"arena/lich_3_run5": {
+"ax": 19,
+"ay": 43,
+"h": 44,
+"w": 40
+},
+"arena/lyra_atk0": {
+"ax": 34,
+"ay": 45,
+"h": 56,
+"w": 64
+},
+"arena/lyra_atk1": {
+"ax": 34,
+"ay": 44,
+"h": 56,
+"w": 64
+},
+"arena/lyra_atk2": {
+"ax": 34,
+"ay": 46,
+"h": 56,
+"w": 64
+},
+"arena/lyra_hurt": {
+"ax": 34,
+"ay": 44,
+"h": 56,
+"w": 64
+},
+"arena/lyra_idle0": {
+"ax": 34,
+"ay": 44,
+"h": 56,
+"w": 64
+},
+"arena/lyra_idle1": {
+"ax": 34,
+"ay": 44,
+"h": 56,
+"w": 64
+},
+"arena/lyra_run0": {
+"ax": 34,
+"ay": 45,
+"h": 56,
+"w": 64
+},
+"arena/lyra_run1": {
+"ax": 34,
+"ay": 43,
+"h": 56,
+"w": 64
+},
+"arena/lyra_run2": {
+"ax": 34,
+"ay": 45,
+"h": 56,
+"w": 64
+},
+"arena/lyra_run3": {
+"ax": 34,
+"ay": 43,
+"h": 56,
+"w": 64
+},
+"arena/lyra_tele": {
+"ax": 34,
+"ay": 45,
+"h": 56,
+"w": 64
+},
+"arena/minotauro_0_atk0": {
+"ax": 24,
+"ay": 42,
+"h": 42,
+"w": 48
+},
+"arena/minotauro_0_atk1": {
+"ax": 24,
+"ay": 41,
+"h": 42,
+"w": 48
+},
+"arena/minotauro_0_atk2": {
+"ax": 24,
+"ay": 42,
+"h": 42,
+"w": 48
+},
+"arena/minotauro_0_atk3": {
+"ax": 24,
+"ay": 41,
+"h": 42,
+"w": 48
+},
+"arena/minotauro_0_cast": {
+"ax": 24,
+"ay": 40,
+"h": 42,
+"w": 48
+},
+"arena/minotauro_0_fall": {
+"ax": 24,
+"ay": 41,
+"h": 42,
+"w": 48
+},
+"arena/minotauro_0_hurt": {
+"ax": 24,
+"ay": 41,
+"h": 42,
+"w": 48
+},
+"arena/minotauro_0_idle0": {
+"ax": 24,
+"ay": 41,
+"h": 42,
+"w": 48
+},
+"arena/minotauro_0_idle1": {
+"ax": 24,
+"ay": 41,
+"h": 42,
+"w": 48
+},
+"arena/minotauro_0_idle2": {
+"ax": 24,
+"ay": 42,
+"h": 42,
+"w": 48
+},
+"arena/minotauro_0_idle3": {
+"ax": 24,
+"ay": 42,
+"h": 42,
+"w": 48
+},
+"arena/minotauro_0_jump": {
+"ax": 24,
+"ay": 37,
+"h": 42,
+"w": 48
+},
+"arena/minotauro_0_run0": {
+"ax": 24,
+"ay": 42,
+"h": 42,
+"w": 48
+},
+"arena/minotauro_0_run1": {
+"ax": 24,
+"ay": 40,
+"h": 42,
+"w": 48
+},
+"arena/minotauro_0_run2": {
+"ax": 24,
+"ay": 41,
+"h": 42,
+"w": 48
+},
+"arena/minotauro_0_run3": {
+"ax": 24,
+"ay": 42,
+"h": 42,
+"w": 48
+},
+"arena/minotauro_0_run4": {
+"ax": 24,
+"ay": 40,
+"h": 42,
+"w": 48
+},
+"arena/minotauro_0_run5": {
+"ax": 24,
+"ay": 41,
+"h": 42,
+"w": 48
+},
+"arena/minotauro_1_atk0": {
+"ax": 24,
+"ay": 42,
+"h": 42,
+"w": 48
+},
+"arena/minotauro_1_atk1": {
+"ax": 24,
+"ay": 42,
+"h": 42,
+"w": 48
+},
+"arena/minotauro_1_atk2": {
+"ax": 24,
+"ay": 42,
+"h": 42,
+"w": 48
+},
+"arena/minotauro_1_atk3": {
+"ax": 24,
+"ay": 42,
+"h": 42,
+"w": 48
+},
+"arena/minotauro_1_cast": {
+"ax": 24,
+"ay": 41,
+"h": 42,
+"w": 48
+},
+"arena/minotauro_1_fall": {
+"ax": 24,
+"ay": 42,
+"h": 42,
+"w": 48
+},
+"arena/minotauro_1_hurt": {
+"ax": 24,
+"ay": 42,
+"h": 42,
+"w": 48
+},
+"arena/minotauro_1_idle0": {
+"ax": 24,
+"ay": 42,
+"h": 42,
+"w": 48
+},
+"arena/minotauro_1_idle1": {
+"ax": 24,
+"ay": 42,
+"h": 42,
+"w": 48
+},
+"arena/minotauro_1_idle2": {
+"ax": 24,
+"ay": 42,
+"h": 42,
+"w": 48
+},
+"arena/minotauro_1_idle3": {
+"ax": 24,
+"ay": 42,
+"h": 42,
+"w": 48
+},
+"arena/minotauro_1_jump": {
+"ax": 24,
+"ay": 42,
+"h": 42,
+"w": 48
+},
+"arena/minotauro_1_run0": {
+"ax": 24,
+"ay": 42,
+"h": 42,
+"w": 48
+},
+"arena/minotauro_1_run1": {
+"ax": 24,
+"ay": 42,
+"h": 42,
+"w": 48
+},
+"arena/minotauro_1_run2": {
+"ax": 24,
+"ay": 42,
+"h": 42,
+"w": 48
+},
+"arena/minotauro_1_run3": {
+"ax": 24,
+"ay": 42,
+"h": 42,
+"w": 48
+},
+"arena/minotauro_1_run4": {
+"ax": 24,
+"ay": 42,
+"h": 42,
+"w": 48
+},
+"arena/minotauro_1_run5": {
+"ax": 24,
+"ay": 42,
+"h": 42,
+"w": 48
+},
+"arena/minotauro_2_atk0": {
+"ax": 24,
+"ay": 42,
+"h": 42,
+"w": 48
+},
+"arena/minotauro_2_atk1": {
+"ax": 24,
+"ay": 41,
+"h": 42,
+"w": 48
+},
+"arena/minotauro_2_atk2": {
+"ax": 24,
+"ay": 42,
+"h": 42,
+"w": 48
+},
+"arena/minotauro_2_atk3": {
+"ax": 24,
+"ay": 41,
+"h": 42,
+"w": 48
+},
+"arena/minotauro_2_cast": {
+"ax": 24,
+"ay": 40,
+"h": 42,
+"w": 48
+},
+"arena/minotauro_2_fall": {
+"ax": 24,
+"ay": 41,
+"h": 42,
+"w": 48
+},
+"arena/minotauro_2_hurt": {
+"ax": 24,
+"ay": 41,
+"h": 42,
+"w": 48
+},
+"arena/minotauro_2_idle0": {
+"ax": 24,
+"ay": 41,
+"h": 42,
+"w": 48
+},
+"arena/minotauro_2_idle1": {
+"ax": 24,
+"ay": 41,
+"h": 42,
+"w": 48
+},
+"arena/minotauro_2_idle2": {
+"ax": 24,
+"ay": 42,
+"h": 42,
+"w": 48
+},
+"arena/minotauro_2_idle3": {
+"ax": 24,
+"ay": 42,
+"h": 42,
+"w": 48
+},
+"arena/minotauro_2_jump": {
+"ax": 24,
+"ay": 37,
+"h": 42,
+"w": 48
+},
+"arena/minotauro_2_run0": {
+"ax": 24,
+"ay": 42,
+"h": 42,
+"w": 48
+},
+"arena/minotauro_2_run1": {
+"ax": 24,
+"ay": 40,
+"h": 42,
+"w": 48
+},
+"arena/minotauro_2_run2": {
+"ax": 24,
+"ay": 41,
+"h": 42,
+"w": 48
+},
+"arena/minotauro_2_run3": {
+"ax": 24,
+"ay": 42,
+"h": 42,
+"w": 48
+},
+"arena/minotauro_2_run4": {
+"ax": 24,
+"ay": 40,
+"h": 42,
+"w": 48
+},
+"arena/minotauro_2_run5": {
+"ax": 24,
+"ay": 41,
+"h": 42,
+"w": 48
+},
+"arena/minotauro_3_atk0": {
+"ax": 24,
+"ay": 42,
+"h": 42,
+"w": 48
+},
+"arena/minotauro_3_atk1": {
+"ax": 24,
+"ay": 41,
+"h": 42,
+"w": 48
+},
+"arena/minotauro_3_atk2": {
+"ax": 24,
+"ay": 42,
+"h": 42,
+"w": 48
+},
+"arena/minotauro_3_atk3": {
+"ax": 24,
+"ay": 41,
+"h": 42,
+"w": 48
+},
+"arena/minotauro_3_cast": {
+"ax": 24,
+"ay": 40,
+"h": 42,
+"w": 48
+},
+"arena/minotauro_3_fall": {
+"ax": 24,
+"ay": 41,
+"h": 42,
+"w": 48
+},
+"arena/minotauro_3_hurt": {
+"ax": 24,
+"ay": 41,
+"h": 42,
+"w": 48
+},
+"arena/minotauro_3_idle0": {
+"ax": 24,
+"ay": 41,
+"h": 42,
+"w": 48
+},
+"arena/minotauro_3_idle1": {
+"ax": 24,
+"ay": 41,
+"h": 42,
+"w": 48
+},
+"arena/minotauro_3_idle2": {
+"ax": 24,
+"ay": 42,
+"h": 42,
+"w": 48
+},
+"arena/minotauro_3_idle3": {
+"ax": 24,
+"ay": 42,
+"h": 42,
+"w": 48
+},
+"arena/minotauro_3_jump": {
+"ax": 24,
+"ay": 37,
+"h": 42,
+"w": 48
+},
+"arena/minotauro_3_run0": {
+"ax": 24,
+"ay": 42,
+"h": 42,
+"w": 48
+},
+"arena/minotauro_3_run1": {
+"ax": 24,
+"ay": 40,
+"h": 42,
+"w": 48
+},
+"arena/minotauro_3_run2": {
+"ax": 24,
+"ay": 41,
+"h": 42,
+"w": 48
+},
+"arena/minotauro_3_run3": {
+"ax": 24,
+"ay": 42,
+"h": 42,
+"w": 48
+},
+"arena/minotauro_3_run4": {
+"ax": 24,
+"ay": 40,
+"h": 42,
+"w": 48
+},
+"arena/minotauro_3_run5": {
+"ax": 24,
+"ay": 41,
+"h": 42,
+"w": 48
+},
+"arena/morgana_atk0": {
+"ax": 34,
+"ay": 46,
+"h": 56,
+"w": 64
+},
+"arena/morgana_atk1": {
+"ax": 34,
+"ay": 45,
+"h": 56,
+"w": 64
+},
+"arena/morgana_atk2": {
+"ax": 34,
+"ay": 46,
+"h": 56,
+"w": 64
+},
+"arena/morgana_hurt": {
+"ax": 34,
+"ay": 45,
+"h": 56,
+"w": 64
+},
+"arena/morgana_idle0": {
+"ax": 34,
+"ay": 45,
+"h": 56,
+"w": 64
+},
+"arena/morgana_idle1": {
+"ax": 34,
+"ay": 45,
+"h": 56,
+"w": 64
+},
+"arena/morgana_run0": {
+"ax": 34,
+"ay": 47,
+"h": 56,
+"w": 64
+},
+"arena/morgana_run1": {
+"ax": 34,
+"ay": 45,
+"h": 56,
+"w": 64
+},
+"arena/morgana_run2": {
+"ax": 34,
+"ay": 47,
+"h": 56,
+"w": 64
+},
+"arena/morgana_run3": {
+"ax": 34,
+"ay": 45,
+"h": 56,
+"w": 64
+},
+"arena/morgana_tele": {
+"ax": 34,
+"ay": 46,
+"h": 56,
+"w": 64
+},
+"arena/nyx_atk0": {
+"ax": 34,
+"ay": 46,
+"h": 56,
+"w": 64
+},
+"arena/nyx_atk1": {
+"ax": 34,
+"ay": 45,
+"h": 56,
+"w": 64
+},
+"arena/nyx_atk2": {
+"ax": 34,
+"ay": 46,
+"h": 56,
+"w": 64
+},
+"arena/nyx_hurt": {
+"ax": 34,
+"ay": 45,
+"h": 56,
+"w": 64
+},
+"arena/nyx_idle0": {
+"ax": 34,
+"ay": 45,
+"h": 56,
+"w": 64
+},
+"arena/nyx_idle1": {
+"ax": 34,
+"ay": 45,
+"h": 56,
+"w": 64
+},
+"arena/nyx_run0": {
+"ax": 34,
+"ay": 47,
+"h": 56,
+"w": 64
+},
+"arena/nyx_run1": {
+"ax": 34,
+"ay": 45,
+"h": 56,
+"w": 64
+},
+"arena/nyx_run2": {
+"ax": 34,
+"ay": 47,
+"h": 56,
+"w": 64
+},
+"arena/nyx_run3": {
+"ax": 34,
+"ay": 45,
+"h": 56,
+"w": 64
+},
+"arena/nyx_tele": {
+"ax": 34,
+"ay": 46,
+"h": 56,
+"w": 64
+},
+"arena/plat": {
+"ax": 33.0,
+"ay": 7,
+"h": 7,
+"w": 66
+},
+"arena/ragnar_atk0": {
+"ax": 34,
+"ay": 45,
+"h": 56,
+"w": 64
+},
+"arena/ragnar_atk1": {
+"ax": 34,
+"ay": 44,
+"h": 56,
+"w": 64
+},
+"arena/ragnar_atk2": {
+"ax": 34,
+"ay": 47,
+"h": 56,
+"w": 64
+},
+"arena/ragnar_hurt": {
+"ax": 34,
+"ay": 44,
+"h": 56,
+"w": 64
+},
+"arena/ragnar_idle0": {
+"ax": 34,
+"ay": 44,
+"h": 56,
+"w": 64
+},
+"arena/ragnar_idle1": {
+"ax": 34,
+"ay": 44,
+"h": 56,
+"w": 64
+},
+"arena/ragnar_run0": {
+"ax": 34,
+"ay": 45,
+"h": 56,
+"w": 64
+},
+"arena/ragnar_run1": {
+"ax": 34,
+"ay": 43,
+"h": 56,
+"w": 64
+},
+"arena/ragnar_run2": {
+"ax": 34,
+"ay": 45,
+"h": 56,
+"w": 64
+},
+"arena/ragnar_run3": {
+"ax": 34,
+"ay": 43,
+"h": 56,
+"w": 64
+},
+"arena/ragnar_tele": {
+"ax": 34,
+"ay": 45,
+"h": 56,
+"w": 64
+},
+"arena/seraphine_atk0": {
+"ax": 34,
+"ay": 46,
+"h": 56,
+"w": 64
+},
+"arena/seraphine_atk1": {
+"ax": 34,
+"ay": 45,
+"h": 56,
+"w": 64
+},
+"arena/seraphine_atk2": {
+"ax": 34,
+"ay": 46,
+"h": 56,
+"w": 64
+},
+"arena/seraphine_hurt": {
+"ax": 34,
+"ay": 45,
+"h": 56,
+"w": 64
+},
+"arena/seraphine_idle0": {
+"ax": 34,
+"ay": 45,
+"h": 56,
+"w": 64
+},
+"arena/seraphine_idle1": {
+"ax": 34,
+"ay": 45,
+"h": 56,
+"w": 64
+},
+"arena/seraphine_run0": {
+"ax": 34,
+"ay": 47,
+"h": 56,
+"w": 64
+},
+"arena/seraphine_run1": {
+"ax": 34,
+"ay": 45,
+"h": 56,
+"w": 64
+},
+"arena/seraphine_run2": {
+"ax": 34,
+"ay": 47,
+"h": 56,
+"w": 64
+},
+"arena/seraphine_run3": {
+"ax": 34,
+"ay": 45,
+"h": 56,
+"w": 64
+},
+"arena/seraphine_tele": {
+"ax": 34,
+"ay": 46,
+"h": 56,
+"w": 64
+},
+"arena/thorne_atk0": {
+"ax": 34,
+"ay": 45,
+"h": 56,
+"w": 64
+},
+"arena/thorne_atk1": {
+"ax": 34,
+"ay": 44,
+"h": 56,
+"w": 64
+},
+"arena/thorne_atk2": {
+"ax": 34,
+"ay": 52,
+"h": 56,
+"w": 64
+},
+"arena/thorne_hurt": {
+"ax": 34,
+"ay": 44,
+"h": 56,
+"w": 64
+},
+"arena/thorne_idle0": {
+"ax": 34,
+"ay": 44,
+"h": 56,
+"w": 64
+},
+"arena/thorne_idle1": {
+"ax": 34,
+"ay": 44,
+"h": 56,
+"w": 64
+},
+"arena/thorne_run0": {
+"ax": 34,
+"ay": 45,
+"h": 56,
+"w": 64
+},
+"arena/thorne_run1": {
+"ax": 34,
+"ay": 43,
+"h": 56,
+"w": 64
+},
+"arena/thorne_run2": {
+"ax": 34,
+"ay": 45,
+"h": 56,
+"w": 64
+},
+"arena/thorne_run3": {
+"ax": 34,
+"ay": 43,
+"h": 56,
+"w": 64
+},
+"arena/thorne_tele": {
+"ax": 34,
+"ay": 45,
+"h": 56,
+"w": 64
+},
+"arena/yuki_atk0": {
+"ax": 34,
+"ay": 45,
+"h": 56,
+"w": 64
+},
+"arena/yuki_atk1": {
+"ax": 34,
+"ay": 44,
+"h": 56,
+"w": 64
+},
+"arena/yuki_atk2": {
+"ax": 34,
+"ay": 45,
+"h": 56,
+"w": 64
+},
+"arena/yuki_hurt": {
+"ax": 34,
+"ay": 44,
+"h": 56,
+"w": 64
+},
+"arena/yuki_idle0": {
+"ax": 34,
+"ay": 44,
+"h": 56,
+"w": 64
+},
+"arena/yuki_idle1": {
+"ax": 34,
+"ay": 44,
+"h": 56,
+"w": 64
+},
+"arena/yuki_run0": {
+"ax": 34,
+"ay": 45,
+"h": 56,
+"w": 64
+},
+"arena/yuki_run1": {
+"ax": 34,
+"ay": 43,
+"h": 56,
+"w": 64
+},
+"arena/yuki_run2": {
+"ax": 34,
+"ay": 45,
+"h": 56,
+"w": 64
+},
+"arena/yuki_run3": {
+"ax": 34,
+"ay": 43,
+"h": 56,
+"w": 64
+},
+"arena/yuki_tele": {
+"ax": 34,
+"ay": 45,
+"h": 56,
+"w": 64
+},
+"bg/arena": {
+"ax": 180.0,
+"ay": 240,
+"h": 240,
+"w": 360
+},
+"fx/arrow": {
+"ax": 8.0,
+"ay": 5,
+"h": 5,
+"w": 16
+},
+"fx/arrow_down": {
+"ax": 2.5,
+"ay": 16,
+"h": 16,
+"w": 5
+},
+"fx/beartrap_0": {
+"ax": 9.0,
+"ay": 9,
+"h": 9,
+"w": 18
+},
+"fx/beartrap_1": {
+"ax": 9.0,
+"ay": 9,
+"h": 9,
+"w": 18
+},
+"fx/bone": {
+"ax": 5.0,
+"ay": 5,
+"h": 5,
+"w": 10
+},
+"fx/bonewall": {
+"ax": 7.0,
+"ay": 50,
+"h": 50,
+"w": 14
+},
+"fx/bottle": {
+"ax": 4.5,
+"ay": 12,
+"h": 12,
+"w": 9
+},
+"fx/bull_0": {
+"ax": 16.0,
+"ay": 22,
+"h": 22,
+"w": 32
+},
+"fx/bull_1": {
+"ax": 16.0,
+"ay": 22,
+"h": 22,
+"w": 32
+},
+"fx/clockhand": {
+"ax": 7.0,
+"ay": 5,
+"h": 5,
+"w": 14
+},
+"fx/crescent": {
+"ax": 8.0,
+"ay": 16,
+"h": 16,
+"w": 16
+},
+"fx/drop_acid": {
+"ax": 4.0,
+"ay": 11,
+"h": 11,
+"w": 8
+},
+"fx/ice_spear": {
+"ax": 14.0,
+"ay": 7,
+"h": 7,
+"w": 28
+},
+"fx/meteor": {
+"ax": 8.0,
+"ay": 20,
+"h": 20,
+"w": 16
+},
+"fx/moonshard": {
+"ax": 3.5,
+"ay": 12,
+"h": 12,
+"w": 7
+},
+"fx/orb": {
+"ax": 5.5,
+"ay": 11,
+"h": 11,
+"w": 11
+},
+"fx/orb_fire": {
+"ax": 5.5,
+"ay": 11,
+"h": 11,
+"w": 11
+},
+"fx/orb_green": {
+"ax": 5.5,
+"ay": 11,
+"h": 11,
+"w": 11
+},
+"fx/orb_ice": {
+"ax": 5.5,
+"ay": 11,
+"h": 11,
+"w": 11
+},
+"fx/orb_storm": {
+"ax": 5.5,
+"ay": 11,
+"h": 11,
+"w": 11
+},
+"fx/rock": {
+"ax": 9.0,
+"ay": 18,
+"h": 18,
+"w": 18
+},
+"fx/shard": {
+"ax": 4.0,
+"ay": 6,
+"h": 8,
+"w": 8
+},
+"fx/shield": {
+"ax": 7.0,
+"ay": 14,
+"h": 14,
+"w": 14
+},
+"fx/shuriken": {
+"ax": 5.5,
+"ay": 11,
+"h": 11,
+"w": 11
+},
+"fx/skel_0": {
+"ax": 7.0,
+"ay": 20,
+"h": 20,
+"w": 14
+},
+"fx/skel_1": {
+"ax": 7.0,
+"ay": 20,
+"h": 20,
+"w": 14
+},
+"fx/skull": {
+"ax": 5.0,
+"ay": 10,
+"h": 10,
+"w": 10
+},
+"fx/slash_axe_0": {
+"ax": 20.0,
+"ay": 30,
+"h": 40,
+"w": 40
+},
+"fx/slash_axe_1": {
+"ax": 20.0,
+"ay": 37,
+"h": 40,
+"w": 40
+},
+"fx/slash_axe_2": {
+"ax": 20.0,
+"ay": 40,
+"h": 40,
+"w": 40
+},
+"fx/slash_claw_0": {
+"ax": 20.0,
+"ay": 40,
+"h": 40,
+"w": 40
+},
+"fx/slash_claw_1": {
+"ax": 20.0,
+"ay": 40,
+"h": 40,
+"w": 40
+},
+"fx/slash_claw_2": {
+"ax": 20.0,
+"ay": 40,
+"h": 40,
+"w": 40
+},
+"fx/slash_hero_0": {
+"ax": 20.0,
+"ay": 34,
+"h": 40,
+"w": 40
+},
+"fx/slash_hero_1": {
+"ax": 20.0,
+"ay": 38,
+"h": 40,
+"w": 40
+},
+"fx/slash_hero_2": {
+"ax": 20.0,
+"ay": 40,
+"h": 40,
+"w": 40
+},
+"fx/slash_hero_heavy_0": {
+"ax": 20.0,
+"ay": 35,
+"h": 40,
+"w": 40
+},
+"fx/slash_hero_heavy_1": {
+"ax": 20.0,
+"ay": 38,
+"h": 40,
+"w": 40
+},
+"fx/slash_hero_heavy_2": {
+"ax": 20.0,
+"ay": 40,
+"h": 40,
+"w": 40
+},
+"fx/slash_necro_0": {
+"ax": 20.0,
+"ay": 31,
+"h": 40,
+"w": 40
+},
+"fx/slash_necro_1": {
+"ax": 20.0,
+"ay": 34,
+"h": 40,
+"w": 40
+},
+"fx/slash_necro_2": {
+"ax": 20.0,
+"ay": 37,
+"h": 40,
+"w": 40
+},
+"fx/slash_spear_0": {
+"ax": 20.0,
+"ay": 21,
+"h": 40,
+"w": 40
+},
+"fx/slash_spear_1": {
+"ax": 20.0,
+"ay": 21,
+"h": 40,
+"w": 40
+},
+"fx/slash_spear_2": {
+"ax": 20.0,
+"ay": 21,
+"h": 40,
+"w": 40
+},
+"fx/spark_guard_0": {
+"ax": 10.0,
+"ay": 16,
+"h": 20,
+"w": 20
+},
+"fx/spark_guard_1": {
+"ax": 10.0,
+"ay": 18,
+"h": 20,
+"w": 20
+},
+"fx/spark_guard_2": {
+"ax": 10.0,
+"ay": 20,
+"h": 20,
+"w": 20
+},
+"fx/spark_hero_0": {
+"ax": 10.0,
+"ay": 14,
+"h": 20,
+"w": 20
+},
+"fx/spark_hero_1": {
+"ax": 10.0,
+"ay": 17,
+"h": 20,
+"w": 20
+},
+"fx/spark_hero_2": {
+"ax": 10.0,
+"ay": 20,
+"h": 20,
+"w": 20
+},
+"fx/spear": {
+"ax": 15.0,
+"ay": 5,
+"h": 5,
+"w": 30
+},
+"fx/star": {
+"ax": 6.5,
+"ay": 13,
+"h": 13,
+"w": 13
+},
+"fx/stinger": {
+"ax": 7.0,
+"ay": 7,
+"h": 7,
+"w": 14
+},
+"fx/wave_dust": {
+"ax": 8.0,
+"ay": 16,
+"h": 16,
+"w": 16
+},
+"fx/wave_fire": {
+"ax": 8.0,
+"ay": 16,
+"h": 16,
+"w": 16
+},
+"fx/wave_red": {
+"ax": 8.0,
+"ay": 16,
+"h": 16,
+"w": 16
+},
+"fx/wolf_0": {
+"ax": 12.0,
+"ay": 15,
+"h": 15,
+"w": 24
+},
+"fx/wolf_1": {
+"ax": 12.0,
+"ay": 15,
+"h": 15,
+"w": 24
+},
+"heroes/acrobata": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/acrobata_atk0": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/acrobata_atk1": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/acrobata_walk0": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/acrobata_walk1": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/acrobata_walk2": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/acrobata_walk3": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/alquimista": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/alquimista_atk0": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/alquimista_atk1": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/alquimista_walk0": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/alquimista_walk1": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/alquimista_walk2": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/alquimista_walk3": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/andarilho": {
+"ax": 9.5,
+"ay": 20,
+"h": 20,
+"w": 19
+},
+"heroes/andarilho_atk0": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/andarilho_atk1": {
+"ax": 9.5,
+"ay": 20,
+"h": 20,
+"w": 19
+},
+"heroes/andarilho_walk0": {
+"ax": 9.5,
+"ay": 20,
+"h": 20,
+"w": 19
+},
+"heroes/andarilho_walk1": {
+"ax": 9.5,
+"ay": 20,
+"h": 20,
+"w": 19
+},
+"heroes/andarilho_walk2": {
+"ax": 9.5,
+"ay": 20,
+"h": 20,
+"w": 19
+},
+"heroes/andarilho_walk3": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/arqueiro": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/arqueiro_atk0": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/arqueiro_atk1": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/arqueiro_walk0": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/arqueiro_walk1": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/arqueiro_walk2": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/arqueiro_walk3": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/arquimago": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/astra": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/batedor": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/batedor_atk0": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/batedor_atk1": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/batedor_walk0": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/batedor_walk1": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/batedor_walk2": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/batedor_walk3": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/borin": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/bram": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/cacador": {
+"ax": 9.5,
+"ay": 20,
+"h": 20,
+"w": 19
+},
+"heroes/cacador_atk0": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/cacador_atk1": {
+"ax": 9.5,
+"ay": 20,
+"h": 20,
+"w": 19
+},
+"heroes/cacador_walk0": {
+"ax": 9.5,
+"ay": 20,
+"h": 20,
+"w": 19
+},
+"heroes/cacador_walk1": {
+"ax": 9.5,
+"ay": 20,
+"h": 20,
+"w": 19
+},
+"heroes/cacador_walk2": {
+"ax": 9.5,
+"ay": 20,
+"h": 20,
+"w": 19
+},
+"heroes/cacador_walk3": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/cacatesouro": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/cacatesouro_atk0": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/cacatesouro_atk1": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/cacatesouro_walk0": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/cacatesouro_walk1": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/cacatesouro_walk2": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/cacatesouro_walk3": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/cacavampiro": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/cacavampiro_atk0": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/cacavampiro_atk1": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/cacavampiro_walk0": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/cacavampiro_walk1": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/cacavampiro_walk2": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/cacavampiro_walk3": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/campeao": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/desarmador": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/desarmador_atk0": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/desarmador_atk1": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/desarmador_walk0": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/desarmador_walk1": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/desarmador_walk2": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/desarmador_walk3": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/escudeiro": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/escudeiro_atk0": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/escudeiro_atk1": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/escudeiro_walk0": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/escudeiro_walk1": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/escudeiro_walk2": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/escudeiro_walk3": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/exorcista": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/exorcista_atk0": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/exorcista_atk1": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/exorcista_walk0": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/exorcista_walk1": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/exorcista_walk2": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/exorcista_walk3": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/garrick": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/guerreiro": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/guerreiro_atk0": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/guerreiro_atk1": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/guerreiro_walk0": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/guerreiro_walk1": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/guerreiro_walk2": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/guerreiro_walk3": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/ignis": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/inquisidor": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/inquisidor_atk0": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/inquisidor_atk1": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/inquisidor_walk0": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/inquisidor_walk1": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/inquisidor_walk2": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/inquisidor_walk3": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/kael": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/ladino": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/ladino_atk0": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/ladino_atk1": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/ladino_walk0": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/ladino_walk1": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/ladino_walk2": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/ladino_walk3": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/lyra": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/mercador": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/mercador_atk0": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/mercador_atk1": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/mercador_walk0": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/mercador_walk1": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/mercador_walk2": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/mercador_walk3": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/mineiro": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/mineiro_atk0": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/mineiro_atk1": {
+"ax": 9.5,
+"ay": 20,
+"h": 20,
+"w": 19
+},
+"heroes/mineiro_walk0": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/mineiro_walk1": {
+"ax": 9.5,
+"ay": 20,
+"h": 20,
+"w": 19
+},
+"heroes/mineiro_walk2": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/mineiro_walk3": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/morgana": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/nyx": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/paladino": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/paladino_atk0": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/paladino_atk1": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/paladino_walk0": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/paladino_walk1": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/paladino_walk2": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/paladino_walk3": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/piromante": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/piromante_atk0": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/piromante_atk1": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/piromante_walk0": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/piromante_walk1": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/piromante_walk2": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/piromante_walk3": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/ragnar": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/rei": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/sacerdote": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/sacerdote_atk0": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/sacerdote_atk1": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/sacerdote_walk0": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/sacerdote_walk1": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/sacerdote_walk2": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/sacerdote_walk3": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/seraphine": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/thorne": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/tocheiro": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/tocheiro_atk0": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/tocheiro_atk1": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/tocheiro_walk0": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/tocheiro_walk1": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/tocheiro_walk2": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/tocheiro_walk3": {
+"ax": 9.5,
+"ay": 19,
+"h": 20,
+"w": 19
+},
+"heroes/yuki": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"mon/aranha": {
+"ax": 8.0,
+"ay": 16,
+"h": 16,
+"w": 16
+},
+"mon/espectro": {
+"ax": 8.0,
+"ay": 16,
+"h": 16,
+"w": 16
+},
+"mon/esqueleto": {
+"ax": 8.0,
+"ay": 16,
+"h": 16,
+"w": 16
+},
+"mon/golem": {
+"ax": 10.0,
+"ay": 20,
+"h": 20,
+"w": 20
+},
+"mon/gosma": {
+"ax": 8.0,
+"ay": 16,
+"h": 16,
+"w": 16
+},
+"mon/mimico": {
+"ax": 8.0,
+"ay": 16,
+"h": 16,
+"w": 16
+},
+"mon/mimico_aberto": {
+"ax": 8.0,
+"ay": 16,
+"h": 16,
+"w": 16
+},
+"mon/morcego_0": {
+"ax": 8.0,
+"ay": 13,
+"h": 16,
+"w": 16
+},
+"mon/morcego_1": {
+"ax": 8.0,
+"ay": 15,
+"h": 16,
+"w": 16
+},
+"mon/ogro": {
+"ax": 10.0,
+"ay": 20,
+"h": 20,
+"w": 20
+},
+"mon/vampiro": {
+"ax": 8.0,
+"ay": 16,
+"h": 16,
+"w": 16
+},
+"tiles/deco_cogumelo": {
+"ax": 10.0,
+"ay": 20,
+"h": 20,
+"w": 20
+},
+"tiles/deco_corrente": {
+"ax": 10.0,
+"ay": 19,
+"h": 20,
+"w": 20
+},
+"tiles/deco_ossos": {
+"ax": 10.0,
+"ay": 18,
+"h": 20,
+"w": 20
+},
+"tiles/deco_teia": {
+"ax": 10.0,
+"ay": 10,
+"h": 20,
+"w": 20
+},
+"tiles/deco_vela": {
+"ax": 10.0,
+"ay": 19,
+"h": 20,
+"w": 20
+},
+"tiles/entrance": {
+"ax": 10.0,
+"ay": 20,
+"h": 20,
+"w": 20
+},
+"tiles/floor_0": {
+"ax": 10.0,
+"ay": 20,
+"h": 20,
+"w": 20
+},
+"tiles/floor_1": {
+"ax": 10.0,
+"ay": 20,
+"h": 20,
+"w": 20
+},
+"tiles/floor_2": {
+"ax": 10.0,
+"ay": 20,
+"h": 20,
+"w": 20
+},
+"tiles/guard_floor": {
+"ax": 10.0,
+"ay": 20,
+"h": 20,
+"w": 20
+},
+"tiles/heart": {
+"ax": 10.0,
+"ay": 19,
+"h": 20,
+"w": 20
+},
+"tiles/wall_0": {
+"ax": 10.0,
+"ay": 20,
+"h": 20,
+"w": 20
+},
+"tiles/wall_1": {
+"ax": 10.0,
+"ay": 20,
+"h": 20,
+"w": 20
+},
+"tiles/wall_2": {
+"ax": 10.0,
+"ay": 20,
+"h": 20,
+"w": 20
+},
+"traps/alcapao": {
+"ax": 10.0,
+"ay": 19,
+"h": 20,
+"w": 20
+},
+"traps/alcapao_aberto": {
+"ax": 10.0,
+"ay": 19,
+"h": 20,
+"w": 20
+},
+"traps/ampulheta": {
+"ax": 10.0,
+"ay": 19,
+"h": 20,
+"w": 20
+},
+"traps/besta": {
+"ax": 10.0,
+"ay": 18,
+"h": 20,
+"w": 20
+},
+"traps/espinhos": {
+"ax": 10.0,
+"ay": 18,
+"h": 20,
+"w": 20
+},
+"traps/fogo_0": {
+"ax": 10.0,
+"ay": 20,
+"h": 20,
+"w": 20
+},
+"traps/fogo_1": {
+"ax": 10.0,
+"ay": 20,
+"h": 20,
+"w": 20
+},
+"traps/ganancia": {
+"ax": 10.0,
+"ay": 18,
+"h": 20,
+"w": 20
+},
+"traps/runa": {
+"ax": 10.0,
+"ay": 18,
+"h": 20,
+"w": 20
+},
+"ui/atk_dragao": {
+"ax": 9.0,
+"ay": 16,
+"h": 18,
+"w": 18
+},
+"ui/atk_dragao_0": {
+"ax": 9.0,
+"ay": 16,
+"h": 18,
+"w": 18
+},
+"ui/atk_dragao_1": {
+"ax": 9.0,
+"ay": 16,
+"h": 18,
+"w": 18
+},
+"ui/atk_dragao_2": {
+"ax": 9.0,
+"ay": 17,
+"h": 18,
+"w": 18
+},
+"ui/atk_dragao_3": {
+"ax": 9.0,
+"ay": 17,
+"h": 18,
+"w": 18
+},
+"ui/atk_lich": {
+"ax": 9.0,
+"ay": 17,
+"h": 18,
+"w": 18
+},
+"ui/atk_lich_0": {
+"ax": 9.0,
+"ay": 17,
+"h": 18,
+"w": 18
+},
+"ui/atk_lich_1": {
+"ax": 9.0,
+"ay": 15,
+"h": 18,
+"w": 18
+},
+"ui/atk_lich_2": {
+"ax": 9.0,
+"ay": 17,
+"h": 18,
+"w": 18
+},
+"ui/atk_lich_3": {
+"ax": 9.0,
+"ay": 17,
+"h": 18,
+"w": 18
+},
+"ui/atk_minotauro": {
+"ax": 9.0,
+"ay": 17,
+"h": 18,
+"w": 18
+},
+"ui/atk_minotauro_0": {
+"ax": 9.0,
+"ay": 17,
+"h": 18,
+"w": 18
+},
+"ui/atk_minotauro_1": {
+"ax": 9.0,
+"ay": 17,
+"h": 18,
+"w": 18
+},
+"ui/atk_minotauro_2": {
+"ax": 9.0,
+"ay": 17,
+"h": 18,
+"w": 18
+},
+"ui/atk_minotauro_3": {
+"ax": 9.0,
+"ay": 17,
+"h": 18,
+"w": 18
+},
+"ui/dash": {
+"ax": 9.0,
+"ay": 16,
+"h": 18,
+"w": 18
+},
+"ui/jump": {
+"ax": 9.0,
+"ay": 16,
+"h": 18,
+"w": 18
+},
+"ui/sk_arremesso": {
+"ax": 9.0,
+"ay": 17,
+"h": 18,
+"w": 18
+},
+"ui/sk_asas_fogo": {
+"ax": 9.0,
+"ay": 16,
+"h": 18,
+"w": 18
+},
+"ui/sk_baforada": {
+"ax": 9.0,
+"ay": 17,
+"h": 18,
+"w": 18
+},
+"ui/sk_bloco": {
+"ax": 9.0,
+"ay": 16,
+"h": 18,
+"w": 18
+},
+"ui/sk_chifrada": {
+"ax": 9.0,
+"ay": 17,
+"h": 18,
+"w": 18
+},
+"ui/sk_coroa": {
+"ax": 9.0,
+"ay": 16,
+"h": 18,
+"w": 18
+},
+"ui/sk_drenar": {
+"ax": 9.0,
+"ay": 17,
+"h": 18,
+"w": 18
+},
+"ui/sk_eco": {
+"ax": 9.0,
+"ay": 15,
+"h": 18,
+"w": 18
+},
+"ui/sk_erguer": {
+"ax": 9.0,
+"ay": 16,
+"h": 18,
+"w": 18
+},
+"ui/sk_escamas": {
+"ax": 9.0,
+"ay": 17,
+"h": 18,
+"w": 18
+},
+"ui/sk_estouro": {
+"ax": 9.0,
+"ay": 18,
+"h": 18,
+"w": 18
+},
+"ui/sk_explosao": {
+"ax": 9.0,
+"ay": 17,
+"h": 18,
+"w": 18
+},
+"ui/sk_ferrao": {
+"ax": 9.0,
+"ay": 14,
+"h": 18,
+"w": 18
+},
+"ui/sk_furia": {
+"ax": 9.0,
+"ay": 17,
+"h": 18,
+"w": 18
+},
+"ui/sk_investida": {
+"ax": 9.0,
+"ay": 17,
+"h": 18,
+"w": 18
+},
+"ui/sk_investida_longa": {
+"ax": 9.0,
+"ay": 17,
+"h": 18,
+"w": 18
+},
+"ui/sk_lanca_gelo": {
+"ax": 9.0,
+"ay": 14,
+"h": 18,
+"w": 18
+},
+"ui/sk_mergulho": {
+"ax": 9.0,
+"ay": 16,
+"h": 18,
+"w": 18
+},
+"ui/sk_meteoro": {
+"ax": 9.0,
+"ay": 16,
+"h": 18,
+"w": 18
+},
+"ui/sk_muda": {
+"ax": 9.0,
+"ay": 14,
+"h": 18,
+"w": 18
+},
+"ui/sk_muralha": {
+"ax": 9.0,
+"ay": 18,
+"h": 18,
+"w": 18
+},
+"ui/sk_nevasca": {
+"ax": 9.0,
+"ay": 18,
+"h": 18,
+"w": 18
+},
+"ui/sk_nuvem": {
+"ax": 9.0,
+"ay": 16,
+"h": 18,
+"w": 18
+},
+"ui/sk_parar": {
+"ax": 9.0,
+"ay": 17,
+"h": 18,
+"w": 18
+},
+"ui/sk_pisao": {
+"ax": 9.0,
+"ay": 16,
+"h": 18,
+"w": 18
+},
+"ui/sk_postura": {
+"ax": 9.0,
+"ay": 17,
+"h": 18,
+"w": 18
+},
+"ui/sk_raio": {
+"ax": 9.0,
+"ay": 18,
+"h": 18,
+"w": 18
+},
+"ui/sk_rebobinar": {
+"ax": 9.0,
+"ay": 17,
+"h": 18,
+"w": 18
+},
+"ui/sk_redemoinho": {
+"ax": 9.0,
+"ay": 17,
+"h": 18,
+"w": 18
+},
+"ui/sk_rugido": {
+"ax": 9.0,
+"ay": 16,
+"h": 18,
+"w": 18
+},
+"ui/sk_sede": {
+"ax": 9.0,
+"ay": 17,
+"h": 18,
+"w": 18
+},
+"ui/sk_tempestade": {
+"ax": 9.0,
+"ay": 17,
+"h": 18,
+"w": 18
+},
+"ui/sk_terremoto": {
+"ax": 9.0,
+"ay": 17,
+"h": 18,
+"w": 18
+},
+"ui/sk_voo": {
+"ax": 9.0,
+"ay": 15,
+"h": 18,
+"w": 18
+}
+}
