@@ -20,12 +20,13 @@ const CFG := {
 	"SOUL_BASE": 1.0,   # energia absorvida por herói derrotado: 1s × (1 + fama%)
 	"SOUL_LEG": 10.0,   # lendário vale 10× isso
 	"LEG_RES": 0.45,    # lendário no corredor só sofre 45% do dano
-	"LEG_HP_GROWTH": 0.35,
+	"LEG_HP_GROWTH": 0.15,      # vida do lendário na arena a cada lendário que já caiu
+	"LEG_MAP_HP_GROWTH": 0.35,  # vida do lendário no corredor a cada lendário que já caiu
 	"ARENA_BONUS": 10.0,
 	# dano dos lendários na arena acompanha o relógio: cada golpe tira uma fatia do tempo que você tinha
 	# ao entrar na sala (relógio/LEG_DMG_REF, com expoente para guardar tempo ainda ajudar um pouco)
-	"LEG_DMG_REF": 150.0, "LEG_DMG_EXP": 0.9, "LEG_DMG_MIN": 0.5, "LEG_DMG_GROWTH": 0.07,
-	"LEG_ARENA_HP": 2.3,   # vida dos lendários na arena (multiplica LEG_ARENA.hp)
+	"LEG_DMG_REF": 185.0, "LEG_DMG_EXP": 0.9, "LEG_DMG_MIN": 0.5, "LEG_DMG_GROWTH": 0.04, "LEG_FAME_DMG": 0.4, "LEG_FAME_HP": 0.5,
+	"LEG_ARENA_HP": 2.0,   # vida dos lendários na arena (multiplica LEG_ARENA.hp)
 	"AURA": 2.5,
 	"HERO_HP_GROWTH": 0.10, "HERO_DMG_GROWTH": 0.05, "HERO_SPD_GROWTH": 0.015, "HERO_STEAL_GROWTH": 0.15,
 	"HERO_COUNT": [4, 2],
@@ -223,38 +224,57 @@ const LEG_ARENA := {
 }
 
 # ===== Classes do guardião (estilo Grand Chase): cada classe muda arma, ataque, movimento e habilidades =====
-## Classes 2, 3 e 4 liberam com a evolução do guardião (%).
-const CLASS_UNLOCK := [0.0, 30.0, 65.0, 110.0]
+## Classes 2, 3 e 4 liberam com missões permanentes (ficam salvas entre runs).
+## stat = o que conta para a missão; goal = quanto precisa.
+const MISSIONS := {
+	"minotauro_1": {"desc": "Acerte 250 golpes básicos com o Minotauro na sala do guardião.", "goal": 250},
+	"minotauro_2": {"desc": "Vença um lendário com o Minotauro perdendo menos de 30% do relógio na luta.", "goal": 1},
+	"minotauro_3": {"desc": "Derrote 4 lendários com o Minotauro (somando todas as runs).", "goal": 4},
+	"lich_1": {"desc": "Solte 40 esqueletos na masmorra jogando com o Lich.", "goal": 40},
+	"lich_2": {"desc": "Toque a badalada 15 vezes jogando com o Lich.", "goal": 15},
+	"lich_3": {"desc": "Termine uma onda com 300s ou mais no relógio jogando com o Lich.", "goal": 1},
+	"dragao_1": {"desc": "Dê 120 pulos no ar com o Dragão na sala do guardião.", "goal": 120},
+	"dragao_2": {"desc": "Vença um lendário com o Dragão sem usar o dash na luta.", "goal": 1},
+	"dragao_3": {"desc": "Chegue à onda 12 jogando com o Dragão.", "goal": 1},
+}
+## Bônus que o guardião dá à masmorra enquanto ele é o seu guardião.
+## mul = multiplica (monHp, monDmg, esp, besta, fogo, bellCd, drain); add = soma (slow, kill);
+## cheap = monstro pela metade do tempo; free = [monstro, segundos] sai de graça.
+const GUARD_BONUS := {
+	"minotauro": {"nome": "Labirinto", "desc": "Monstros têm +25% de vida.", "mul": {"monHp": 1.25}},
+	"lich": {"nome": "Coração gelado", "desc": "A badalada recarrega 30% mais rápido.", "mul": {"bellCd": 0.7}},
+	"dragao": {"nome": "Tesouro do dragão", "desc": "Cada herói derrotado dá +0,5s.", "add": {"kill": 0.5}},
+}
 const CLASSES := {
 	"minotauro": [
 		{"nome": "Guerreiro do Labirinto", "estilo": "Equilibrado: machado pesado e investidas.", "spd": 1.0, "jump": 1.0, "jumps": 1, "armor": 0.85,
-			"atk": {"kind": "melee", "dmg": 22, "cd": 0.46, "range": 70, "hh": 54, "t": 0.14, "anti": 0.07, "rec": 0.1, "fx": "axe", "shake": 0.006}, "skills": ["investida", "pisao", "furia"], "passive": ""},
+			"atk": {"kind": "melee", "dmg": 22, "cd": 0.46, "range": 70, "hh": 54, "t": 0.14, "anti": 0.07, "rec": 0.1, "fx": "axe", "shake": 0.006}, "skills": ["investida", "pisao", "furia"], "passive": "", "bonus": {"desc": "Monstros causam +20% de dano.", "mul": {"monDmg": 1.2}}},
 		{"nome": "Berserker", "estilo": "Dois machados, golpes rápidos; cada acerto aumenta o dano até ser atingido.", "spd": 1.12, "jump": 1.0, "jumps": 1, "armor": 0.95,
-			"atk": {"kind": "melee", "dmg": 12, "cd": 0.24, "range": 60, "hh": 48, "t": 0.09, "anti": 0.03, "rec": 0.05, "fx": "axe", "shake": 0.003}, "skills": ["redemoinho", "investida", "sede"], "passive": "furia_acumula"},
+			"atk": {"kind": "melee", "dmg": 12, "cd": 0.24, "range": 60, "hh": 48, "t": 0.09, "anti": 0.03, "rec": 0.05, "fx": "axe", "shake": 0.003}, "skills": ["redemoinho", "investida", "sede"], "passive": "furia_acumula", "bonus": {"desc": "Monstros causam +35% de dano, mas têm 10% menos vida.", "mul": {"monDmg": 1.35, "monHp": 0.9}}},
 		{"nome": "Guardião de Pedra", "estilo": "Tanque com escudo e maça: lento, aguenta muito e empurra o inimigo.", "spd": 0.85, "jump": 0.95, "jumps": 1, "armor": 0.6,
-			"atk": {"kind": "melee", "dmg": 26, "cd": 0.6, "range": 62, "hh": 56, "t": 0.16, "anti": 0.1, "rec": 0.14, "fx": "axe", "shake": 0.008}, "skills": ["postura", "chifrada", "terremoto"], "passive": "empurrao"},
+			"atk": {"kind": "melee", "dmg": 26, "cd": 0.6, "range": 62, "hh": 56, "t": 0.16, "anti": 0.1, "rec": 0.14, "fx": "axe", "shake": 0.008}, "skills": ["postura", "chifrada", "terremoto"], "passive": "empurrao", "bonus": {"desc": "Monstros têm +40% de vida.", "mul": {"monHp": 1.4}}},
 		{"nome": "Senhor dos Touros", "estilo": "Lança longa: ataca de mais longe e atropela com o rebanho.", "spd": 1.05, "jump": 1.05, "jumps": 1, "armor": 0.9,
-			"atk": {"kind": "melee", "dmg": 18, "cd": 0.38, "range": 110, "hh": 30, "t": 0.12, "anti": 0.07, "rec": 0.08, "fx": "spear", "shake": 0.004}, "skills": ["arremesso", "investida_longa", "estouro"], "passive": ""},
+			"atk": {"kind": "melee", "dmg": 18, "cd": 0.38, "range": 110, "hh": 30, "t": 0.12, "anti": 0.07, "rec": 0.08, "fx": "spear", "shake": 0.004}, "skills": ["arremesso", "investida_longa", "estouro"], "passive": "", "bonus": {"desc": "Um ogro sai de graça a cada 25s de onda.", "free": ["ogro", 25.0]}},
 	],
 	"lich": [
 		{"nome": "Lich", "estilo": "Magia à distância e controle.", "spd": 1.0, "jump": 1.0, "jumps": 2, "armor": 0.98,
-			"atk": {"kind": "shot", "dmg": 8, "cd": 0.26, "spd": 640, "anti": 0.04, "rec": 0.05, "spr": "fx/bone", "fx": "necro"}, "skills": ["coroa", "muralha", "drenar"], "passive": ""},
+			"atk": {"kind": "shot", "dmg": 8, "cd": 0.26, "spd": 640, "anti": 0.04, "rec": 0.05, "spr": "fx/bone", "fx": "necro"}, "skills": ["coroa", "muralha", "drenar"], "passive": "", "bonus": {"desc": "Espinhos causam +30% de dano.", "mul": {"esp": 1.3}}},
 		{"nome": "Necromante", "estilo": "Ergue esqueletos que lutam por ele; acertos colhem almas.", "spd": 0.95, "jump": 1.0, "jumps": 2, "armor": 0.93,
-			"atk": {"kind": "shot", "dmg": 10, "cd": 0.4, "spd": 520, "anti": 0.06, "rec": 0.06, "spr": "fx/skull", "fx": "necro"}, "skills": ["erguer", "explosao", "coroa"], "passive": "colheita"},
+			"atk": {"kind": "shot", "dmg": 10, "cd": 0.4, "spd": 520, "anti": 0.06, "rec": 0.06, "spr": "fx/skull", "fx": "necro"}, "skills": ["erguer", "explosao", "coroa"], "passive": "colheita", "bonus": {"desc": "Esqueletos custam metade do tempo e um sai de graça a cada 12s de onda.", "cheap": "esqueleto", "free": ["esqueleto", 12.0]}},
 		{"nome": "Feiticeiro do Gelo", "estilo": "Cada acerto deixa o lendário lento; congela e se protege.", "spd": 1.0, "jump": 1.0, "jumps": 2, "armor": 0.88,
-			"atk": {"kind": "shot", "dmg": 7, "cd": 0.3, "spd": 600, "anti": 0.04, "rec": 0.05, "spr": "fx/shard", "fx": "necro"}, "skills": ["lanca_gelo", "nevasca", "bloco"], "passive": "congelar"},
+			"atk": {"kind": "shot", "dmg": 7, "cd": 0.3, "spd": 600, "anti": 0.04, "rec": 0.05, "spr": "fx/shard", "fx": "necro"}, "skills": ["lanca_gelo", "nevasca", "bloco"], "passive": "congelar", "bonus": {"desc": "Ampulhetas deixam 15% mais lento.", "add": {"slow": 0.15}}},
 		{"nome": "Arauto do Tempo", "estilo": "Manipula o relógio: para o inimigo, rebobina dano e devolve tempo a cada acerto.", "spd": 1.05, "jump": 1.0, "jumps": 2, "armor": 1.03,
-			"atk": {"kind": "shot", "dmg": 8, "cd": 0.28, "spd": 680, "anti": 0.04, "rec": 0.05, "spr": "fx/clockhand", "fx": "necro"}, "skills": ["parar", "rebobinar", "eco"], "passive": "tempo_devolvido"},
+			"atk": {"kind": "shot", "dmg": 8, "cd": 0.28, "spd": 680, "anti": 0.04, "rec": 0.05, "spr": "fx/clockhand", "fx": "necro"}, "skills": ["parar", "rebobinar", "eco"], "passive": "tempo_devolvido", "bonus": {"desc": "O relógio corre 15% mais devagar durante as ondas.", "mul": {"drain": 0.85}}},
 	],
 	"dragao": [
 		{"nome": "Dragão Jovem", "estilo": "Ágil, garras rápidas e fogo.", "spd": 1.0, "jump": 1.0, "jumps": 2, "armor": 0.88,
-			"atk": {"kind": "melee", "dmg": 11, "cd": 0.2, "range": 54, "hh": 42, "t": 0.09, "anti": 0.03, "rec": 0.04, "fx": "claw", "shake": 0.002}, "skills": ["baforada", "mergulho", "escamas"], "passive": ""},
+			"atk": {"kind": "melee", "dmg": 11, "cd": 0.2, "range": 54, "hh": 42, "t": 0.09, "anti": 0.03, "rec": 0.04, "fx": "claw", "shake": 0.002}, "skills": ["baforada", "mergulho", "escamas"], "passive": "", "bonus": {"desc": "Fogueiras causam +40% de dano.", "mul": {"fogo": 1.4}}},
 		{"nome": "Dragão da Tempestade", "estilo": "Pulo triplo e raios; acertos às vezes soltam faíscas.", "spd": 1.1, "jump": 1.05, "jumps": 3, "armor": 0.93,
-			"atk": {"kind": "melee", "dmg": 10, "cd": 0.2, "range": 54, "hh": 42, "t": 0.09, "anti": 0.03, "rec": 0.04, "fx": "claw", "shake": 0.002}, "skills": ["raio", "voo", "tempestade"], "passive": "faisca"},
+			"atk": {"kind": "melee", "dmg": 10, "cd": 0.2, "range": 54, "hh": 42, "t": 0.09, "anti": 0.03, "rec": 0.04, "fx": "claw", "shake": 0.002}, "skills": ["raio", "voo", "tempestade"], "passive": "faisca", "bonus": {"desc": "Bestas causam +40% de dano.", "mul": {"besta": 1.4}}},
 		{"nome": "Serpe Venenosa", "estilo": "Ferrão na cauda: envenena e desgasta aos poucos.", "spd": 1.05, "jump": 1.0, "jumps": 2, "armor": 0.88,
-			"atk": {"kind": "melee", "dmg": 8, "cd": 0.26, "range": 64, "hh": 40, "t": 0.1, "anti": 0.05, "rec": 0.05, "fx": "claw", "shake": 0.002}, "skills": ["nuvem", "ferrao", "muda"], "passive": "veneno"},
+			"atk": {"kind": "melee", "dmg": 8, "cd": 0.26, "range": 64, "hh": 40, "t": 0.1, "anti": 0.05, "rec": 0.05, "fx": "claw", "shake": 0.002}, "skills": ["nuvem", "ferrao", "muda"], "passive": "veneno", "bonus": {"desc": "Espinhos causam +50% de dano.", "mul": {"esp": 1.5}}},
 		{"nome": "Dragão Ancião", "estilo": "Grande e pesado: cauda larga, meteoros e rugido.", "spd": 0.85, "jump": 0.92, "jumps": 1, "armor": 0.63,
-			"atk": {"kind": "melee", "dmg": 20, "cd": 0.45, "range": 84, "hh": 62, "t": 0.14, "anti": 0.08, "rec": 0.1, "fx": "axe", "shake": 0.006}, "skills": ["meteoro", "rugido", "asas_fogo"], "passive": ""},
+			"atk": {"kind": "melee", "dmg": 20, "cd": 0.45, "range": 84, "hh": 62, "t": 0.14, "anti": 0.08, "rec": 0.1, "fx": "axe", "shake": 0.006}, "skills": ["meteoro", "rugido", "asas_fogo"], "passive": "", "bonus": {"desc": "Cada herói derrotado dá +1s extra.", "add": {"kill": 1.0}}},
 	],
 }
 const PASSIVES := {

@@ -109,7 +109,8 @@ func _process(_d: float) -> bool:
 			main.duel = {"dash": 2, "pulo": 1, "perto": 3, "longe": 0, "especial": 1}
 			main.kl["espinhos"] = 2
 			main.evo = 70
-			main.check_class_unlock()
+			main.meta.cls = ["dragao_1"]
+			main.meta.miss = {"dragao_1": 120, "dragao_3": 0}
 			main.ui.render_know()
 		494: snap("08_volta_ao_mapa")
 		496:

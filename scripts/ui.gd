@@ -446,7 +446,13 @@ func show_guard_pick() -> void:
 		var nomes = []
 		for c in D.CLASSES[k].slice(1):
 			nomes.append(c.nome)
-		lines.append("Evolui para: " + ", ".join(nomes) + ".")
+		var gb = D.GUARD_BONUS[k]
+		lines.append("Bônus na masmorra · %s: %s" % [gb.nome, gb.desc])
+		var livres = 1
+		for i in range(1, 4):
+			if game.meta.cls.has("%s_%d" % [k, i]):
+				livres += 1
+		lines.append("Classes: %d de 4 liberadas (as outras por missões)." % livres)
 		var kk: String = k
 		var b = _card("Guardião", G.nome, "\n".join(lines), func():
 			overlay.visible = false
@@ -549,7 +555,8 @@ func render_classes() -> void:
 	var hv = VBoxContainer.new()
 	hv.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	hv.add_child(_label("Classes do %s" % D.GUARDS[g].nome, 28, C_FG, "PixelifySans-SemiBold.woff2"))
-	var sub = _label("Evolução do guardião: +%s. Cada classe muda arma, ataque, movimento e habilidades.%s" % [D.pct(game.evo), " Troque fora da luta." if game.phase == "arena" else ""], 14, C_MUTE)
+	var gb = D.GUARD_BONUS[g]
+	var sub = _label("Cada classe muda arma, ataque, movimento, habilidades e o bônus da masmorra. Classes novas saem de missões e ficam liberadas para sempre. Bônus do guardião: %s (%s)%s" % [gb.nome, gb.desc.trim_suffix("."), ". Troque fora da luta." if game.phase == "arena" else "."], 14, C_MUTE)
 	sub.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	hv.add_child(sub)
 	head.add_child(hv)
@@ -592,7 +599,8 @@ func render_classes() -> void:
 		nm.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		nm.custom_minimum_size.x = 120
 		tv.add_child(nm)
-		var stt = "ATUAL" if cur else ("LIBERADA" if open else "+%d%% DE EVOLUÇÃO" % int(D.CLASS_UNLOCK[i]))
+		var mk = "%s_%d" % [g, i]
+		var stt = "ATUAL" if cur else ("LIBERADA" if open else "MISSÃO %d/%d" % [game.mission_prog(mk), D.MISSIONS[mk].goal])
 		tv.add_child(_label(stt, 8, col, "PressStart2P.woff2"))
 		top_h.add_child(tv)
 		v.add_child(top_h)
@@ -603,6 +611,9 @@ func render_classes() -> void:
 		for k in c.skills:
 			sk.append(D.SKILLS[k].nome)
 		lines.append("Habilidades: " + ", ".join(sk) + ".")
+		lines.append("Masmorra: " + c.bonus.desc)
+		if not open:
+			lines.append("Missão: " + D.MISSIONS[mk].desc)
 		var d = _label("\n".join(lines), 13, C_FG if open else C_MUTE)
 		d.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		d.custom_minimum_size.x = 200

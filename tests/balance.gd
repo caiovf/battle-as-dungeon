@@ -18,8 +18,8 @@ func _initialize() -> void:
 	var g = OS.get_environment("BAL_G")
 	if g == "":
 		g = "minotauro"
-	for clk in [80.0, 200.0]:
-		for n in [1, 2, 4]:
+	for clk in [100.0, 220.0]:
+		for n in [1, 2, 4, 8]:
 			for l in legs:
 				fights.append({"g": g, "l": l, "clock": clk, "n": n})
 

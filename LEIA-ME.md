@@ -32,10 +32,12 @@ Na primeira abertura, o Godot leva alguns segundos importando as fontes.
 
 ## Guardião, classes e lendários
 
-- Depois que você escolhe o guardião, ele evolui a cada herói derrotado. Com **+30%, +65% e +110%** de evolução liberam novas classes (4 por guardião, no estilo Grand Chase). Troque no botão **Guardião** da barra de cima, fora da luta.
-- Cada classe muda arma, ataque básico, velocidade, pulos, armadura, passiva e as 3 habilidades. O nível das habilidades fica guardado, mesmo trocando de classe.
+- **Bônus na masmorra:** cada guardião dá um bônus à masmorra enquanto ele é o seu guardião (Minotauro: monstros com +25% de vida; Lich: badalada recarrega 30% mais rápido; Dragão: cada herói derrotado dá +0,5s). Cada classe soma um bônus próprio, por exemplo o Necromante faz esqueletos custarem metade e solta um de graça a cada 12s.
+- **Classes por missões:** cada guardião tem 4 classes no estilo Grand Chase. A primeira já vem liberada; as outras três saem de missões. Exemplo: o Necromante libera soltando 40 esqueletos jogando com o Lich. O progresso e as classes liberadas ficam salvos para sempre, mesmo depois que a run acaba. Troque no botão **Guardião** da barra de cima (ou `C`), fora da luta. A tela mostra cada missão e quanto falta.
+- Cada classe muda arma, ataque básico, velocidade, pulos, armadura, passiva, as 3 habilidades e o bônus da masmorra. O nível das habilidades fica guardado mesmo trocando de classe.
 - São **13 lendários**. Cada um tem um poder no corredor e golpes próprios na arena.
 - O painel de baixo separa **o que os heróis sabem da masmorra** de **o que os lendários sabem do guardião**.
+- Missões, bônus e textos ficam em `data.gd` (`MISSIONS`, `GUARD_BONUS` e o campo `bonus` de cada classe em `CLASSES`).
 
 ## Onde mexer
 

@@ -67,7 +67,7 @@ class Trap:
 
 
 # ===== estado da run =====
-var meta := {"runs": 0, "best": 0}
+var meta := {"runs": 0, "best": 0, "miss": {}, "cls": []}
 var heart := Vector2i(COLS - 1, 5)
 var clock: float = 60.0
 var wave: int = 1
@@ -120,6 +120,7 @@ var g_skl := {}             # nível de cada habilidade (chave da habilidade -> 
 var g_up := {"couraca": 0, "agil": 0, "sangue": 0}
 var duel := {"dash": 0, "pulo": 0, "perto": 0, "longe": 0, "especial": 0}
 var lost_to := ""
+var free_t := 0.0
 var tool := "espinhos"
 var hover := Vector2i(-1, -1)
 var shake_t: float = 0.0
@@ -222,6 +223,10 @@ func _load_meta() -> void:
 			if d is Dictionary:
 				meta["runs"] = int(d.get("runs", 0))
 				meta["best"] = int(d.get("best", 0))
+				var ms = d.get("miss", {})
+				meta["miss"] = ms if ms is Dictionary else {}
+				var cl = d.get("cls", [])
+				meta["cls"] = cl if cl is Array else []
 
 
 func save_meta() -> void:
@@ -264,7 +269,7 @@ func cost_f() -> float:
 
 
 func cost(k: String) -> float:
-	return D.r1(D.TOOLS[k].custo * cost_f() * (ev.costMul if phase == "wave" else 1.0))
+	return D.r1(D.TOOLS[k].custo * cost_f() * (ev.costMul if phase == "wave" else 1.0) * (0.5 if cheap(k) else 1.0))
 
 
 func bell_cost() -> int:
@@ -273,7 +278,7 @@ func bell_cost() -> int:
 
 func clock_rate() -> float:
 	var r = minf(D.CFG.DRAIN_MAX, D.CFG.DRAIN_BASE + D.CFG.DRAIN_GROWTH * (wave - 1))
-	return r * (ev.drainMul if phase == "wave" else 1.0)
+	return r * (ev.drainMul if phase == "wave" else 1.0) * gmul("drain")
 
 
 func hero_scale(n: int) -> Dictionary:
@@ -326,7 +331,56 @@ func cls() -> Dictionary:
 
 
 func class_open(i: int) -> bool:
-	return evo >= D.CLASS_UNLOCK[i]
+	return i == 0 or meta.cls.has("%s_%d" % [guardian, i])
+
+
+# ===== missões das classes (permanentes, salvas entre runs) =====
+func mission_prog(k: String) -> int:
+	return int(meta.miss.get(k, 0))
+
+
+## Soma progresso numa missão. Só conta para o guardião que está em uso.
+func mission_add(k: String, n := 1) -> void:
+	if guardian == "" or not k.begins_with(guardian + "_") or meta.cls.has(k) or not D.MISSIONS.has(k):
+		return
+	var goal: int = D.MISSIONS[k].goal
+	meta.miss[k] = mini(goal, mission_prog(k) + n)
+	if mission_prog(k) >= goal:
+		meta.cls.append(k)
+		save_meta()
+		var c = D.CLASSES[guardian][int(k.get_slice("_", 1))]
+		float_text(Vector2(W / 2.0, H / 2.0 + 30), "CLASSE LIBERADA: " + c.nome.to_upper(), Color("#f2d488"), 18)
+		hint("Missão cumprida! O %s pode virar %s, nesta run e nas próximas. Toque em Guardião (na barra de cima) para trocar." % [D.GUARDS[guardian].nome, c.nome], false, 7.0)
+		if ui:
+			ui.flash_guard_btn()
+
+
+# ===== bônus do guardião e da classe na masmorra =====
+func bonuses() -> Array:
+	if guardian == "":
+		return []
+	return [D.GUARD_BONUS[guardian], D.CLASSES[guardian][g_cls].bonus]
+
+
+func gmul(k: String) -> float:
+	var v = 1.0
+	for b in bonuses():
+		v *= float(b.get("mul", {}).get(k, 1.0))
+	return v
+
+
+func gadd(k: String) -> float:
+	var v = 0.0
+	for b in bonuses():
+		v += float(b.get("add", {}).get(k, 0.0))
+	return v
+
+
+func cheap(k: String) -> bool:
+	for b in bonuses():
+		if b.get("cheap", "") == k:
+			return true
+	return false
 
 
 func guard_key() -> String:
@@ -346,6 +400,7 @@ func set_class(i: int) -> void:
 
 
 func check_class_unlock() -> void:
+	return
 	if guardian == "":
 		return
 	var newest = -1
@@ -659,6 +714,8 @@ func _specials() -> Array:
 func start_wave() -> void:
 	if phase != "prep":
 		return
+	if wave >= 12:
+		mission_add("dragao_3")
 	var total_use = 0
 	for k in wave_use:
 		total_use += wave_use[k]
@@ -764,7 +821,8 @@ func bell() -> void:
 		return
 	clock -= bc
 	freeze = D.CFG.BELL_FREEZE + mods.bellFreeze
-	bell_cd = D.CFG.BELL_CD * mods.bellCdMul
+	bell_cd = D.CFG.BELL_CD * mods.bellCdMul * gmul("bellCd")
+	mission_add("lich_2")
 	var c = center(heart.x, heart.y)
 	fx.append({"kind": "ring", "pos": c, "life": 0.6, "max_life": 0.6, "col": Color("#7fb8c9"), "max": W * 0.6})
 	float_text(c + Vector2(0, -30), "-%ds" % bc, Color("#7fb8c9"))
@@ -829,6 +887,9 @@ func coverage(k: String) -> float:
 func show_draft() -> void:
 	phase = "draft"
 	combo = 0
+	if clock >= 300:
+		mission_add("lich_3")
+	save_meta()
 	for k in D.TRAP_ORDER:
 		var c = coverage(k)
 		if c > 0:
@@ -971,7 +1032,7 @@ func buy_unlock(k: String) -> void:
 func mon_stats(k: String) -> Dictionary:
 	var d = D.TOOLS[k]
 	var m = 1.0 + D.CFG.MON_LVL_GAIN * (mon_lvl[k] - 1)
-	return {"hp": d.hp * mods.monHp * m, "dps": d.dps * mods.monDmg * m, "vel": d.vel * (1.0 + 0.04 * (mon_lvl[k] - 1))}
+	return {"hp": d.hp * mods.monHp * gmul("monHp") * m, "dps": d.dps * mods.monDmg * gmul("monDmg") * m, "vel": d.vel * (1.0 + 0.04 * (mon_lvl[k] - 1))}
 
 
 func up_cost(k: String) -> float:
@@ -1051,6 +1112,8 @@ func summon(k: String) -> void:
 	clock -= paid
 	spawn_monster(k, path_len - T * 0.5, paid)
 	_mark_use(k)
+	if k == "esqueleto":
+		mission_add("lich_1")
 	var c = center(heart.x, heart.y)
 	fx.append({"kind": "ring", "pos": c, "life": 0.5, "max_life": 0.5, "col": D.col(D.TOOLS[k].cor), "max": float(T)})
 	float_text(c + Vector2(0, -30), "-%ss" % D.fmt(paid), Color("#e0613a"))
@@ -1214,7 +1277,7 @@ func kill_hero(h: Hero) -> void:
 	var mult = minf(D.CFG.COMBO_MAX, 1.0 + D.CFG.COMBO_STEP * (combo - 1))
 	var is_leg: bool = d.get("legend", false)
 	var soul = D.r1(D.CFG.SOUL_BASE * (D.CFG.SOUL_LEG if is_leg else 1.0) * (1.0 + fame_pct()))
-	var gain = D.r1((d.da * (D.CFG.GREED_MUL if greedy else 1.0) + mods.killBonus) * mult * ev.killMul + soul)
+	var gain = D.r1((d.da * (D.CFG.GREED_MUL if greedy else 1.0) + mods.killBonus + gadd("kill")) * mult * ev.killMul + soul)
 	clock += gain
 	kills += 1
 	fame += D.CFG.FAME_KILL + (D.CFG.FAME_COMBO if combo >= 4 else 0.0)
@@ -1298,6 +1361,15 @@ func step(delta: float) -> void:
 
 
 func _wave_step(dt: float) -> void:
+	# bônus de classe: monstro de graça de tempos em tempos
+	for b in bonuses():
+		if b.has("free"):
+			free_t += dt
+			if free_t >= float(b.free[1]):
+				free_t = 0.0
+				spawn_monster(b.free[0], path_len - T * 0.5, 0.0)
+				var hc = center(heart.x, heart.y)
+				float_text(hc + Vector2(0, -30), D.TOOLS[b.free[0]].nome + " de graça", Color("#9fd36b"), 12)
 	var greed = 0
 	for t in traps.values():
 		if t.type == "ganancia" and active(t):
@@ -1316,7 +1388,7 @@ func _wave_step(dt: float) -> void:
 		var type: String = queue.pop_front()
 		var d = D.HEROES[type]
 		var sc = hero_scale(wave)
-		var hp: float = d.hp * sc.hp * ((1.0 + D.CFG.LEG_HP_GROWTH * leg_count) if d.get("legend", false) else 1.0)
+		var hp: float = d.hp * sc.hp * ((1.0 + D.CFG.LEG_MAP_HP_GROWTH * leg_count) if d.get("legend", false) else 1.0)
 		var h = Hero.new()
 		h.type = type
 		h.hp = hp
@@ -1346,7 +1418,7 @@ func _wave_step(dt: float) -> void:
 			for key in traps:
 				var t: Trap = traps[key]
 				if t.type == "ampulheta" and active(t) and h.pos.distance_to(center(key.x, key.y)) <= D.TOOLS.ampulheta.alcance * T * ev.rangeMul:
-					h.slow = minf(0.8, 0.45 + mods.slow) * res("ampulheta")
+					h.slow = minf(0.85, 0.45 + mods.slow + gadd("slow")) * res("ampulheta")
 		if h.stun > 0:
 			h.stun -= dt
 		var frozen = (frozen_all and not cc_imm(h.type)) or h.stun > 0
@@ -1450,7 +1522,7 @@ func _wave_step(dt: float) -> void:
 			"espinhos":
 				for h in heroes:
 					if h.type != "acrobata" and int(floor(h.pos.x / T)) == key.x and int(floor(h.pos.y / T)) == key.y:
-						h.hp -= 14 * mods.esp * dt * res("espinhos")
+						h.hp -= 14 * mods.esp * gmul("esp") * dt * res("espinhos")
 			"besta":
 				if t.cd <= 0:
 					var tgt = null
@@ -1459,7 +1531,7 @@ func _wave_step(dt: float) -> void:
 							tgt = h
 					if tgt:
 						var shielded = near_hero(tgt.pos, "escudeiro", D.CFG.AURA * T)
-						tgt.hp -= 8 * mods.besta * (0.08 if shielded else 1.0) * res("besta")
+						tgt.hp -= 8 * mods.besta * gmul("besta") * (0.08 if shielded else 1.0) * res("besta")
 						t.cd = 0.8
 						fx.append({"kind": "bolt", "a": cp, "b": tgt.pos, "life": 0.1, "max_life": 0.1, "col": Color("#8aa0b8") if shielded else Color("#f2d488")})
 			"fogo":
@@ -1470,7 +1542,7 @@ func _wave_step(dt: float) -> void:
 						if h.pos.distance_to(cp) <= r:
 							any = true
 							if h.type != "desarmador":
-								h.hp -= 18 * mods.fogo * res("fogo")
+								h.hp -= 18 * mods.fogo * gmul("fogo") * res("fogo")
 					if any:
 						t.cd = 1.6
 						fx.append({"kind": "boom", "pos": cp, "r": r, "life": 0.3, "max_life": 0.3, "col": Color("#e0613a")})

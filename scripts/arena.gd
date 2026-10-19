@@ -177,7 +177,7 @@ func start(h) -> void:
 	key = h.type
 	var l = L()
 	gd = build_gd()
-	var mx: float = l.hp * D.CFG.LEG_ARENA_HP * (1.0 + D.CFG.LEG_HP_GROWTH * game.leg_count) * (1.0 + game.fame_pct())
+	var mx: float = l.hp * D.CFG.LEG_ARENA_HP * (1.0 + D.CFG.LEG_HP_GROWTH * game.leg_count) * (1.0 + game.fame_pct() * D.CFG.LEG_FAME_HP)
 	var carry = clampf(h.hp / h.max, 0.15, 1.0)
 	game.phase = "arena"
 	game.combo = 0
@@ -503,6 +503,7 @@ func fire_basic(dy: float, delay := 0.0) -> void:
 
 ## Passivas da classe e efeitos ligados a cada acerto do ataque básico.
 func on_basic_hit(x: float, y: float) -> void:
+	game.mission_add("minotauro_1")
 	match gd.passive:
 		"furia_acumula":
 			P.rage = mini(10, P.rage + 1)
@@ -575,6 +576,7 @@ func player_step(dt: float) -> void:
 			P.vy = -gd.jump * 0.9
 			P.jumps += 1
 			use.pulo += 1
+			game.mission_add("dragao_1")
 			spawn_parts(P.x, P.y, D.col(gd.cor), 5)
 	if not Input.is_action_pressed("g_jump") and P.vy < -260 and not P.dive_hop and P.wing_t <= 0:
 		P.vy = -260.0
@@ -833,7 +835,7 @@ func hurt_guard(sec: float, force := false) -> void:
 		return
 	if not force and P.inv > 0:
 		return
-	var lost = D.r1(sec * leg_scale * gd.armor * pow(0.85, game.g_up.couraca) * (1.0 + game.fame_pct() * 0.8) * (0.7 if P.fury_t > 0 else 1.0) * (0.6 if P.scale_t > 0 else 1.0))
+	var lost = D.r1(sec * leg_scale * gd.armor * pow(0.85, game.g_up.couraca) * (1.0 + game.fame_pct() * D.CFG.LEG_FAME_DMG) * (0.7 if P.fury_t > 0 else 1.0) * (0.6 if P.scale_t > 0 else 1.0))
 	game.clock -= lost
 	P.lost.append([t, lost])
 	stats.hits += 1
@@ -1732,6 +1734,11 @@ func learn_duel() -> void:
 
 func reward() -> void:
 	learn_duel()
+	game.mission_add("minotauro_3")
+	if stats.lost < clock0 * 0.3:
+		game.mission_add("minotauro_2")
+	if use.dash == 0:
+		game.mission_add("dragao_2")
 	var soul = D.r1(D.CFG.SOUL_BASE * D.CFG.SOUL_LEG * (1.0 + game.fame_pct()))
 	var e: int = game.legend_fell(key, true)
 	game.clock += soul
