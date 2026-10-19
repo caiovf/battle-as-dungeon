@@ -450,8 +450,9 @@ func show_guard_pick() -> void:
 		lines.append("Bônus na masmorra · %s: %s" % [gb.nome, gb.desc])
 		var livres = 1
 		for i in range(1, 4):
-			if game.meta.cls.has("%s_%d" % [k, i]):
-				livres += 1
+			if not game.meta.cls.has("%s_%d" % [k, i]):
+				break
+			livres += 1
 		lines.append("Classes: %d de 4 liberadas (as outras por missões)." % livres)
 		var kk: String = k
 		var b = _card("Guardião", G.nome, "\n".join(lines), func():
@@ -603,7 +604,8 @@ func render_classes() -> void:
 		var pwr = D.CLASS_POWER[i]
 		var pl = _label("PODER %d/4" % (i + 1), 8, C_BRASS if open else C_MUTE, "PressStart2P.woff2")
 		tv.add_child(pl)
-		var stt = "ATUAL" if cur else ("LIBERADA" if open else "MISSÃO %d/%d" % [game.mission_prog(mk), D.MISSIONS[mk].goal])
+		var prev_ok: bool = game.class_open(i - 1) if i > 0 else true
+		var stt = "ATUAL" if cur else ("LIBERADA" if open else ("MISSÃO %d/%d" % [game.mission_prog(mk), D.MISSIONS[mk].goal] if prev_ok else "BLOQUEADA"))
 		tv.add_child(_label(stt, 8, col, "PressStart2P.woff2"))
 		top_h.add_child(tv)
 		v.add_child(top_h)
@@ -618,7 +620,10 @@ func render_classes() -> void:
 		lines.append("Habilidades: " + ", ".join(sk) + ".")
 		lines.append("Masmorra: " + c.bonus.desc)
 		if not open:
-			lines.append("Missão: " + D.MISSIONS[mk].desc)
+			if prev_ok:
+				lines.append("Missão: " + D.MISSIONS[mk].desc)
+			else:
+				lines.append("Libere antes a classe %s. Depois: %s" % [D.CLASSES[g][i - 1].nome, D.MISSIONS[mk].desc])
 		var d = _label("\n".join(lines), 13, C_FG if open else C_MUTE)
 		d.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		d.custom_minimum_size.x = 200

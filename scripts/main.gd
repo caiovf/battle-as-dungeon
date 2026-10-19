@@ -331,8 +331,9 @@ func cls() -> Dictionary:
 	return D.CLASSES[guardian][g_cls]
 
 
+## As classes liberam em ordem: a 3ª só depois da 2ª, a 4ª só depois da 3ª.
 func class_open(i: int) -> bool:
-	return i == 0 or meta.cls.has("%s_%d" % [guardian, i])
+	return i == 0 or (meta.cls.has("%s_%d" % [guardian, i]) and class_open(i - 1))
 
 
 # ===== missões das classes (permanentes, salvas entre runs) =====
@@ -343,6 +344,9 @@ func mission_prog(k: String) -> int:
 ## Soma progresso numa missão. Só conta para o guardião que está em uso.
 func mission_add(k: String, n := 1) -> void:
 	if guardian == "" or not k.begins_with(guardian + "_") or meta.cls.has(k) or not D.MISSIONS.has(k):
+		return
+	# a missão só conta depois que a classe anterior estiver liberada
+	if not class_open(int(k.get_slice("_", 1)) - 1):
 		return
 	var goal: int = D.MISSIONS[k].goal
 	meta.miss[k] = mini(goal, mission_prog(k) + n)
