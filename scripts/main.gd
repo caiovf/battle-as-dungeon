@@ -67,7 +67,7 @@ class Trap:
 
 
 # ===== estado da run =====
-var meta := {"runs": 0, "best": 0, "miss": {}, "cls": [], "tal": {}, "tp": {}, "load": {}, "skp": {}, "spent": {}, "sku": []}
+var meta := {"runs": 0, "best": 0, "miss": {}, "cls": [], "tal": {}, "tp": {}, "load": {}, "skp": {}, "spent": {}, "sku": [], "gup": {}, "gp": {}}
 var heart := Vector2i(COLS - 1, 5)
 var clock: float = 60.0
 var wave: int = 1
@@ -232,7 +232,7 @@ func _load_meta() -> void:
 				meta["tal"] = tl if tl is Dictionary else {}
 				var tp = d.get("tp", {})
 				meta["tp"] = tp if tp is Dictionary else {}
-				for key in ["load", "skp", "spent"]:
+				for key in ["load", "skp", "spent", "gup", "gp"]:
 					var v = d.get(key, {})
 					meta[key] = v if v is Dictionary else {}
 				var su = d.get("sku", [])
@@ -382,7 +382,7 @@ static func slot_pool(g: String, ci: int, slot: int) -> Array:
 				def = u
 	else:
 		def = D.CLASSES[g][ci].skills[slot]
-	return [def, D.CLASS_ALTS[ck][slot]]
+	return [def] + D.CLASS_ALTS[ck][slot]
 
 
 ## Dados de qualquer habilidade (base, alternativa ou suprema).
@@ -452,13 +452,17 @@ func skill_upgrade(g: String, ci: int, k: String) -> void:
 
 
 # ===== talentos (permanentes, por classe) =====
+static func tal_tree(k: String) -> Array:
+	return D.TALENT_TREES[k].nodes
+
+
 func tal_owned(k: String) -> Array:
 	return meta.tal.get(k, [])
 
 
 func tal_spent(k: String) -> int:
 	var n = 0
-	for t in D.TALENTS:
+	for t in tal_tree(k):
 		if tal_owned(k).has(t.id):
 			n += int(t.cost)
 	return n
@@ -479,7 +483,7 @@ func tal_can(k: String, t: Dictionary) -> bool:
 
 
 func tal_buy(k: String, id: String) -> void:
-	for t in D.TALENTS:
+	for t in tal_tree(k):
 		if t.id == id and tal_can(k, t):
 			var o = tal_owned(k).duplicate()
 			o.append(id)
@@ -501,7 +505,7 @@ func tal_gain(k: String, n: int) -> void:
 ## Soma dos efeitos dos talentos comprados de uma classe.
 func talent_fx(k: String) -> Dictionary:
 	var f = {}
-	for t in D.TALENTS:
+	for t in tal_tree(k):
 		if tal_owned(k).has(t.id):
 			for e in t.fx:
 				f[e] = float(f.get(e, 0.0)) + float(t.fx[e])
@@ -516,11 +520,39 @@ func tal_text(g: String, ci: int, s: String) -> String:
 	return s
 
 
-static func tal_master_desc(g: String, ci: int) -> String:
-	var c = D.CLASSES[g][ci]
-	if c.passive != "":
-		return "A passiva fica duas vezes mais forte (%s)." % D.PASSIVES[c.passive].trim_suffix(".").to_lower()
-	return "Todas as habilidades com +25% de poder."
+# ===== upgrades básicos do guardião (valem para todas as classes dele) =====
+func gup_lv(g: String, id: String) -> int:
+	return int(meta.gup.get("%s:%s" % [g, id], 0))
+
+
+static func gup_cost(lv: int) -> int:
+	return 1 + int(lv / 3)
+
+
+func gp_spent(g: String) -> int:
+	var n = 0
+	for u in D.BASIC_UPS:
+		for lv in gup_lv(g, u.id):
+			n += gup_cost(lv)
+	return n
+
+
+func gp_points(g: String) -> int:
+	return int(meta.gp.get(g, 0)) - gp_spent(g)
+
+
+func gp_gain(g: String, n: int) -> void:
+	meta.gp[g] = int(meta.gp.get(g, 0)) + n
+	save_meta()
+
+
+func gup_buy(g: String, id: String) -> void:
+	for u in D.BASIC_UPS:
+		if u.id == id:
+			var lv = gup_lv(g, id)
+			if lv < u.max and gp_points(g) >= gup_cost(lv):
+				meta.gup["%s:%s" % [g, id]] = lv + 1
+				save_meta()
 
 
 # ===== bônus do guardião e da classe na masmorra =====

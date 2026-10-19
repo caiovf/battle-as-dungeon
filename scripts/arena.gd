@@ -70,20 +70,41 @@ func build_gd() -> Dictionary:
 	o.cls = game.g_cls
 	o.pw = D.CLASS_POWER[game.g_cls].dmg
 	o.def = D.CLASS_POWER[game.g_cls].def
-	# talentos da classe
+	# talentos da classe (especializados)
 	var tf: Dictionary = game.talent_fx("%s_%d" % [game.guardian, game.g_cls])
-	var master: bool = tf.get("master", 0.0) > 0
 	o.spd *= 1.0 + tf.get("spd", 0.0)
-	o.t_atk = 1.0 + tf.get("atk", 0.0)
+	o.t_atk = 1.0 + tf.get("atk_dmg", 0.0)
 	o.t_atkcd = 1.0 - tf.get("atk_cd", 0.0)
-	o.t_skcd = 1.0 - tf.get("sk_cd", 0.0)
-	var allsk = 0.25 if master and c.passive == "" else 0.0
-	o.t_sk = [1.0 + tf.get("sk0", 0.0) + allsk, 1.0 + tf.get("sk1", 0.0) + allsk, 1.0 + tf.get("sk2", 0.0) + allsk]
-	o.t_sk2cd = 1.0 - tf.get("sk2_cd", 0.0)
-	o.def *= 1.0 - tf.get("def", 0.0)
-	o.t_dash = 1.0 - tf.get("dash", 0.0)
+	o.t_range = 1.0 + tf.get("atk_range", 0.0)
+	o.t_sk = []
+	o.t_skcd = []
+	o.t_dur = []
+	for i in 3:
+		o.t_sk.append(1.0 + tf.get("sk%d_pow" % i, 0.0))
+		o.t_skcd.append(1.0 - tf.get("sk%d_cd" % i, 0.0))
+		o.t_dur.append(1.0 + tf.get("sk%d_dur" % i, 0.0))
+	o.ult_pow = 1.0 + tf.get("ult_pow", 0.0)
+	o.ult_gain = 1.0 + tf.get("ult_gain", 0.0)
+	o.t_pass = 1.0 + tf.get("pass", 0.0)
+	o.rage_cap = 10 + int(tf.get("rage_cap", 0.0))
+	o.shot_n = int(tf.get("shot_n", 0.0))
+	o.pierce = tf.get("pierce", 0.0) > 0
+	o.jumps += int(tf.get("jumps", 0.0))
+	o.pcap = 8 + int(tf.get("poison_cap", 0.0))
+	o.skel = 1.0 + tf.get("skel", 0.0)
 	o.t_leech = tf.get("leech", 0.0)
-	o.t_pass = 2.0 if master else 1.0
+	o.def *= 1.0 - tf.get("def", 0.0)
+	# upgrades básicos do guardião (valem para todas as classes)
+	var gu = func(id): return game.gup_lv(game.guardian, id)
+	o.pw *= 1.0 + 0.05 * gu.call("forca")
+	o.def *= 1.0 - 0.04 * gu.call("resist")
+	var pd = 1.0 + 0.06 * gu.call("poder")
+	for i in 3:
+		o.t_sk[i] *= pd
+	o.ult_pow *= pd
+	o.spd *= 1.0 + 0.03 * gu.call("agil")
+	o.t_dash = 1.0 - 0.05 * gu.call("agil")
+	o.ult_start = 6.0 * gu.call("impeto")
 	o.key = "%s_%d" % [game.guardian, game.g_cls]
 	if game.guardian == "dragao" and game.g_cls == 3:
 		o.w = 44
@@ -125,11 +146,11 @@ func sk_pow(i: int) -> float:
 
 
 func sk_dur(i: int) -> float:
-	return 1.0 + 0.2 * (sk_lv(i) - 1)
+	return (1.0 + 0.2 * (sk_lv(i) - 1)) * gd.t_dur[i]
 
 
 func sk_cd(i: int) -> float:
-	return float(game.skill_info(sk_key(i)).cd) * (1.0 - 0.12 * (sk_lv(i) - 1)) * gd.t_skcd * (gd.t_sk2cd if i == 2 else 1.0)
+	return float(game.skill_info(sk_key(i)).cd) * (1.0 - 0.12 * (sk_lv(i) - 1)) * gd.t_skcd[i]
 
 
 func dmg_mul() -> float:
@@ -220,7 +241,7 @@ func start(h) -> void:
 		"block_t": 0.0, "block_pow": 1.0, "block_tick": 0.0, "quake_n": 0, "quake_t": 0.0, "quake_pow": 1.0,
 		"ice_t": 0.0, "fly_t": 0.0, "haste_t": 0.0, "wing_t": 0.0, "wing_pow": 1.0, "wing_hit": false, "wing_drop": 0.0,
 		"echo_n": 0, "rage": 0, "harvest": 0, "root_t": 0.0, "lost": [],
-		"ult": D.ULT_CHARGE_START, "king_t": 0.0, "ult_charges": 0}
+		"ult": minf(100.0, D.ULT_CHARGE_START + gd.ult_start), "king_t": 0.0, "ult_charges": 0}
 	B = {"x": W - 150.0, "y": FY, "vx": 0.0, "vy": 0.0, "face": -1, "hp": mx * carry, "max": mx, "act": {}, "idle": 1.0,
 		"guard": 0.0, "inv": 0.0, "flash": 0.0, "tele": 0.0, "ground": true, "phase2": B_phase2(mx * carry, mx), "last": "",
 		"stun": 0.0, "mark_t": 0.0, "mark_lv": 1, "vis_atk": 0.0, "atk_anim": 0.0, "hurt_t": 0.0, "run_d": 0.0,
@@ -452,14 +473,14 @@ func _boom(x: float, y: float, r: float, dmg: float, col: Color) -> void:
 func summon_skel(life: float, dmg: float, x: float) -> void:
 	if mins.size() >= 4:
 		mins.pop_front()
-	mins.append({"x": clamp_x(x, 20), "y": FY, "face": P.face, "life": life, "cd": 0.4, "dmg": dmg, "f": 0})
+	mins.append({"x": clamp_x(x, 20), "y": FY, "face": P.face, "life": life * gd.skel, "cd": 0.4, "dmg": dmg * gd.skel, "f": 0})
 	spawn_parts(x, FY - 10, Color("#c08ae0"), 10)
 
 
 ## Habilidade suprema: gasta a barra de poder cheia.
 func cast_ult() -> void:
 	var l = L()
-	var pw = dmg_mul() * (1.0 + 0.15 * game.skill_perm(game.guardian, game.g_cls, gd.ult))
+	var pw = dmg_mul() * gd.ult_pow * (1.0 + 0.15 * game.skill_perm(game.guardian, game.g_cls, gd.ult))
 	var bx: float = B.x
 	var by: float = B.y - l.h / 2.0
 	P.ult = 0.0
@@ -612,7 +633,7 @@ func run_mechs(list: Array, pw: float, du: float) -> void:
 				if m.has("slow"):
 					B.slow_t = maxf(B.slow_t, m.slow * du)
 				if m.has("poison"):
-					B.poison = mini(8, B.poison + int(m.poison))
+					B.poison = mini(gd.pcap, B.poison + int(m.poison))
 				spawn_parts(bx, by, Color("#c08ae0"), 10)
 			"clock":
 				game.clock += m.s * du
@@ -627,6 +648,19 @@ func run_mechs(list: Array, pw: float, du: float) -> void:
 						var a = j / float(m.n) * TAU + w * 0.2
 						shots.append(_shot({"x": P.x, "y": P.y - gd.h * 0.6, "vx": cos(a) * m.spd, "vy": sin(a) * m.spd, "r": 7.0, "dmg": m.dmg * pw,
 							"spr": m.spr, "delay": w * 0.35, "life": 1.6}))
+			"spin":
+				P.spin_t = m.t * du
+				P.spin_pow = pw * m.dmg / 6.0
+				P.spin_tick = 0.0
+			"king":
+				P.king_t = maxf(P.king_t, m.t * du)
+			"wall":
+				wall = {"x": clamp_x(P.x + P.face * 48, 24), "life": 3.0 * du, "dmg": m.dmg * pw}
+				spawn_parts(wall.x, FY - 20, Color("#a89a8a"), 12)
+			"breath":
+				P.breath_t = m.t * du
+				P.breath_pow = pw * m.dmg
+				P.tick = 0.0
 			"bulls":
 				for j in int(m.n):
 					var sx = AW0 + 10 if j % 2 == 0 else AW1 - 10
@@ -668,7 +702,7 @@ func basic_step(dt: float) -> void:
 				P.atk_pt = a.t
 				var flip: bool = P.face < 0
 				var yy: float = P.y - a.hh * 0.6
-				add_vfx("fx/slash_%s" % a.fx, P.x + P.face * a.range * 0.45, yy, a.t + 0.06, flip, 2.0 * clampf(a.range / 64.0, 0.85, 1.2))
+				add_vfx("fx/slash_%s" % a.fx, P.x + P.face * a.range * gd.t_range * 0.45, yy, a.t + 0.06, flip, 2.0 * clampf(a.range * gd.t_range / 64.0, 0.85, 1.35))
 			else:
 				P.atk_pt = 0.08
 				fire_basic(0.0)
@@ -678,10 +712,11 @@ func basic_step(dt: float) -> void:
 		return
 	if P.atk_ph == "act":
 		if a.kind == "melee" and not P.hit_b:
-			var box = Rect2(P.x if P.face > 0 else P.x - a.range, P.y - a.hh, a.range, a.hh)
+			var rg: float = a.range * gd.t_range
+			var box = Rect2(P.x if P.face > 0 else P.x - rg, P.y - a.hh, rg, a.hh)
 			if overlap(box, body_b()):
 				P.hit_b = true
-				var cx: float = clampf(P.x + P.face * a.range * 0.7, B.x - L().w / 2.0, B.x + L().w / 2.0)
+				var cx: float = clampf(P.x + P.face * rg * 0.7, B.x - L().w / 2.0, B.x + L().w / 2.0)
 				if hurt_boss(a.dmg * dmg_mul() * gd.t_atk, "perto"):
 					on_basic_hit(cx, P.y - a.hh * 0.55)
 					hitstop = maxf(hitstop, clampf(0.03 + a.dmg / 500.0, 0.04, 0.08))
@@ -698,8 +733,10 @@ func basic_step(dt: float) -> void:
 func fire_basic(dy: float, delay := 0.0) -> void:
 	var a = gd.atk
 	P.shot_vis = 0.14
-	shots.append(_shot({"x": P.x + P.face * 16, "y": P.y - gd.h * 0.62 + dy, "vx": P.face * a.spd, "r": 6.0, "dmg": a.dmg * dmg_mul() * gd.t_atk, "life": 1.4,
-		"cat": "longe", "spr": a.spr, "basic": true, "delay": delay, "col": Color("#bfeee6")}))
+	for j in 1 + gd.shot_n:
+		var ang = (j - gd.shot_n / 2.0) * 0.12 if gd.shot_n > 0 else 0.0
+		shots.append(_shot({"x": P.x + P.face * 16, "y": P.y - gd.h * 0.62 + dy, "vx": P.face * a.spd * cos(ang), "vy": a.spd * sin(ang), "r": 6.0,
+			"dmg": a.dmg * dmg_mul() * gd.t_atk, "life": 1.4, "cat": "longe", "spr": a.spr, "basic": true, "delay": delay, "col": Color("#bfeee6"), "pierce": gd.pierce}))
 
 
 ## Passivas da classe e efeitos ligados a cada acerto do ataque básico.
@@ -707,7 +744,7 @@ func on_basic_hit(x: float, y: float) -> void:
 	game.mission_add("minotauro_1")
 	match gd.passive:
 		"furia_acumula":
-			P.rage = mini(10, P.rage + 1)
+			P.rage = mini(gd.rage_cap, P.rage + 1)
 		"empurrao":
 			if B.guard <= 0 and B.inv <= 0:
 				B.x = clamp_x(B.x + P.face * 34 * gd.t_pass, L().w)
@@ -724,7 +761,7 @@ func on_basic_hit(x: float, y: float) -> void:
 			if randf() < 0.25 * gd.t_pass:
 				shots.append(_shot({"kind": "bolt", "x": B.x, "delay": 0.05, "dmg": 6.0 * dmg_mul(), "stun": 0.0, "track": true, "life": 0.35}))
 		"veneno":
-			B.poison = mini(8, B.poison + int(gd.t_pass))
+			B.poison = mini(gd.pcap, B.poison + int(gd.t_pass))
 	game.clock += gd.t_leech
 	if P.leech_t > 0:
 		game.clock += P.leech_amt
@@ -899,7 +936,7 @@ func player_step(dt: float) -> void:
 				B.stun = maxf(B.stun, P.charge_stun)
 				game.float_text(Vector2(B.x, B.y - L().h - 16), "atordoado", Color("#d6c3a5"), 12)
 			if P.charge_poison > 0:
-				B.poison = mini(8, B.poison + P.charge_poison)
+				B.poison = mini(gd.pcap, B.poison + P.charge_poison)
 		add_vfx("fx/spark_guard", B.x, B.y - L().h / 2.0, 0.2)
 		hitstop = maxf(hitstop, 0.07)
 		game.shake(0.12, 0.008)
@@ -967,9 +1004,9 @@ func allies_step(dt: float) -> void:
 				if z.slow > 0:
 					B.slow_t = maxf(B.slow_t, z.slow)
 				if z.poison > 0:
-					B.poison = mini(8, B.poison + z.poison)
+					B.poison = mini(gd.pcap, B.poison + z.poison)
 		if randf() < 0.4:
-			var c = {"snow": Color("#e8f8ff"), "poison": Color("#96e65a"), "fire": Color("#ff8a3d")}[z.kind]
+			var c = {"snow": Color("#e8f8ff"), "poison": Color("#96e65a"), "fire": Color("#ff8a3d"), "storm": Color("#fff0a0")}[z.kind]
 			parts.append({"x": z.x + (randf() - 0.5) * z.w, "y": FY - z.h * randf(), "vx": 0.0, "vy": -30.0 if z.kind != "snow" else 60.0, "r": 1.5 + randf() * 2, "col": c, "life": 0.4, "max": 0.4})
 	zones = zones.filter(func(z): return z.life > 0)
 
@@ -1008,7 +1045,7 @@ func hurt_boss(dmg: float, cat: String, no_leech := false) -> bool:
 	if B.vuln_t > 0:
 		mul *= 1.3
 	B.hp -= dmg * mul
-	P.ult = minf(100.0, P.ult + clampf(dmg * mul * 0.3, 0.4, 6.0))
+	P.ult = minf(100.0, P.ult + clampf(dmg * mul * 0.3, 0.4, 6.0) * gd.ult_gain)
 	B.flash = 0.08
 	B.hurt_t = 0.18
 	if game.g_up.sangue > 0 and not no_leech:
@@ -1051,7 +1088,7 @@ func hurt_guard(sec: float, force := false) -> void:
 		return
 	var lost = D.r1(sec * leg_scale * gd.armor * gd.def * (0.5 if P.king_t > 0 else 1.0) * pow(0.85, game.g_up.couraca) * (1.0 + game.fame_pct() * D.CFG.LEG_FAME_DMG) * (0.7 if P.fury_t > 0 else 1.0) * (0.6 if P.scale_t > 0 else 1.0))
 	game.clock -= lost
-	P.ult = minf(100.0, P.ult + 12.0)
+	P.ult = minf(100.0, P.ult + 12.0 * gd.ult_gain)
 	P.lost.append([t, lost])
 	stats.hits += 1
 	stats.lost += lost
@@ -1871,7 +1908,7 @@ func hazards_step(dt: float) -> void:
 				if s.slow > 0:
 					B.slow_t = maxf(B.slow_t, s.slow)
 				if s.poison > 0:
-					B.poison = mini(8, B.poison + s.poison)
+					B.poison = mini(gd.pcap, B.poison + s.poison)
 				if s.basic:
 					on_basic_hit(s.x, s.y)
 					hitstop = maxf(hitstop, 0.03)
@@ -1951,6 +1988,7 @@ func reward() -> void:
 	learn_duel()
 	game.mission_add("minotauro_3")
 	game.tal_gain(gd.key, D.TALENT_PER_LEG)
+	game.gp_gain(game.guardian, D.GUARD_PTS_PER_LEG)
 	if stats.lost < clock0 * 0.3:
 		game.mission_add("minotauro_2")
 	if use.dash == 0:
@@ -1962,7 +2000,7 @@ func reward() -> void:
 	game.phase = "reward"
 	var nome: String = D.HEROES[key].nome.get_slice(",", 0)
 	var title = "%s foi %s" % [nome, "derrotada" if D.HEROES[key].get("fem", false) else "derrotado"]
-	var txt = "O %s defendeu o coração. Energia absorvida: +%ss. +%d de essência. O guardião evoluiu para +%s de dano. +%d pontos de talento para %s. Melhore o guardião ou a masmorra; o próximo lendário virá mais forte." % [gd.nome, D.fmt(soul), e, D.pct(game.evo), D.TALENT_PER_LEG, gd.nome]
+	var txt = "O %s defendeu o coração. Energia absorvida: +%ss. +%d de essência. O guardião evoluiu para +%s de dano. +%d pontos de talento para %s e +%d pontos de guardião. Melhore o guardião ou a masmorra; o próximo lendário virá mais forte." % [gd.nome, D.fmt(soul), e, D.pct(game.evo), D.TALENT_PER_LEG, gd.nome, D.GUARD_PTS_PER_LEG]
 	# opções: pelo menos uma habilidade da classe atual, mais uma do guardião e duas da masmorra
 	var sk = []
 	for i in 3:
@@ -2101,6 +2139,10 @@ func draw(g: CanvasItem) -> void:
 					Art.ellipse(g, Vector2(z.x + (i - 2) * z.w * 0.18, FY - 26 - sin(now / 300.0 + i) * 8), 30, 20, Color(0.45, 0.85, 0.3, 0.16 * k))
 			"fire":
 				Art.spr(g, "arena/flame_%d" % (int(now / 90 + z.x) % 3), z.x, FY, 1.4, false, Color(1, 1, 1, k))
+			"storm":
+				g.draw_rect(Rect2(z.x - z.w / 2.0, FY - z.h, z.w, z.h), Color(1.0, 0.95, 0.5, 0.1 * k))
+				if randf() < 0.3:
+					_zag(g, z.x + randf_range(-z.w / 2.0, z.w / 2.0), FY - z.h, FY, Color(1, 1, 0.7, 0.7 * k), 2)
 	# perigos do lendário: vermelho piscando é aviso
 	var blink = 0.22 + 0.18 * sin(now / 55.0)
 	for z in hz:

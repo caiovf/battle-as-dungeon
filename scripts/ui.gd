@@ -37,7 +37,8 @@ var gbtn_flash := 0.0
 var cls_modal: Control
 var cls_box: VBoxContainer
 var tal_cls := -1
-var sk_cls := -1           # classe aberta na tela de habilidades          # classe aberta na árvore de talentos (-1 = lista de classes)
+var sk_cls := -1
+var gup_open := false      # tela de upgrades básicos do guardião           # classe aberta na tela de habilidades          # classe aberta na árvore de talentos (-1 = lista de classes)
 var dock: PanelContainer
 var bell_btn: Button
 var pause_btn: Button
@@ -78,6 +79,13 @@ func _font(n: String) -> Font:
 	var f: Font = null
 	if ResourceLoader.exists(p):
 		f = load(p)
+	if f and n.begins_with("Pixelify"):
+		# sem ligaduras: a fonte junta "fi" num símbolo estranho
+		var fv = FontVariation.new()
+		fv.base_font = f
+		var ts = TextServerManager.get_primary_interface()
+		fv.opentype_features = {ts.name_to_tag("liga"): 0, ts.name_to_tag("clig"): 0}
+		f = fv
 	fonts[n] = f
 	return f
 
@@ -546,6 +554,58 @@ func close_classes() -> void:
 	cls_modal.visible = false
 	tal_cls = -1
 	sk_cls = -1
+	gup_open = false
+
+
+## Upgrades básicos: dano, defesa, habilidades... valem para todas as classes do guardião.
+func _render_gups(g: String) -> void:
+	var pts: int = maxi(0, game.gp_points(g))
+	var head = HBoxContainer.new()
+	var hv = VBoxContainer.new()
+	hv.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	hv.add_child(_label("Upgrades básicos · %s" % D.GUARDS[g].nome, 26, C_FG, "PixelifySans-SemiBold.woff2"))
+	var sub = _label("Valem para todas as classes do %s, inclusive a base, e ficam para sempre. Cada lendário vencido com ele dá %d pontos de guardião. Pontos livres: %d." % [D.GUARDS[g].nome, D.GUARD_PTS_PER_LEG, pts], 14, C_BRASS if pts > 0 else C_MUTE)
+	sub.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	hv.add_child(sub)
+	head.add_child(hv)
+	var bk = _button("Voltar", func():
+		gup_open = false
+		render_classes(), 16)
+	bk.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
+	head.add_child(bk)
+	cls_box.add_child(head)
+	for u in D.BASIC_UPS:
+		var lv: int = game.gup_lv(g, u.id)
+		var mx: bool = lv >= u.max
+		var cost: int = game.gup_cost(lv)
+		var p = PanelContainer.new()
+		p.add_theme_stylebox_override("panel", _sb(C_BG, C_MOSS if lv > 0 else C_LINE, 6, 1, 8))
+		var h = HBoxContainer.new()
+		h.add_theme_constant_override("separation", 10)
+		var v = VBoxContainer.new()
+		v.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		v.add_child(_label(u.nome, 16, C_FG, "PixelifySans-SemiBold.woff2"))
+		v.add_child(_label(u.desc, 13, C_MUTE))
+		h.add_child(v)
+		var pips = HBoxContainer.new()
+		pips.add_theme_constant_override("separation", 3)
+		pips.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		for i in u.max:
+			var pp = ColorRect.new()
+			pp.custom_minimum_size = Vector2(10, 10)
+			pp.color = C_MOSS if i < lv else Color(C_LINE, 0.6)
+			pips.add_child(pp)
+		h.add_child(pips)
+		var uid: String = u.id
+		var b = _button("Máximo" if mx else "Melhorar · %d pt%s" % [cost, "s" if cost > 1 else ""], func():
+			game.gup_buy(g, uid)
+			render_classes(), 14)
+		b.disabled = mx or pts < cost or game.phase == "arena"
+		b.custom_minimum_size = Vector2(150, 0)
+		b.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		h.add_child(b)
+		p.add_child(h)
+		cls_box.add_child(p)
 
 
 ## Habilidades da classe: cada posição (1, 2, 3 e suprema) troca só com a mesma posição.
@@ -558,7 +618,7 @@ func _render_skills(g: String, ci: int) -> void:
 	var hv = VBoxContainer.new()
 	hv.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	hv.add_child(_label("Habilidades · %s" % c.nome, 26, C_FG, "PixelifySans-SemiBold.woff2"))
-	var sub = _label("Cada posição tem a habilidade da classe e uma alternativa exclusiva dela; só troca com a mesma posição. Libere a alternativa e aprimore com pontos desta classe (valem para sempre). Pontos livres: %d." % pts, 13, C_BRASS if pts > 0 else C_MUTE)
+	var sub = _label("Cada posição tem a habilidade da classe e duas alternativas exclusivas dela; só troca com a mesma posição. Libere a alternativa e aprimore com pontos desta classe (valem para sempre). Pontos livres: %d." % pts, 13, C_BRASS if pts > 0 else C_MUTE)
 	sub.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	hv.add_child(sub)
 	head.add_child(hv)
@@ -651,7 +711,7 @@ func _render_talents(g: String, ci: int) -> void:
 	var hv = VBoxContainer.new()
 	hv.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	hv.add_child(_label("Talentos · %s" % c.nome, 26, C_FG, "PixelifySans-SemiBold.woff2"))
-	var sub = _label("Cada lendário vencido com esta classe dá %d pontos. Os talentos ficam para sempre e valem em todas as runs. Pontos livres: %d." % [D.TALENT_PER_LEG, pts], 14, C_BRASS if pts > 0 else C_MUTE)
+	var sub = _label("Talentos especializados desta classe. Cada lendário vencido com ela dá %d pontos; os talentos ficam para sempre. Pontos livres: %d." % [D.TALENT_PER_LEG, pts], 14, C_BRASS if pts > 0 else C_MUTE)
 	sub.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	hv.add_child(sub)
 	head.add_child(hv)
@@ -674,12 +734,12 @@ func _render_talents(g: String, ci: int) -> void:
 		var cv = VBoxContainer.new()
 		cv.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		cv.add_theme_constant_override("separation", 6)
-		cv.add_child(_label(D.TALENT_COLS[col].to_upper(), 9, C_MUTE, "PressStart2P.woff2"))
-		for t in D.TALENTS:
+		cv.add_child(_label(D.TALENT_TREES[k].cols[col].to_upper(), 9, C_MUTE, "PressStart2P.woff2"))
+		for t in game.tal_tree(k):
 			if t.col == col:
 				cv.add_child(_tal_node(g, ci, k, t))
 		cols.add_child(cv)
-	for t in D.TALENTS:
+	for t in game.tal_tree(k):
 		if t.col == -1:
 			cls_box.add_child(_tal_node(g, ci, k, t))
 
@@ -696,7 +756,7 @@ func _tal_node(g: String, ci: int, k: String, t: Dictionary) -> Control:
 	v.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	v.add_theme_constant_override("separation", 2)
 	v.add_child(_label(game.tal_text(g, ci, t.nome), 15, C_FG if (have or can) else C_MUTE, "PixelifySans-SemiBold.woff2"))
-	var desc = game.tal_master_desc(g, ci) if t.id == "m" else game.tal_text(g, ci, t.desc)
+	var desc = game.tal_text(g, ci, t.desc)
 	if t.req.begins_with("*") and not have:
 		desc += " Precisa de %s talentos." % t.req.substr(1)
 	var d = _label(desc, 12, C_FG if (have or can) else C_MUTE)
@@ -732,6 +792,9 @@ func render_classes() -> void:
 	if sk_cls >= 0:
 		_render_skills(g, sk_cls)
 		return
+	if gup_open:
+		_render_gups(g)
+		return
 	var head = HBoxContainer.new()
 	var hv = VBoxContainer.new()
 	hv.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -741,6 +804,13 @@ func render_classes() -> void:
 	sub.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	hv.add_child(sub)
 	head.add_child(hv)
+	var gpts: int = maxi(0, game.gp_points(g))
+	var ub = _button("Upgrades básicos%s" % ((" · %d" % gpts) if gpts > 0 else ""), func():
+		gup_open = true
+		render_classes(), 16)
+	ub.add_theme_color_override("font_color", C_BRASS if gpts > 0 else C_FG)
+	ub.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
+	head.add_child(ub)
 	var x = _button("Fechar", close_classes, 16)
 	x.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
 	head.add_child(x)

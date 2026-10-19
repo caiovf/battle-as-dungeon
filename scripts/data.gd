@@ -229,25 +229,123 @@ const LEG_ARENA := {
 ## Poder de cada classe: a 1ª é a base e a 4ª a mais forte.
 ## dmg multiplica todo o dano do guardião; def multiplica o tempo perdido ao levar golpes.
 const CLASS_POWER := [{"dmg": 1.0, "def": 1.0}, {"dmg": 1.15, "def": 0.92}, {"dmg": 1.3, "def": 0.85}, {"dmg": 1.5, "def": 0.76}]
-## Árvore de talentos (estilo Grand Chase): igual para todas as classes, com os nomes das habilidades de cada uma.
-## Pontos: cada lendário vencido com a classe dá TALENT_PER_LEG pontos para ela (permanentes, salvos entre runs).
-## col 0 = Ataque, 1 = Habilidades, 2 = Defesa. req = talento anterior; "*6" = precisa de 6 talentos comprados.
-## {s0} {s1} {s2} viram os nomes das habilidades da classe.
+## Árvore de talentos de cada classe (estilo Grand Chase): três ramos especializados no jeito de lutar
+## da classe, 2 talentos em cada ramo, e o talento de Mestre (precisa de 4 talentos comprados).
+## Pontos: cada lendário vencido com a classe dá TALENT_PER_LEG pontos para ela (permanentes).
+## Efeitos (fx): atk_dmg, atk_cd, atk_range, sk0/1/2_pow, sk0/1/2_cd, sk0/1/2_dur, ult_pow, ult_gain, pass (força da passiva),
+## rage_cap, shot_n, pierce, jumps, poison_cap, skel, leech, def, spd.
 const TALENT_PER_LEG := 2
-const TALENT_COLS := ["Ataque", "Habilidades", "Defesa"]
-const TALENTS := [
-	{"id": "a1", "col": 0, "cost": 1, "req": "", "nome": "Golpe certeiro", "desc": "+10% de dano no ataque básico.", "fx": {"atk": 0.10}},
-	{"id": "a2", "col": 0, "cost": 2, "req": "a1", "nome": "Ritmo de batalha", "desc": "Ataque básico 12% mais rápido.", "fx": {"atk_cd": 0.12}},
-	{"id": "a3", "col": 0, "cost": 3, "req": "a2", "nome": "Golpe devastador", "desc": "+20% de dano no ataque básico.", "fx": {"atk": 0.20}},
-	{"id": "b1", "col": 1, "cost": 1, "req": "", "nome": "Foco", "desc": "Habilidades recarregam 10% mais rápido.", "fx": {"sk_cd": 0.10}},
-	{"id": "b2", "col": 1, "cost": 2, "req": "b1", "nome": "Domínio: {s0}", "desc": "{s0} e {s1} com +30% de poder.", "fx": {"sk0": 0.30, "sk1": 0.30}},
-	{"id": "b3", "col": 1, "cost": 3, "req": "b2", "nome": "Domínio: {s2}", "desc": "{s2} com +40% de poder e 20% menos recarga.", "fx": {"sk2": 0.40, "sk2_cd": 0.20}},
-	{"id": "c1", "col": 2, "cost": 1, "req": "", "nome": "Couro grosso", "desc": "Perde 8% menos tempo por golpe.", "fx": {"def": 0.08}},
-	{"id": "c2", "col": 2, "cost": 2, "req": "c1", "nome": "Passos de caça", "desc": "+10% de velocidade e dash recarrega 20% mais rápido.", "fx": {"spd": 0.10, "dash": 0.20}},
-	{"id": "c3", "col": 2, "cost": 3, "req": "c2", "nome": "Sangue do relógio", "desc": "Perde 12% menos tempo e cada acerto básico devolve 0,1s.", "fx": {"def": 0.12, "leech": 0.1}},
-	{"id": "m", "col": -1, "cost": 4, "req": "*6", "nome": "Mestre", "desc": "", "fx": {"master": 1.0}},
+const TALENT_TREES := {
+	"minotauro_0": {"cols": ["Machado", "Chifres", "Fúria"], "nodes": [
+		{"id": "a1", "col": 0, "cost": 1, "req": "", "nome": "Machado pesado", "desc": "+15% de dano no ataque básico.", "fx": {"atk_dmg": 0.15}},
+		{"id": "a2", "col": 0, "cost": 2, "req": "a1", "nome": "Golpe largo", "desc": "O machado alcança 30% mais longe.", "fx": {"atk_range": 0.3}},
+		{"id": "b1", "col": 1, "cost": 1, "req": "", "nome": "Chifres de ferro", "desc": "Habilidade 1 com +35% de poder.", "fx": {"sk0_pow": 0.35}},
+		{"id": "b2", "col": 1, "cost": 2, "req": "b1", "nome": "Fôlego de touro", "desc": "Habilidade 1 recarrega 25% e habilidade 2, 15% mais rápido.", "fx": {"sk0_cd": 0.25, "sk1_cd": 0.15}},
+		{"id": "c1", "col": 2, "cost": 1, "req": "", "nome": "Fúria longa", "desc": "Habilidade 3 dura 40% mais.", "fx": {"sk2_dur": 0.4}},
+		{"id": "c2", "col": 2, "cost": 2, "req": "c1", "nome": "Sangue quente", "desc": "A suprema carrega 30% mais rápido.", "fx": {"ult_gain": 0.3}},
+		{"id": "m", "col": -1, "cost": 4, "req": "*4", "nome": "Rei do Labirinto", "desc": "+20% de poder nas 3 habilidades e suprema 40% mais forte.", "fx": {"sk0_pow": 0.2, "sk1_pow": 0.2, "sk2_pow": 0.2, "ult_pow": 0.4}}]},
+	"minotauro_1": {"cols": ["Lâminas", "Sede", "Frenesi"], "nodes": [
+		{"id": "a1", "col": 0, "cost": 1, "req": "", "nome": "Lâminas leves", "desc": "Ataque básico 12% mais rápido.", "fx": {"atk_cd": 0.12}},
+		{"id": "a2", "col": 0, "cost": 2, "req": "a1", "nome": "Corte fundo", "desc": "+20% de dano no ataque básico.", "fx": {"atk_dmg": 0.2}},
+		{"id": "b1", "col": 1, "cost": 1, "req": "", "nome": "Sangue nas lâminas", "desc": "Cada acerto básico devolve 0,08s.", "fx": {"leech": 0.08}},
+		{"id": "b2", "col": 1, "cost": 2, "req": "b1", "nome": "Sede infinita", "desc": "Habilidade 3 dura 50% mais.", "fx": {"sk2_dur": 0.5}},
+		{"id": "c1", "col": 2, "cost": 1, "req": "", "nome": "Ódio sem fim", "desc": "A fúria acumula até 15 cargas.", "fx": {"rage_cap": 5}},
+		{"id": "c2", "col": 2, "cost": 2, "req": "c1", "nome": "Fúria crescente", "desc": "Cada carga de fúria vale 50% mais.", "fx": {"pass": 0.5}},
+		{"id": "m", "col": -1, "cost": 4, "req": "*4", "nome": "Encarnação da fúria", "desc": "Fúria acumula até 20 cargas, cada uma vale mais, e a suprema fica 30% mais forte.", "fx": {"rage_cap": 5, "pass": 0.5, "ult_pow": 0.3}}]},
+	"minotauro_2": {"cols": ["Escudo", "Maça", "Terra"], "nodes": [
+		{"id": "a1", "col": 0, "cost": 1, "req": "", "nome": "Escudo pesado", "desc": "Perde 10% menos tempo por golpe.", "fx": {"def": 0.1}},
+		{"id": "a2", "col": 0, "cost": 2, "req": "a1", "nome": "Rocha viva", "desc": "Perde mais 10% menos tempo e a habilidade 1 dura 30% mais.", "fx": {"def": 0.1, "sk0_dur": 0.3}},
+		{"id": "b1", "col": 1, "cost": 1, "req": "", "nome": "Maça de granito", "desc": "+20% de dano no ataque básico.", "fx": {"atk_dmg": 0.2}},
+		{"id": "b2", "col": 1, "cost": 2, "req": "b1", "nome": "Empurrão brutal", "desc": "Os golpes empurram o lendário 60% mais longe.", "fx": {"pass": 0.6}},
+		{"id": "c1", "col": 2, "cost": 1, "req": "", "nome": "Terra viva", "desc": "Habilidade 3 com +35% de poder.", "fx": {"sk2_pow": 0.35}},
+		{"id": "c2", "col": 2, "cost": 2, "req": "c1", "nome": "Abalo", "desc": "Habilidade 2 com +30% de poder e 20% menos recarga.", "fx": {"sk1_pow": 0.3, "sk1_cd": 0.2}},
+		{"id": "m", "col": -1, "cost": 4, "req": "*4", "nome": "Montanha", "desc": "Perde mais 10% menos tempo, habilidade 3 +20% e suprema 40% mais forte.", "fx": {"def": 0.1, "sk2_pow": 0.2, "ult_pow": 0.4}}]},
+	"minotauro_3": {"cols": ["Lança", "Galope", "Rebanho"], "nodes": [
+		{"id": "a1", "col": 0, "cost": 1, "req": "", "nome": "Ponta longa", "desc": "A lança alcança 30% mais longe.", "fx": {"atk_range": 0.3}},
+		{"id": "a2", "col": 0, "cost": 2, "req": "a1", "nome": "Estocada precisa", "desc": "+15% de dano e ataque 8% mais rápido.", "fx": {"atk_dmg": 0.15, "atk_cd": 0.08}},
+		{"id": "b1", "col": 1, "cost": 1, "req": "", "nome": "Lança afiada", "desc": "Habilidade 1 com +35% de poder.", "fx": {"sk0_pow": 0.35}},
+		{"id": "b2", "col": 1, "cost": 2, "req": "b1", "nome": "Galope veloz", "desc": "+12% de velocidade e habilidade 2 recarrega 20% mais rápido.", "fx": {"spd": 0.12, "sk1_cd": 0.2}},
+		{"id": "c1", "col": 2, "cost": 1, "req": "", "nome": "Rebanho maior", "desc": "Habilidade 3 com +40% de poder.", "fx": {"sk2_pow": 0.4}},
+		{"id": "c2", "col": 2, "cost": 2, "req": "c1", "nome": "Chifres de prata", "desc": "A suprema carrega 30% mais rápido.", "fx": {"ult_gain": 0.3}},
+		{"id": "m", "col": -1, "cost": 4, "req": "*4", "nome": "Senhor da manada", "desc": "Habilidade 3 recarrega 25% mais rápido, +8% de velocidade e suprema 40% mais forte.", "fx": {"sk2_cd": 0.25, "spd": 0.08, "ult_pow": 0.4}}]},
+	"lich_0": {"cols": ["Virotes", "Ossos", "Dreno"], "nodes": [
+		{"id": "a1", "col": 0, "cost": 1, "req": "", "nome": "Virotes perfurantes", "desc": "Os virotes atravessam o lendário.", "fx": {"pierce": 1}},
+		{"id": "a2", "col": 0, "cost": 2, "req": "a1", "nome": "Rajada dupla", "desc": "Cada ataque solta um virote a mais.", "fx": {"shot_n": 1}},
+		{"id": "b1", "col": 1, "cost": 1, "req": "", "nome": "Ossos afiados", "desc": "Habilidade 1 com +35% de poder.", "fx": {"sk0_pow": 0.35}},
+		{"id": "b2", "col": 1, "cost": 2, "req": "b1", "nome": "Ossos densos", "desc": "Habilidade 2 dura 40% mais e tem +30% de poder.", "fx": {"sk1_dur": 0.4, "sk1_pow": 0.3}},
+		{"id": "c1", "col": 2, "cost": 1, "req": "", "nome": "Dreno profundo", "desc": "Habilidade 3 dura 40% mais.", "fx": {"sk2_dur": 0.4}},
+		{"id": "c2", "col": 2, "cost": 2, "req": "c1", "nome": "Alma faminta", "desc": "Suprema carrega 30% mais rápido e cada acerto básico devolve 0,05s.", "fx": {"ult_gain": 0.3, "leech": 0.05}},
+		{"id": "m", "col": -1, "cost": 4, "req": "*4", "nome": "Senhor dos ossos", "desc": "Mais um virote por ataque e suprema 40% mais forte.", "fx": {"shot_n": 1, "ult_pow": 0.4}}]},
+	"lich_1": {"cols": ["Caveiras", "Servos", "Almas"], "nodes": [
+		{"id": "a1", "col": 0, "cost": 1, "req": "", "nome": "Caveiras pesadas", "desc": "+20% de dano no ataque básico.", "fx": {"atk_dmg": 0.2}},
+		{"id": "a2", "col": 0, "cost": 2, "req": "a1", "nome": "Caveira dupla", "desc": "Cada ataque solta uma caveira a mais.", "fx": {"shot_n": 1}},
+		{"id": "b1", "col": 1, "cost": 1, "req": "", "nome": "Servos fortes", "desc": "Esqueletos aliados com +40% de dano e vida.", "fx": {"skel": 0.4}},
+		{"id": "b2", "col": 1, "cost": 2, "req": "b1", "nome": "Servos eternos", "desc": "Esqueletos aliados com mais 40% de dano e vida.", "fx": {"skel": 0.4}},
+		{"id": "c1", "col": 2, "cost": 1, "req": "", "nome": "Colheita rápida", "desc": "Um esqueleto se ergue com metade dos acertos.", "fx": {"pass": 0.5}},
+		{"id": "c2", "col": 2, "cost": 2, "req": "c1", "nome": "Ritual", "desc": "Habilidades 1 e 3 recarregam 20% mais rápido.", "fx": {"sk0_cd": 0.2, "sk2_cd": 0.2}},
+		{"id": "m", "col": -1, "cost": 4, "req": "*4", "nome": "Rei necromante", "desc": "Esqueletos ainda mais fortes, colheita mais rápida e suprema 30% mais forte.", "fx": {"skel": 0.5, "pass": 0.5, "ult_pow": 0.3}}]},
+	"lich_2": {"cols": ["Lascas", "Nevasca", "Cristal"], "nodes": [
+		{"id": "a1", "col": 0, "cost": 1, "req": "", "nome": "Lascas afiadas", "desc": "+15% de dano no ataque básico.", "fx": {"atk_dmg": 0.15}},
+		{"id": "a2", "col": 0, "cost": 2, "req": "a1", "nome": "Frio penetrante", "desc": "As lascas atravessam o lendário.", "fx": {"pierce": 1}},
+		{"id": "b1", "col": 1, "cost": 1, "req": "", "nome": "Inverno longo", "desc": "Habilidade 2 dura 50% mais.", "fx": {"sk1_dur": 0.5}},
+		{"id": "b2", "col": 1, "cost": 2, "req": "b1", "nome": "Gelo cortante", "desc": "Habilidade 1 com +35% de poder.", "fx": {"sk0_pow": 0.35}},
+		{"id": "c1", "col": 2, "cost": 1, "req": "", "nome": "Congelamento", "desc": "Os acertos deixam o lendário lento 60% mais tempo.", "fx": {"pass": 0.6}},
+		{"id": "c2", "col": 2, "cost": 2, "req": "c1", "nome": "Corpo de cristal", "desc": "Perde 12% menos tempo por golpe.", "fx": {"def": 0.12}},
+		{"id": "m", "col": -1, "cost": 4, "req": "*4", "nome": "Coração de gelo", "desc": "Lentidão ainda maior, habilidade 3 recarrega 20% mais rápido e suprema 40% mais forte.", "fx": {"pass": 0.4, "sk2_cd": 0.2, "ult_pow": 0.4}}]},
+	"lich_3": {"cols": ["Ponteiros", "Tempo", "Eco"], "nodes": [
+		{"id": "a1", "col": 0, "cost": 1, "req": "", "nome": "Ponteiros rápidos", "desc": "Ataque básico 15% mais rápido.", "fx": {"atk_cd": 0.15}},
+		{"id": "a2", "col": 0, "cost": 2, "req": "a1", "nome": "Ponteiros afiados", "desc": "+15% de dano no ataque básico.", "fx": {"atk_dmg": 0.15}},
+		{"id": "b1", "col": 1, "cost": 1, "req": "", "nome": "Tempo devolvido", "desc": "Cada acerto devolve 60% mais tempo.", "fx": {"pass": 0.6}},
+		{"id": "b2", "col": 1, "cost": 2, "req": "b1", "nome": "Relógio paciente", "desc": "Habilidade 1 dura 40% mais e recarrega 15% mais rápido.", "fx": {"sk0_dur": 0.4, "sk0_cd": 0.15}},
+		{"id": "c1", "col": 2, "cost": 1, "req": "", "nome": "Eco profundo", "desc": "Habilidade 3 com +40% de poder.", "fx": {"sk2_pow": 0.4}},
+		{"id": "c2", "col": 2, "cost": 2, "req": "c1", "nome": "Rebobinar mais", "desc": "Habilidade 2 com +40% de poder e 15% menos recarga.", "fx": {"sk1_pow": 0.4, "sk1_cd": 0.15}},
+		{"id": "m", "col": -1, "cost": 4, "req": "*4", "nome": "Senhor do tempo", "desc": "Ainda mais tempo devolvido, suprema carrega 30% mais rápido e fica 30% mais forte.", "fx": {"pass": 0.6, "ult_gain": 0.3, "ult_pow": 0.3}}]},
+	"dragao_0": {"cols": ["Garras", "Fogo", "Asas"], "nodes": [
+		{"id": "a1", "col": 0, "cost": 1, "req": "", "nome": "Garras afiadas", "desc": "+15% de dano no ataque básico.", "fx": {"atk_dmg": 0.15}},
+		{"id": "a2", "col": 0, "cost": 2, "req": "a1", "nome": "Garras rápidas", "desc": "Ataque básico 12% mais rápido.", "fx": {"atk_cd": 0.12}},
+		{"id": "b1", "col": 1, "cost": 1, "req": "", "nome": "Fogo intenso", "desc": "Habilidade 1 com +35% de poder.", "fx": {"sk0_pow": 0.35}},
+		{"id": "b2", "col": 1, "cost": 2, "req": "b1", "nome": "Mergulho em chamas", "desc": "Habilidade 2 com +40% de poder.", "fx": {"sk1_pow": 0.4}},
+		{"id": "c1", "col": 2, "cost": 1, "req": "", "nome": "Escamas grossas", "desc": "Habilidade 3 dura 40% mais.", "fx": {"sk2_dur": 0.4}},
+		{"id": "c2", "col": 2, "cost": 2, "req": "c1", "nome": "Asas fortes", "desc": "Um pulo no ar a mais.", "fx": {"jumps": 1}},
+		{"id": "m", "col": -1, "cost": 4, "req": "*4", "nome": "Dragão adulto", "desc": "Suprema 40% mais forte, habilidade 1 +20% e ataque +10%.", "fx": {"ult_pow": 0.4, "sk0_pow": 0.2, "atk_dmg": 0.1}}]},
+	"dragao_1": {"cols": ["Raio", "Céu", "Vento"], "nodes": [
+		{"id": "a1", "col": 0, "cost": 1, "req": "", "nome": "Garras elétricas", "desc": "Faíscas extras saem 50% mais vezes.", "fx": {"pass": 0.5}},
+		{"id": "a2", "col": 0, "cost": 2, "req": "a1", "nome": "Choque rápido", "desc": "Ataque básico 12% mais rápido.", "fx": {"atk_cd": 0.12}},
+		{"id": "b1", "col": 1, "cost": 1, "req": "", "nome": "Raio potente", "desc": "Habilidade 1 com +35% de poder.", "fx": {"sk0_pow": 0.35}},
+		{"id": "b2", "col": 1, "cost": 2, "req": "b1", "nome": "Céu carregado", "desc": "Habilidade 3 com +35% de poder e 15% menos recarga.", "fx": {"sk2_pow": 0.35, "sk2_cd": 0.15}},
+		{"id": "c1", "col": 2, "cost": 1, "req": "", "nome": "Vento a favor", "desc": "+12% de velocidade.", "fx": {"spd": 0.12}},
+		{"id": "c2", "col": 2, "cost": 2, "req": "c1", "nome": "Voo longo", "desc": "Habilidade 2 dura 50% mais.", "fx": {"sk1_dur": 0.5}},
+		{"id": "m", "col": -1, "cost": 4, "req": "*4", "nome": "Senhor das tempestades", "desc": "Ainda mais faíscas, um pulo no ar a mais e suprema 40% mais forte.", "fx": {"pass": 0.5, "jumps": 1, "ult_pow": 0.4}}]},
+	"dragao_2": {"cols": ["Ferrão", "Veneno", "Muda"], "nodes": [
+		{"id": "a1", "col": 0, "cost": 1, "req": "", "nome": "Ferrão longo", "desc": "O ferrão alcança 30% mais longe.", "fx": {"atk_range": 0.3}},
+		{"id": "a2", "col": 0, "cost": 2, "req": "a1", "nome": "Ferrão afiado", "desc": "+15% de dano no ataque básico.", "fx": {"atk_dmg": 0.15}},
+		{"id": "b1", "col": 1, "cost": 1, "req": "", "nome": "Veneno acumulado", "desc": "O veneno acumula até 12.", "fx": {"poison_cap": 4}},
+		{"id": "b2", "col": 1, "cost": 2, "req": "b1", "nome": "Veneno potente", "desc": "Cada acerto aplica mais veneno.", "fx": {"pass": 0.5}},
+		{"id": "c1", "col": 2, "cost": 1, "req": "", "nome": "Muda rápida", "desc": "Habilidade 3 recarrega 25% mais rápido.", "fx": {"sk2_cd": 0.25}},
+		{"id": "c2", "col": 2, "cost": 2, "req": "c1", "nome": "Nuvem densa", "desc": "Habilidade 1 dura 40% mais e tem +30% de poder.", "fx": {"sk0_dur": 0.4, "sk0_pow": 0.3}},
+		{"id": "m", "col": -1, "cost": 4, "req": "*4", "nome": "Rainha das serpes", "desc": "Veneno acumula até 16, ainda mais veneno por acerto e suprema 30% mais forte.", "fx": {"poison_cap": 4, "pass": 0.5, "ult_pow": 0.3}}]},
+	"dragao_3": {"cols": ["Cauda", "Meteoro", "Rugido"], "nodes": [
+		{"id": "a1", "col": 0, "cost": 1, "req": "", "nome": "Cauda maciça", "desc": "+20% de dano no ataque básico.", "fx": {"atk_dmg": 0.2}},
+		{"id": "a2", "col": 0, "cost": 2, "req": "a1", "nome": "Cauda longa", "desc": "A cauda alcança 25% mais longe.", "fx": {"atk_range": 0.25}},
+		{"id": "b1", "col": 1, "cost": 1, "req": "", "nome": "Meteoro maior", "desc": "Habilidade 1 com +40% de poder.", "fx": {"sk0_pow": 0.4}},
+		{"id": "b2", "col": 1, "cost": 2, "req": "b1", "nome": "Céu em chamas", "desc": "Habilidade 1 recarrega 20% mais rápido e habilidade 3 tem +30% de poder.", "fx": {"sk0_cd": 0.2, "sk2_pow": 0.3}},
+		{"id": "c1", "col": 2, "cost": 1, "req": "", "nome": "Rugido ensurdecedor", "desc": "Habilidade 2 dura 50% mais.", "fx": {"sk1_dur": 0.5}},
+		{"id": "c2", "col": 2, "cost": 2, "req": "c1", "nome": "Couro ancestral", "desc": "Perde 12% menos tempo por golpe.", "fx": {"def": 0.12}},
+		{"id": "m", "col": -1, "cost": 4, "req": "*4", "nome": "Ancião eterno", "desc": "Suprema 50% mais forte, habilidade 2 +30% e perde 8% menos tempo.", "fx": {"ult_pow": 0.5, "sk1_pow": 0.3, "def": 0.08}}]}
+}
+
+## ===== Upgrades básicos do guardião: valem para todas as 4 classes dele, inclusive a base =====
+## Pontos de guardião: cada lendário vencido com qualquer classe do guardião dá GUARD_PTS_PER_LEG.
+## Custo de cada nível = 1 + nível atual / 3.
+const GUARD_PTS_PER_LEG := 2
+const BASIC_UPS := [
+	{"id": "forca", "nome": "Força", "desc": "+5% de dano em tudo por nível.", "max": 10},
+	{"id": "resist", "nome": "Resistência", "desc": "Perde 4% menos tempo por golpe, por nível.", "max": 10},
+	{"id": "poder", "nome": "Poder das habilidades", "desc": "+6% de poder nas habilidades e na suprema por nível.", "max": 10},
+	{"id": "agil", "nome": "Agilidade", "desc": "+3% de velocidade e dash 5% mais rápido por nível.", "max": 5},
+	{"id": "impeto", "nome": "Ímpeto", "desc": "A suprema começa a luta com +6% de carga por nível.", "max": 5},
 ]
-## ===== Habilidades supremas (uma por classe; trocáveis entre as do mesmo guardião) =====
+## ===== Habilidades supremas da própria classe (a suprema base de cada classe) =====
 ## Carregam com a barra de poder: acertar o lendário e levar golpes enchem a barra.
 const ULTS := {
 	"ult_rei": {"nome": "Rei do Labirinto", "dono": "minotauro_0", "icon": "ui/sk_furia", "desc": "6s com dano dobrado, golpes mais rápidos e metade do tempo perdido."},
@@ -264,23 +362,61 @@ const ULTS := {
 	"ult_meteoros": {"nome": "Chuva de meteoros", "dono": "dragao_3", "icon": "ui/sk_meteoro", "desc": "Oito meteoros caem em volta do lendário."},
 }
 ## ===== Alternativas de cada classe (só da própria classe) =====
-## Para cada classe: [opção extra da hab. 1, da hab. 2, da hab. 3, da suprema].
+## Para cada classe: [opções extras da hab. 1, da hab. 2, da hab. 3, da suprema] (2 extras por posição).
 ## As alternativas usam "mechs": peças de efeito montadas em arena.gd → run_mechs.
 const CLASS_ALTS := {
-	"minotauro_0": ["m0_machado", "m0_grito", "m0_couro", "u_m0_colosso"],
-	"minotauro_1": ["m1_corte", "m1_salto", "m1_frenesi", "u_m1_carnificina"],
-	"minotauro_2": ["m2_pedra", "m2_tremor", "m2_granito", "u_m2_fortaleza"],
-	"minotauro_3": ["m3_lancas", "m3_trote", "m3_marca", "u_m3_manada"],
-	"lich_0": ["l0_virote", "l0_vazio", "l0_maldicao", "u_l0_ceifador"],
-	"lich_1": ["l1_caveiras", "l1_ossada", "l1_pacto", "u_l1_rei_morto"],
-	"lich_2": ["l2_estilhacos", "l2_prisao", "l2_armadura", "u_l2_inverno"],
-	"lich_3": ["l3_ponteiros", "l3_acelerar", "l3_hora", "u_l3_paradoxo"],
-	"dragao_0": ["d0_bola", "d0_rasante", "d0_chamas", "u_d0_sol"],
-	"dragao_1": ["d1_faiscas", "d1_relampago", "d1_nuvem", "u_d1_furacao"],
-	"dragao_2": ["d2_cuspe", "d2_bote", "d2_toxina", "u_d2_ninho"],
-	"dragao_3": ["d3_cauda", "d3_brasas", "d3_escamas", "u_d3_cataclismo"],
+	"minotauro_0": [["m0_machado", "m0_tufao"], ["m0_grito", "m0_quebra"], ["m0_couro", "m0_estandarte"], ["u_m0_colosso", "u_m0_tita"]],
+	"minotauro_1": [["m1_corte", "m1_laminas"], ["m1_salto", "m1_chute"], ["m1_frenesi", "m1_ira"], ["u_m1_carnificina", "u_m1_matanca"]],
+	"minotauro_2": [["m2_pedra", "m2_paredao"], ["m2_tremor", "m2_punho"], ["m2_granito", "m2_regenerar"], ["u_m2_fortaleza", "u_m2_avatar"]],
+	"minotauro_3": [["m3_lancas", "m3_dardo"], ["m3_trote", "m3_salto"], ["m3_marca", "m3_rebanho"], ["u_m3_manada", "u_m3_ceu_lancas"]],
+	"lich_0": [["l0_virote", "l0_orbe"], ["l0_vazio", "l0_espelho"], ["l0_maldicao", "l0_ceifa"], ["u_l0_ceifador", "u_l0_eclipse"]],
+	"lich_1": [["l1_caveiras", "l1_lascas_osso"], ["l1_ossada", "l1_cadaver"], ["l1_pacto", "l1_horda"], ["u_l1_rei_morto", "u_l1_tumulo"]],
+	"lich_2": [["l2_estilhacos", "l2_cometa"], ["l2_prisao", "l2_deslize"], ["l2_armadura", "l2_espelho_gelo"], ["u_l2_inverno", "u_l2_zero"]],
+	"lich_3": [["l3_ponteiros", "l3_badalo"], ["l3_acelerar", "l3_atraso"], ["l3_hora", "l3_ampulheta"], ["u_l3_paradoxo", "u_l3_relogio"]],
+	"dragao_0": [["d0_bola", "d0_garras"], ["d0_rasante", "d0_salto"], ["d0_chamas", "d0_furia"], ["u_d0_sol", "u_d0_fenix"]],
+	"dragao_1": [["d1_faiscas", "d1_rajada"], ["d1_relampago", "d1_trovao"], ["d1_nuvem", "d1_campo"], ["u_d1_furacao", "u_d1_ciclone"]],
+	"dragao_2": [["d2_cuspe", "d2_espinhos"], ["d2_bote", "d2_enrosco"], ["d2_toxina", "d2_pele"], ["u_d2_ninho", "u_d2_hidra"]],
+	"dragao_3": [["d3_cauda", "d3_sopro"], ["d3_brasas", "d3_pisada"], ["d3_escamas", "d3_tesouro"], ["u_d3_cataclismo", "u_d3_dominio"]],
 }
 const ALT_SKILLS := {
+	"m1_investida_sangue": {"nome": "Investida sangrenta", "cd": 5.0, "icon": "ui/sk_investida", "desc": "avança com os machados e cada acerto devolve tempo por 2s", "mechs": [{"m": "charge", "t": 0.3, "spd": 760.0, "dmg": 28.0}, {"m": "buff", "leech": 2.0}]},
+	"l1_colheita": {"nome": "Colheita de almas", "cd": 7.0, "icon": "ui/sk_erguer", "desc": "ergue 2 esqueletos e deixa o lendário frágil por 3s", "mechs": [{"m": "summon", "n": 2, "life": 6.0, "dmg": 5.0}, {"m": "boss", "vuln": 3.0}]},
+	"m0_tufao": {"nome": "Tufão de machado", "cd": 6.0, "icon": "ui/sk_redemoinho", "desc": "gira o machado em volta do corpo por 1s", "mechs": [{"m": "spin", "t": 1.0, "dmg": 7.0}]},
+	"m0_quebra": {"nome": "Quebra-chão", "cd": 6.0, "icon": "ui/sk_pisao", "desc": "onda de choque forte que atordoa", "mechs": [{"m": "stomp", "n": 1, "dmg": 26.0}, {"m": "boss", "stun": 0.5}]},
+	"m0_estandarte": {"nome": "Estandarte", "cd": 11.0, "icon": "ui/sk_furia", "desc": "4s de fúria e muito mais velocidade", "mechs": [{"m": "buff", "fury": 4.0, "haste": 4.0}]},
+	"m1_laminas": {"nome": "Lâminas giratórias", "cd": 4.0, "icon": "ui/sk_redemoinho", "desc": "lança dois machados que atravessam o lendário", "mechs": [{"m": "proj", "spr": "fx/axe_spin", "n": 2, "spread": 0.3, "spd": 600.0, "dmg": 14.0, "pierce": true}]},
+	"m1_chute": {"nome": "Chute", "cd": 5.0, "icon": "ui/sk_chifrada", "desc": "chute curto que atordoa por quase 1s", "mechs": [{"m": "charge", "t": 0.12, "spd": 600.0, "dmg": 16.0, "stun": 0.8}]},
+	"m1_ira": {"nome": "Ira", "cd": 10.0, "icon": "ui/sk_sede", "desc": "3s de fúria e o lendário leva +30% de dano", "mechs": [{"m": "buff", "fury": 3.0}, {"m": "boss", "vuln": 3.0}]},
+	"m2_paredao": {"nome": "Paredão de pedra", "cd": 7.0, "icon": "ui/sk_muralha", "desc": "ergue uma parede de pedra que barra projéteis e investidas", "mechs": [{"m": "wall", "dmg": 24.0}]},
+	"m2_punho": {"nome": "Punho de pedra", "cd": 6.0, "icon": "ui/sk_chifrada", "desc": "soco pesado que atordoa", "mechs": [{"m": "charge", "t": 0.15, "spd": 600.0, "dmg": 34.0, "stun": 0.5}]},
+	"m2_regenerar": {"nome": "Regenerar", "cd": 12.0, "icon": "ui/sk_postura", "desc": "devolve 4s ao relógio", "mechs": [{"m": "clock", "s": 4.0}]},
+	"m3_dardo": {"nome": "Dardo triplo", "cd": 4.5, "icon": "ui/sk_arremesso", "desc": "três dardos que atravessam o lendário", "mechs": [{"m": "proj", "spr": "fx/spear", "n": 3, "spread": 0.12, "spd": 760.0, "dmg": 12.0, "pierce": true}]},
+	"m3_salto": {"nome": "Salto de lança", "cd": 6.0, "icon": "ui/sk_mergulho", "desc": "salta e cai com a lança sobre o lendário", "mechs": [{"m": "leap", "dmg": 30.0}]},
+	"m3_rebanho": {"nome": "Rebanho veloz", "cd": 8.0, "icon": "ui/sk_estouro", "desc": "dois touros espectrais atravessam a arena", "mechs": [{"m": "bulls", "n": 2, "dmg": 16.0}]},
+	"l0_orbe": {"nome": "Orbe de alma", "cd": 4.0, "icon": "ui/sk_drenar", "desc": "orbe lento e pesado que atravessa o lendário", "mechs": [{"m": "proj", "spr": "fx/orb", "spd": 360.0, "dmg": 30.0, "r": 14.0, "pierce": true}]},
+	"l0_espelho": {"nome": "Véu sombrio", "cd": 7.0, "icon": "ui/sk_muralha", "desc": "fica intocável por 1s e recua", "mechs": [{"m": "blink", "dist": -140.0}, {"m": "buff", "inv": 1.0}]},
+	"l0_ceifa": {"nome": "Ceifa de tempo", "cd": 8.0, "icon": "ui/sk_drenar", "desc": "fere o lendário e devolve 1s ao relógio", "mechs": [{"m": "boss", "dmg": 18.0}, {"m": "clock", "s": 1.0}]},
+	"l1_lascas_osso": {"nome": "Lascas de osso", "cd": 4.0, "icon": "ui/sk_explosao", "desc": "cinco lascas de osso em linha reta", "mechs": [{"m": "proj", "spr": "fx/bone", "n": 5, "spread": 0.06, "spd": 700.0, "dmg": 7.0}]},
+	"l1_cadaver": {"nome": "Cadáver venenoso", "cd": 6.0, "icon": "ui/sk_explosao", "desc": "explode um cadáver no lendário e envenena", "mechs": [{"m": "boss", "dmg": 22.0, "poison": 2}]},
+	"l1_horda": {"nome": "Horda", "cd": 9.0, "icon": "ui/sk_erguer", "desc": "ergue 3 esqueletos fracos por 5s", "mechs": [{"m": "summon", "n": 3, "life": 5.0, "dmg": 4.0}]},
+	"l2_cometa": {"nome": "Cometa de gelo", "cd": 6.0, "icon": "ui/sk_lanca_gelo", "desc": "um cometa de gelo cai e deixa lento", "mechs": [{"m": "meteors", "n": 1, "dmg": 34.0, "spread": 0.0, "spr": "fx/orb_ice", "r": 70.0}, {"m": "boss", "slow": 2.0}]},
+	"l2_deslize": {"nome": "Deslizar", "cd": 5.0, "icon": "ui/sk_bloco", "desc": "desliza no gelo atravessando o lendário e deixa lento", "mechs": [{"m": "charge", "t": 0.3, "spd": 700.0, "dmg": 12.0}, {"m": "boss", "slow": 2.0}]},
+	"l2_espelho_gelo": {"nome": "Espelho de gelo", "cd": 10.0, "icon": "ui/sk_bloco", "desc": "2s bloqueando tudo e devolvendo o dano", "mechs": [{"m": "buff", "block": 2.0}]},
+	"l3_badalo": {"nome": "Badalo", "cd": 5.0, "icon": "ui/sk_eco", "desc": "uma badalada solta ponteiros para todos os lados", "mechs": [{"m": "nova", "waves": 1, "n": 10, "spr": "fx/clockhand", "spd": 420.0, "dmg": 7.0}]},
+	"l3_atraso": {"nome": "Atraso", "cd": 8.0, "icon": "ui/sk_parar", "desc": "o lendário fica lento e frágil", "mechs": [{"m": "boss", "slow": 4.0, "vuln": 2.0}]},
+	"l3_ampulheta": {"nome": "Ampulheta", "cd": 10.0, "icon": "ui/sk_rebobinar", "desc": "devolve 2s e dá 3s de velocidade", "mechs": [{"m": "clock", "s": 2.0}, {"m": "buff", "haste": 3.0}]},
+	"d0_garras": {"nome": "Garras ardentes", "cd": 3.5, "icon": "ui/sk_mergulho", "desc": "avanço curto com as garras em chamas", "mechs": [{"m": "charge", "t": 0.14, "spd": 650.0, "dmg": 20.0}]},
+	"d0_salto": {"nome": "Salto alado", "cd": 6.0, "icon": "ui/sk_mergulho", "desc": "salta e cai sobre o lendário", "mechs": [{"m": "leap", "dmg": 28.0}]},
+	"d0_furia": {"nome": "Fúria dracônica", "cd": 11.0, "icon": "ui/sk_escamas", "desc": "4s de fúria: +50% de dano", "mechs": [{"m": "buff", "fury": 4.0}]},
+	"d1_rajada": {"nome": "Rajada de vento", "cd": 4.0, "icon": "ui/sk_voo", "desc": "rajada rápida que atravessa o lendário", "mechs": [{"m": "proj", "spr": "fx/orb_storm", "spd": 800.0, "dmg": 20.0, "pierce": true}]},
+	"d1_trovao": {"nome": "Trovão", "cd": 8.0, "icon": "ui/sk_raio", "desc": "atordoa o lendário por mais de 1s", "mechs": [{"m": "boss", "stun": 1.2, "dmg": 10.0}]},
+	"d1_campo": {"nome": "Campo elétrico", "cd": 9.0, "icon": "ui/sk_tempestade", "desc": "área elétrica sob o lendário por 4s", "mechs": [{"m": "zone", "kind": "storm", "at": "boss", "w": 140.0, "h": 120.0, "life": 4.0, "tick": 0.3, "dmg": 3.5}]},
+	"d2_espinhos": {"nome": "Espinhos venenosos", "cd": 4.0, "icon": "ui/sk_ferrao", "desc": "quatro espinhos que envenenam", "mechs": [{"m": "proj", "spr": "fx/stinger", "n": 4, "spread": 0.15, "spd": 600.0, "dmg": 6.0, "poison": 1}]},
+	"d2_enrosco": {"nome": "Enroscar", "cd": 8.0, "icon": "ui/sk_muda", "desc": "prende o lendário por 1s e envenena", "mechs": [{"m": "boss", "stop": 1.0, "poison": 2}]},
+	"d2_pele": {"nome": "Pele tóxica", "cd": 11.0, "icon": "ui/sk_muda", "desc": "5s com aura que machuca e envenena", "mechs": [{"m": "buff", "scale": 5.0}, {"m": "boss", "poison": 1}]},
+	"d3_sopro": {"nome": "Sopro antigo", "cd": 6.0, "icon": "ui/sk_baforada", "desc": "baforada larga e pesada", "mechs": [{"m": "breath", "t": 1.2, "dmg": 1.6}]},
+	"d3_pisada": {"nome": "Pisada colossal", "cd": 6.0, "icon": "ui/sk_terremoto", "desc": "onda de choque que atordoa", "mechs": [{"m": "stomp", "n": 1, "dmg": 30.0}, {"m": "boss", "stun": 0.7}]},
+	"d3_tesouro": {"nome": "Tesouro", "cd": 12.0, "icon": "ui/sk_escamas", "desc": "devolve 4s ao relógio", "mechs": [{"m": "clock", "s": 4.0}]},
 	"m0_machado": {"nome": "Machado arremessado", "cd": 4.5, "icon": "ui/sk_arremesso", "desc": "arremessa o machado, que atravessa o lendário", "mechs": [{"m": "proj", "spr": "fx/axe_spin", "spd": 620.0, "dmg": 24.0, "r": 12.0, "pierce": true}]},
 	"m0_grito": {"nome": "Grito de guerra", "cd": 7.0, "icon": "ui/sk_rugido", "desc": "atordoa o lendário por 1s e dá 3s de fúria", "mechs": [{"m": "boss", "stun": 1.0}, {"m": "buff", "fury": 3.0}]},
 	"m0_couro": {"nome": "Couro de touro", "cd": 11.0, "icon": "ui/sk_postura", "desc": "5s perdendo menos tempo e queimando quem chega perto", "mechs": [{"m": "buff", "scale": 5.0}]},
@@ -319,6 +455,18 @@ const ALT_SKILLS := {
 	"d3_escamas": {"nome": "Escamas antigas", "cd": 12.0, "icon": "ui/sk_escamas", "desc": "6s perdendo menos tempo e devolve 2s", "mechs": [{"m": "buff", "scale": 6.0}, {"m": "clock", "s": 2.0}]},
 }
 const ALT_ULTS := {
+	"u_m0_tita": {"nome": "Titã", "icon": "ui/sk_furia", "desc": "5s gigante: dano dobrado, golpes rápidos e metade do tempo perdido.", "mechs": [{"m": "king", "t": 5.0}, {"m": "buff", "inv": 0.6}]},
+	"u_m1_matanca": {"nome": "Matança", "icon": "ui/sk_redemoinho", "desc": "2s girando com dano altíssimo e 4s de fúria.", "mechs": [{"m": "spin", "t": 2.0, "dmg": 18.0}, {"m": "buff", "fury": 4.0}]},
+	"u_m2_avatar": {"nome": "Avatar de pedra", "icon": "ui/sk_postura", "desc": "5s de dano dobrado e 8s de aura que protege.", "mechs": [{"m": "king", "t": 5.0}, {"m": "buff", "scale": 8.0}]},
+	"u_m3_ceu_lancas": {"nome": "Céu de lanças", "icon": "ui/sk_arremesso", "desc": "Dez lanças caem do alto sobre o lendário.", "mechs": [{"m": "meteors", "n": 10, "dmg": 14.0, "spread": 200.0, "spr": "fx/spear", "r": 40.0}]},
+	"u_l0_eclipse": {"nome": "Eclipse", "icon": "ui/sk_drenar", "desc": "Para o lendário por 1,5s e solta três rajadas de caveiras.", "mechs": [{"m": "boss", "stop": 1.5}, {"m": "nova", "waves": 3, "n": 10, "spr": "fx/skull", "spd": 460.0, "dmg": 8.0}]},
+	"u_l1_tumulo": {"nome": "Túmulo aberto", "icon": "ui/sk_erguer", "desc": "Quatro esqueletos saem da terra e o lendário fica lento.", "mechs": [{"m": "summon", "n": 4, "life": 10.0, "dmg": 8.0}, {"m": "boss", "slow": 4.0}]},
+	"u_l2_zero": {"nome": "Zero absoluto", "icon": "ui/sk_bloco", "desc": "Congela o lendário por 2s com dano muito alto.", "mechs": [{"m": "boss", "stop": 2.0, "dmg": 50.0}]},
+	"u_l3_relogio": {"nome": "Relógio quebrado", "icon": "ui/sk_rebobinar", "desc": "Seis ponteiros gigantes caem e o relógio ganha 5s.", "mechs": [{"m": "meteors", "n": 6, "dmg": 16.0, "spread": 150.0, "spr": "fx/clockhand", "r": 50.0}, {"m": "clock", "s": 5.0}]},
+	"u_d0_fenix": {"nome": "Fênix", "icon": "ui/sk_asas_fogo", "desc": "Renasce: +6s no relógio, 2s intocável e fogo ao redor.", "mechs": [{"m": "clock", "s": 6.0}, {"m": "buff", "inv": 2.0}, {"m": "zone", "kind": "fire", "at": "self", "w": 200.0, "h": 70.0, "life": 5.0, "tick": 0.3, "dmg": 4.0}]},
+	"u_d1_ciclone": {"nome": "Ciclone", "icon": "ui/sk_voo", "desc": "Um ciclone elétrico segue o lendário por 6s e solta raios.", "mechs": [{"m": "zone", "kind": "storm", "at": "boss", "follow": true, "w": 220.0, "h": 200.0, "life": 6.0, "tick": 0.3, "dmg": 5.0}, {"m": "bolts", "n": 3, "gap": 1.5, "dmg": 12.0, "stun": 0.2}]},
+	"u_d2_hidra": {"nome": "Hidra", "icon": "ui/sk_ferrao", "desc": "Nove ferrões venenosos e veneno alto no lendário.", "mechs": [{"m": "proj", "spr": "fx/stinger", "n": 9, "spread": 0.1, "spd": 620.0, "dmg": 8.0, "poison": 1}, {"m": "boss", "poison": 6}]},
+	"u_d3_dominio": {"nome": "Domínio do céu", "icon": "ui/sk_escamas", "desc": "6s de dano dobrado e aura de fogo.", "mechs": [{"m": "king", "t": 6.0}, {"m": "buff", "scale": 6.0}]},
 	"u_m0_colosso": {"nome": "Machado colossal", "icon": "ui/sk_arremesso", "desc": "Um machado gigante cai sobre o lendário e o deixa atordoado.", "mechs": [{"m": "meteors", "n": 1, "dmg": 70.0, "spread": 0.0, "spr": "fx/axe_spin", "r": 90.0}, {"m": "boss", "stun": 1.5}]},
 	"u_m1_carnificina": {"nome": "Carnificina", "icon": "ui/sk_sede", "desc": "6s de fúria em que cada acerto devolve tempo.", "mechs": [{"m": "buff", "fury": 6.0, "leech": 6.0}]},
 	"u_m2_fortaleza": {"nome": "Fortaleza", "icon": "ui/sk_postura", "desc": "5s bloqueando tudo e devolvendo o dano; recupera 4s.", "mechs": [{"m": "buff", "block": 5.0}, {"m": "clock", "s": 4.0}]},
@@ -362,7 +510,7 @@ const CLASSES := {
 		{"nome": "Guerreiro do Labirinto", "estilo": "Equilibrado: machado pesado e investidas.", "spd": 1.0, "jump": 1.0, "jumps": 1, "armor": 0.85,
 			"atk": {"kind": "melee", "dmg": 22, "cd": 0.46, "range": 70, "hh": 54, "t": 0.14, "anti": 0.07, "rec": 0.1, "fx": "axe", "shake": 0.006}, "skills": ["investida", "pisao", "furia"], "passive": "", "bonus": {"desc": "Monstros causam +20% de dano.", "mul": {"monDmg": 1.2}}},
 		{"nome": "Berserker", "estilo": "Dois machados, golpes rápidos; cada acerto aumenta o dano até ser atingido.", "spd": 1.12, "jump": 1.0, "jumps": 1, "armor": 0.88,
-			"atk": {"kind": "melee", "dmg": 12, "cd": 0.24, "range": 60, "hh": 48, "t": 0.09, "anti": 0.03, "rec": 0.05, "fx": "axe", "shake": 0.003}, "skills": ["redemoinho", "investida", "sede"], "passive": "furia_acumula", "bonus": {"desc": "Monstros causam +35% de dano, mas têm 10% menos vida.", "mul": {"monDmg": 1.35, "monHp": 0.9}}},
+			"atk": {"kind": "melee", "dmg": 12, "cd": 0.24, "range": 60, "hh": 48, "t": 0.09, "anti": 0.03, "rec": 0.05, "fx": "axe", "shake": 0.003}, "skills": ["redemoinho", "m1_investida_sangue", "sede"], "passive": "furia_acumula", "bonus": {"desc": "Monstros causam +35% de dano, mas têm 10% menos vida.", "mul": {"monDmg": 1.35, "monHp": 0.9}}},
 		{"nome": "Guardião de Pedra", "estilo": "Tanque com escudo e maça: lento, aguenta muito e empurra o inimigo.", "spd": 0.85, "jump": 0.95, "jumps": 1, "armor": 0.6,
 			"atk": {"kind": "melee", "dmg": 26, "cd": 0.6, "range": 62, "hh": 56, "t": 0.16, "anti": 0.1, "rec": 0.14, "fx": "axe", "shake": 0.008}, "skills": ["postura", "chifrada", "terremoto"], "passive": "empurrao", "bonus": {"desc": "Monstros têm +40% de vida.", "mul": {"monHp": 1.4}}},
 		{"nome": "Senhor dos Touros", "estilo": "Lança longa: ataca de mais longe e atropela com o rebanho.", "spd": 1.05, "jump": 1.05, "jumps": 1, "armor": 0.9,
@@ -372,7 +520,7 @@ const CLASSES := {
 		{"nome": "Lich", "estilo": "Magia à distância e controle.", "spd": 1.0, "jump": 1.0, "jumps": 2, "armor": 0.98,
 			"atk": {"kind": "shot", "dmg": 8, "cd": 0.26, "spd": 640, "anti": 0.04, "rec": 0.05, "spr": "fx/bone", "fx": "necro"}, "skills": ["coroa", "muralha", "drenar"], "passive": "", "bonus": {"desc": "Espinhos causam +30% de dano.", "mul": {"esp": 1.3}}},
 		{"nome": "Necromante", "estilo": "Ergue esqueletos que lutam por ele; acertos colhem almas.", "spd": 0.95, "jump": 1.0, "jumps": 2, "armor": 0.93,
-			"atk": {"kind": "shot", "dmg": 10, "cd": 0.4, "spd": 520, "anti": 0.06, "rec": 0.06, "spr": "fx/skull", "fx": "necro"}, "skills": ["erguer", "explosao", "coroa"], "passive": "colheita", "bonus": {"desc": "Esqueletos custam metade do tempo e um sai de graça a cada 12s de onda.", "cheap": "esqueleto", "free": ["esqueleto", 12.0]}},
+			"atk": {"kind": "shot", "dmg": 10, "cd": 0.4, "spd": 520, "anti": 0.06, "rec": 0.06, "spr": "fx/skull", "fx": "necro"}, "skills": ["erguer", "explosao", "l1_colheita"], "passive": "colheita", "bonus": {"desc": "Esqueletos custam metade do tempo e um sai de graça a cada 12s de onda.", "cheap": "esqueleto", "free": ["esqueleto", 12.0]}},
 		{"nome": "Feiticeiro do Gelo", "estilo": "Cada acerto deixa o lendário lento; congela e se protege.", "spd": 1.0, "jump": 1.0, "jumps": 2, "armor": 0.88,
 			"atk": {"kind": "shot", "dmg": 7, "cd": 0.3, "spd": 600, "anti": 0.04, "rec": 0.05, "spr": "fx/shard", "fx": "necro"}, "skills": ["lanca_gelo", "nevasca", "bloco"], "passive": "congelar", "bonus": {"desc": "Ampulhetas deixam 15% mais lento.", "add": {"slow": 0.15}}},
 		{"nome": "Arauto do Tempo", "estilo": "Manipula o relógio: para o inimigo, rebobina dano e devolve tempo a cada acerto.", "spd": 1.05, "jump": 1.0, "jumps": 2, "armor": 1.03,

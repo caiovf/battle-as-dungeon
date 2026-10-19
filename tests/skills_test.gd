@@ -13,8 +13,8 @@ func _initialize() -> void:
 	root.add_child(main)
 	for g in ["minotauro", "lich", "dragao"]:
 		for c in 4:
-			queue.append([g, c, true])
-			queue.append([g, c, false])
+			for o in 3:
+				queue.append([g, c, o])
 
 
 func _process(_d: float) -> bool:
@@ -26,7 +26,7 @@ func _process(_d: float) -> bool:
 			print("OK skills")
 			return true
 		var q = queue.pop_front()
-		cur = {"g": q[0], "c": q[1], "alt": q[2]}
+		cur = {"g": q[0], "c": q[1], "opt": q[2]}
 		main.arena.stop()
 		main.fresh_state()
 		main.set_path(main.gen_path())
@@ -35,9 +35,18 @@ func _process(_d: float) -> bool:
 		var ck = "%s_%d" % [q[0], q[1]]
 		for s in 4:
 			var pool = main.slot_pool(q[0], q[1], s)
-			if not main.meta.sku.has(ck + ":" + pool[1]):
-				main.meta.sku.append(ck + ":" + pool[1])
-			main.equip(q[0], q[1], s, pool[1] if q[2] else pool[0])
+			for x in pool:
+				if not main.meta.sku.has(ck + ":" + x):
+					main.meta.sku.append(ck + ":" + x)
+			main.equip(q[0], q[1], s, pool[q[2]])
+		# todos os talentos e upgrades básicos, para testar os efeitos
+		main.meta.tp[ck] = 99
+		for t in main.tal_tree(ck):
+			main.tal_buy(ck, t.id)
+		main.meta.gp[q[0]] = 999
+		for u in D.BASIC_UPS:
+			for i in u.max:
+				main.gup_buy(q[0], u.id)
 		main.clock = 500.0
 		main.phase = "wave"
 		var h = main.Hero.new()
@@ -47,7 +56,7 @@ func _process(_d: float) -> bool:
 		main.arena.start(h)
 		main.arena.intro = 0.0
 		tt = 0.0
-		print("testando ", ck, " alt=", q[2], " ", main.loadout(q[0], q[1]))
+		print("testando ", ck, " opção ", q[2], " ", main.loadout(q[0], q[1]), " talentos ", main.tal_owned(ck).size())
 	for a in ["g_s0", "g_s1", "g_s2", "g_ult", "g_atk"]:
 		Input.action_release(a)
 	var k = int(tt * 60) % 40
