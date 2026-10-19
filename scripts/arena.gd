@@ -1987,7 +1987,7 @@ func learn_duel() -> void:
 func reward() -> void:
 	learn_duel()
 	game.mission_add("minotauro_3")
-	var pts: Array = game.leg_points(gd.key, game.guardian, game.leg_count + 1, true)
+	var pts: Array = game.leg_points(game.guardian, game.leg_count + 1, true)
 	if stats.lost < clock0 * 0.3:
 		game.mission_add("minotauro_2")
 	if use.dash == 0:
@@ -1999,7 +1999,7 @@ func reward() -> void:
 	game.phase = "reward"
 	var nome: String = D.HEROES[key].nome.get_slice(",", 0)
 	var title = "%s foi %s" % [nome, "derrotada" if D.HEROES[key].get("fem", false) else "derrotado"]
-	var txt = "O %s defendeu o coração. Energia absorvida: +%ss. +%d de essência. O guardião evoluiu para +%s de dano. +%d pontos para %s e +%d pontos de guardião%s. Melhore o guardião ou a masmorra; o próximo lendário virá mais forte." % [gd.nome, D.fmt(soul), e, D.pct(game.evo), pts[0], gd.nome, pts[1], " (1ª vitória contra este lendário)" if (pts[2] or pts[3]) else ""]
+	var txt = "O %s defendeu o coração. Energia absorvida: +%ss. +%d de essência. O guardião evoluiu para +%s de dano. +%d pontos de classe e +%d pontos de guardião%s. Melhore o guardião ou a masmorra; o próximo lendário virá mais forte." % [gd.nome, D.fmt(soul), e, D.pct(game.evo), pts[0], pts[1], " (1ª vitória contra este lendário)" if pts[2] else ""]
 	# opções: pelo menos uma habilidade da classe atual, mais uma do guardião e duas da masmorra
 	var sk = []
 	for i in 3:

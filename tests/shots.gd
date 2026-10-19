@@ -118,14 +118,14 @@ func _process(_d: float) -> bool:
 			main.ui.show_classes()
 		500: snap("09_classes")
 		501:
-			main.meta.tp["dragao_0"] = 7
+			main.meta.tp["dragao"] = 7
 			main.meta.tal["dragao_0"] = ["a1", "b1"]
 			main.ui.tal_cls = 0
 			main.ui.render_classes()
 		504: snap("09b_talentos")
 		505:
 			main.ui.tal_cls = -1
-			main.meta.tp["dragao_0"] = 12
+			main.meta.tp["dragao"] = 12
 			main.ui.sk_cls = 0
 			main.ui.render_classes()
 		507: snap("09c_habilidades")
@@ -136,6 +136,10 @@ func _process(_d: float) -> bool:
 			main.ui.render_classes()
 		510: snap("09d_upgrades")
 		511:
+			main.ui.gup_open = false
+			main.ui.render_classes()
+		514: snap("09e_classes_pontos")
+		515:
 			main.ui.close_classes()
 			_fight("minotauro", 1, "kael")
 		540: Input.action_press("g_atk")

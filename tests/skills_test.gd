@@ -40,7 +40,7 @@ func _process(_d: float) -> bool:
 					main.meta.sku.append(ck + ":" + x)
 			main.equip(q[0], q[1], s, pool[q[2]])
 		# todos os talentos e upgrades básicos, para testar os efeitos
-		main.meta.tp[ck] = 99
+		main.meta.tp[q[0]] = 999
 		for t in main.tal_tree(ck):
 			main.tal_buy(ck, t.id)
 		main.meta.gp[q[0]] = 999

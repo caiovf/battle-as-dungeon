@@ -612,13 +612,13 @@ func _render_gups(g: String) -> void:
 func _render_skills(g: String, ci: int) -> void:
 	var c = D.CLASSES[g][ci]
 	var k = "%s_%d" % [g, ci]
-	var pts: int = game.tal_points(k)
+	var pts: int = maxi(0, game.tal_points(k))
 	var lo: Array = game.loadout(g, ci)
 	var head = HBoxContainer.new()
 	var hv = VBoxContainer.new()
 	hv.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	hv.add_child(_label("Habilidades · %s" % c.nome, 26, C_FG, "PixelifySans-SemiBold.woff2"))
-	var sub = _label("Cada posição tem a habilidade da classe e duas alternativas exclusivas dela; só troca com a mesma posição. Libere a alternativa e aprimore com pontos desta classe (valem para sempre). Pontos livres: %d." % pts, 13, C_BRASS if pts > 0 else C_MUTE)
+	var sub = _label("Cada posição tem a habilidade da classe e duas alternativas exclusivas dela; só troca com a mesma posição. Libere e aprimore com os pontos de classe do guardião; em Refazer os pontos voltam e podem ir para outra classe. Pontos livres: %d." % pts, 13, C_BRASS if pts > 0 else C_MUTE)
 	sub.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	hv.add_child(sub)
 	head.add_child(hv)
@@ -627,6 +627,12 @@ func _render_skills(g: String, ci: int) -> void:
 		render_classes(), 16)
 	bk.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
 	head.add_child(bk)
+	if int(game.meta.spent.get(k, 0)) > 0 and game.phase != "arena":
+		var rs = _button("Refazer · +%d" % int(game.meta.spent.get(k, 0)), func():
+			game.skills_reset(k)
+			render_classes(), 16)
+		rs.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
+		head.add_child(rs)
 	cls_box.add_child(head)
 	var names = ["HABILIDADE 1", "HABILIDADE 2", "HABILIDADE 3", "SUPREMA"]
 	var arena_now: bool = game.phase == "arena"
@@ -706,12 +712,12 @@ func _render_skills(g: String, ci: int) -> void:
 func _render_talents(g: String, ci: int) -> void:
 	var c = D.CLASSES[g][ci]
 	var k = "%s_%d" % [g, ci]
-	var pts: int = game.tal_points(k)
+	var pts: int = maxi(0, game.tal_points(k))
 	var head = HBoxContainer.new()
 	var hv = VBoxContainer.new()
 	hv.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	hv.add_child(_label("Talentos · %s" % c.nome, 26, C_FG, "PixelifySans-SemiBold.woff2"))
-	var sub = _label("Talentos especializados desta classe. A 1ª vitória da classe contra o lendário nº n dá n + %d pontos: chegando ao último lendário, a classe fica no máximo. Pontos livres: %d." % [D.CLASS_FIRST_BASE, pts], 14, C_BRASS if pts > 0 else C_MUTE)
+	var sub = _label("Talentos especializados desta classe. Os pontos de classe são do guardião: a 1ª vitória contra o lendário nº n dá n + %d, e em Refazer eles voltam para usar em outra classe. Pontos livres: %d." % [D.CLASS_FIRST_BASE, pts], 14, C_BRASS if pts > 0 else C_MUTE)
 	sub.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	hv.add_child(sub)
 	head.add_child(hv)
@@ -720,8 +726,8 @@ func _render_talents(g: String, ci: int) -> void:
 		render_classes(), 16)
 	bk.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
 	head.add_child(bk)
-	if game.tal_owned(k).size() > 0:
-		var rs = _button("Refazer", func():
+	if game.tal_owned(k).size() > 0 and game.phase != "arena":
+		var rs = _button("Refazer · +%d" % game.tal_spent(k), func():
 			game.tal_reset(k)
 			render_classes(), 16)
 		rs.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
@@ -895,7 +901,7 @@ func render_classes() -> void:
 		row.add_theme_constant_override("separation", 6)
 		if open:
 			var tk = mk
-			var pts: int = game.tal_points(tk)
+			var pts: int = maxi(0, game.tal_points(tk))
 			var tb = _button("Talentos%s" % ((" · %d" % pts) if pts > 0 else ""), func():
 				tal_cls = ii
 				render_classes(), 15)
@@ -907,6 +913,14 @@ func render_classes() -> void:
 				render_classes(), 15)
 			sb2.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 			row.add_child(sb2)
+			var used: int = game.class_spent(tk)
+			if used > 0:
+				var rf = _button("Devolver %d" % used, func():
+					game.class_refund(tk)
+					render_classes(), 13)
+				rf.tooltip_text = "Devolve os pontos desta classe para o guardião usar em outra."
+				rf.disabled = game.phase == "arena"
+				row.add_child(rf)
 		v.add_child(row)
 		b.add_child(v)
 		grid.add_child(b)

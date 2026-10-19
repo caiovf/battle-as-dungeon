@@ -231,7 +231,12 @@ func _load_meta() -> void:
 				var tl = d.get("tal", {})
 				meta["tal"] = tl if tl is Dictionary else {}
 				var tp = d.get("tp", {})
-				meta["tp"] = tp if tp is Dictionary else {}
+				meta["tp"] = {}
+				# pontos de classe agora são do guardião: junta os pontos antigos que eram de cada classe
+				if tp is Dictionary:
+					for tk in tp:
+						var gk = str(tk).get_slice("_", 0)
+						meta.tp[gk] = int(meta.tp.get(gk, 0)) + int(tp[tk])
 				for key in ["load", "skp", "spent", "gup", "gp"]:
 					var v = d.get(key, {})
 					meta[key] = v if v is Dictionary else {}
@@ -470,8 +475,36 @@ func tal_spent(k: String) -> int:
 	return n
 
 
+## Pontos gastos numa classe (talentos + liberar e aprimorar habilidades).
+func class_spent(k: String) -> int:
+	return tal_spent(k) + int(meta.spent.get(k, 0))
+
+
+## Pontos de classe livres. São do guardião, não da classe: k pode ser a chave da classe ("lich_1")
+## ou do guardião ("lich"). Devolvendo os pontos de uma classe dá para gastar em outra.
 func tal_points(k: String) -> int:
-	return int(meta.tp.get(k, 0)) - tal_spent(k) - int(meta.spent.get(k, 0))
+	var g = k.get_slice("_", 0)
+	var n = int(meta.tp.get(g, 0))
+	for ci in D.CLASSES[g].size():
+		n -= class_spent("%s_%d" % [g, ci])
+	return n
+
+
+## Devolve os pontos das habilidades da classe (liberadas e aprimoradas) e volta para as habilidades dela.
+func skills_reset(k: String) -> void:
+	meta.spent[k] = 0
+	meta.sku = meta.sku.filter(func(x): return not str(x).begins_with(k + ":"))
+	for key in meta.skp.keys():
+		if str(key).begins_with(k + ":"):
+			meta.skp.erase(key)
+	meta.load.erase(k)
+	save_meta()
+
+
+## Devolve todos os pontos gastos na classe (talentos e habilidades) para o guardião.
+func class_refund(k: String) -> void:
+	meta.tal[k] = []
+	skills_reset(k)
 
 
 func tal_can(k: String, t: Dictionary) -> bool:
@@ -500,6 +533,7 @@ func tal_reset(k: String) -> void:
 
 
 func tal_gain(k: String, n: int) -> void:
+	k = k.get_slice("_", 0)
 	meta.tp[k] = int(meta.tp.get(k, 0)) + n
 	save_meta()
 
@@ -548,22 +582,20 @@ func gp_gain(g: String, n: int) -> void:
 	save_meta()
 
 
-## Pontos ganhos ao vencer o lendário nº n: a 1ª vitória vale muito mais e cresce com n.
-## Devolve [pontos da classe, pontos do guardião, foi 1ª vitória da classe, do guardião].
-func leg_points(ck: String, g: String, n: int, give: bool) -> Array:
-	var fc = not meta.fw.has("%s:%d" % [ck, n])
-	var fg = not meta.fw.has("%s:%d" % [g, n])
-	var pc = (n + D.CLASS_FIRST_BASE) if fc else D.TALENT_PER_LEG
-	var pg = (n + D.GUARD_FIRST_BASE) if fg else D.GUARD_PTS_PER_LEG
+## Pontos ganhos ao vencer o lendário nº n com o guardião g (qualquer classe): a 1ª vitória vale
+## muito mais e cresce com n. Dá pontos de classe (talentos e habilidades, do guardião todo)
+## e pontos de guardião (upgrades básicos). Devolve [pontos de classe, pontos de guardião, foi a 1ª vitória].
+func leg_points(g: String, n: int, give: bool) -> Array:
+	var first = not meta.fw.has("%s:%d" % [g, n])
+	var pc = (n + D.CLASS_FIRST_BASE) if first else D.TALENT_PER_LEG
+	var pg = (n + D.GUARD_FIRST_BASE) if first else D.GUARD_PTS_PER_LEG
 	if give:
-		if fc:
-			meta.fw.append("%s:%d" % [ck, n])
-		if fg:
+		if first:
 			meta.fw.append("%s:%d" % [g, n])
-		meta.tp[ck] = int(meta.tp.get(ck, 0)) + pc
+		meta.tp[g] = int(meta.tp.get(g, 0)) + pc
 		meta.gp[g] = int(meta.gp.get(g, 0)) + pg
 		save_meta()
-	return [pc, pg, fc, fg]
+	return [pc, pg, first]
 
 
 func gup_buy(g: String, id: String) -> void:

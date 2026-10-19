@@ -1,9 +1,21 @@
 extends SceneTree
-## Simula a progressão de pontos: cada run vai um lendário mais longe (pior caso: quase sem repetições)
-## e confere se, ao chegar no 13º, a classe e o guardião já compram tudo.
+## Pontos de classe do guardião: ganha do lendário 1 ao 12, gasta tudo no Lich,
+## devolve e gasta tudo no Necromante. Confere que a conta fecha.
 const D = preload("res://scripts/data.gd")
 var main
 var frame = 0
+
+
+func spend_all(g: String, ci: int) -> void:
+	var ck = "%s_%d" % [g, ci]
+	for t in main.tal_tree(ck):
+		main.tal_buy(ck, t.id)
+	for s in 4:
+		for k in main.slot_pool(g, ci, s):
+			main.skill_unlock(g, ci, s, k)
+			main.equip(g, ci, s, k)
+			main.skill_upgrade(g, ci, k)
+			main.skill_upgrade(g, ci, k)
 
 
 func _initialize() -> void:
@@ -15,29 +27,23 @@ func _process(_d: float) -> bool:
 	frame += 1
 	if frame < 3:
 		return false
-	var cls_cost = 0
-	for n in D.TALENT_TREES["minotauro_0"].nodes:
-		cls_cost += int(n.cost)
-	for s in 4:
-		cls_cost += D.CLASS_ALTS["minotauro_0"][s].size() * (D.ULT_UNLOCK_COST if s == 3 else D.SKILL_UNLOCK_COST)
-		cls_cost += (1 + D.CLASS_ALTS["minotauro_0"][s].size()) * (D.SKILL_UP_COST[0] + D.SKILL_UP_COST[1])
-	var g_cost = 0
-	for u in D.BASIC_UPS:
-		for lv in u.max:
-			g_cost += main.gup_cost(lv)
-	for mode in ["direto (1 run até o 13º)", "uma run a mais por lendário"]:
-		main.meta.fw = []
-		main.meta.tp = {}
-		main.meta.gp = {}
-		var reach = 13
-		var runs = [12] if mode.begins_with("direto") else range(1, 13)
-		for r in runs:
-			for n in range(1, r + 1):
-				main.leg_points("minotauro_0", "minotauro", n, true)
-		print("%s: classe %d/%d  guardião %d/%d" % [mode, int(main.meta.tp.minotauro_0), cls_cost, int(main.meta.gp.minotauro), g_cost])
-	print("pontos por lendário (1ª vitória): classe ", range(1, 14).map(func(n): return n + D.CLASS_FIRST_BASE), " guardião ", range(1, 14).map(func(n): return n + D.GUARD_FIRST_BASE))
-	main.meta.fw = []
-	main.meta.tp = {}
-	main.meta.gp = {}
+	var bak = main.meta.duplicate(true)
+	for key in ["fw", "sku"]:
+		main.meta[key] = []
+	for key in ["tp", "gp", "tal", "spent", "skp", "load", "gup"]:
+		main.meta[key] = {}
+	for n in range(1, 13):
+		main.leg_points("lich", n, true)
+	for n in range(1, 8):
+		main.leg_points("lich", n, true)   # repetidas não dão nada
+	print("pontos de classe do lich: ", main.tal_points("lich"), "  de guardião: ", main.gp_points("lich"))
+	spend_all("lich", 0)
+	print("depois de gastar tudo no Lich: livres ", main.tal_points("lich"), "  gastos no lich_0 ", main.class_spent("lich_0"), "  talentos ", main.tal_owned("lich_0").size(), "  upgrades ", main.meta.skp.size())
+	main.class_refund("lich_0")
+	print("devolvido: livres ", main.tal_points("lich"), "  gastos no lich_0 ", main.class_spent("lich_0"), "  loadout ", main.loadout("lich", 0))
+	spend_all("lich", 1)
+	print("gasto no Necromante: livres ", main.tal_points("necromante_x".replace("necromante_x", "lich")), "  gastos no lich_1 ", main.class_spent("lich_1"))
+	main.meta = bak
 	main.save_meta()
+	print("OK econ")
 	return true

@@ -231,9 +231,10 @@ const LEG_ARENA := {
 const CLASS_POWER := [{"dmg": 1.0, "def": 1.0}, {"dmg": 1.15, "def": 0.92}, {"dmg": 1.3, "def": 0.85}, {"dmg": 1.5, "def": 0.76}]
 ## Árvore de talentos de cada classe (estilo Grand Chase): três ramos especializados no jeito de lutar
 ## da classe, 2 talentos em cada ramo, e o talento de Mestre (precisa de 4 talentos comprados).
-## Pontos da classe: a 1ª vitória da classe contra o lendário nº n dá n + CLASS_FIRST_BASE pontos;
-## vencer de novo dá TALENT_PER_LEG. Somando a 1ª vitória do lendário 1 ao 12 (= 102) a classe fica
-## no máximo (13 talentos + 26 para liberar + 60 para aprimorar = 99) ao chegar no último lendário.
+## Pontos de classe (talentos e habilidades) são do guardião, divididos entre as 4 classes dele, e podem
+## ser devolvidos de uma classe para gastar em outra. A 1ª vitória do guardião contra o lendário nº n dá
+## n + CLASS_FIRST_BASE; vencer de novo dá TALENT_PER_LEG. Do lendário 1 ao 12 somam 102, o bastante para
+## deixar uma classe no máximo (13 talentos + 26 para liberar + 60 para aprimorar = 99) ao chegar no último.
 ## Efeitos (fx): atk_dmg, atk_cd, atk_range, sk0/1/2_pow, sk0/1/2_cd, sk0/1/2_dur, ult_pow, ult_gain, pass (força da passiva),
 ## rage_cap, shot_n, pierce, jumps, poison_cap, skel, leech, def, spd.
 const TALENT_PER_LEG := 0
