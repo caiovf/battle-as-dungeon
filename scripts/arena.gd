@@ -117,7 +117,7 @@ func sk_key(i: int) -> String:
 
 
 func sk_lv(i: int) -> int:
-	return game.sk_level(sk_key(i)) + game.skill_perm(game.guardian, sk_key(i))
+	return game.sk_level(sk_key(i)) + game.skill_perm(game.guardian, game.g_cls, sk_key(i))
 
 
 func sk_pow(i: int) -> float:
@@ -129,7 +129,7 @@ func sk_dur(i: int) -> float:
 
 
 func sk_cd(i: int) -> float:
-	return D.SKILLS[sk_key(i)].cd * (1.0 - 0.12 * (sk_lv(i) - 1)) * gd.t_skcd * (gd.t_sk2cd if i == 2 else 1.0)
+	return float(game.skill_info(sk_key(i)).cd) * (1.0 - 0.12 * (sk_lv(i) - 1)) * gd.t_skcd * (gd.t_sk2cd if i == 2 else 1.0)
 
 
 func dmg_mul() -> float:
@@ -277,6 +277,9 @@ func cast_skill(i: int) -> void:
 	react_special()
 	var bx: float = B.x
 	var by: float = B.y - l.h / 2.0
+	if D.ALT_SKILLS.has(k):
+		run_mechs(D.ALT_SKILLS[k].mechs, pw, du)
+		return
 	match k:
 		"investida", "investida_longa", "chifrada", "ferrao":
 			var cfg = {"investida": [0.42, 640.0, 40.0, 0.0, 0], "investida_longa": [0.7, 720.0, 55.0, 0.0, 0],
@@ -456,7 +459,7 @@ func summon_skel(life: float, dmg: float, x: float) -> void:
 ## Habilidade suprema: gasta a barra de poder cheia.
 func cast_ult() -> void:
 	var l = L()
-	var pw = dmg_mul() * (1.0 + 0.15 * game.skill_perm(game.guardian, gd.ult))
+	var pw = dmg_mul() * (1.0 + 0.15 * game.skill_perm(game.guardian, game.g_cls, gd.ult))
 	var bx: float = B.x
 	var by: float = B.y - l.h / 2.0
 	P.ult = 0.0
@@ -464,9 +467,12 @@ func cast_ult() -> void:
 	use.especial += 1
 	hitstop = maxf(hitstop, 0.12)
 	game.shake(0.3, 0.008)
-	game.float_text(Vector2(W / 2, H / 2 - 60), D.ULTS[gd.ult].nome.to_upper(), Color("#ffc430"), 24)
+	game.float_text(Vector2(W / 2, H / 2 - 60), game.skill_info(gd.ult).nome.to_upper(), Color("#ffc430"), 24)
 	for r in 3:
 		vfx.append({"spr": "", "ring": true, "x": P.x, "y": P.y - gd.h / 2.0, "t": -r * 0.1, "dur": 0.5, "flip": false, "scale": 1.6, "rot": 0.0, "col": Color("#ffc430")})
+	if D.ALT_ULTS.has(gd.ult):
+		run_mechs(D.ALT_ULTS[gd.ult].mechs, pw, 1.0)
+		return
 	match gd.ult:
 		"ult_rei":
 			P.king_t = 6.0
@@ -516,6 +522,117 @@ func cast_ult() -> void:
 				if j % 3 == 0:
 					x = bx
 				shots.append(_shot({"kind": "meteor", "x": x - 60, "y": -40.0, "vx": 60.0, "vy": 720.0, "dmg": 26 * pw, "r": 70.0, "spr": "fx/meteor", "life": 3.0, "delay": j * 0.25, "tx": x}))
+
+
+## Peças de efeito das habilidades alternativas (data.gd → ALT_SKILLS / ALT_ULTS).
+func run_mechs(list: Array, pw: float, du: float) -> void:
+	var l = L()
+	var bx: float = B.x
+	var by: float = B.y - l.h / 2.0
+	for m in list:
+		match m.m:
+			"proj":
+				var n: int = int(m.get("n", 1))
+				var sy: float = P.y - gd.h * 0.6
+				var base = atan2(by - sy, bx - P.x) if absf(bx - P.x) > 30 else (0.0 if P.face > 0 else PI)
+				for j in n:
+					var a = base + (j - (n - 1) / 2.0) * float(m.get("spread", 0.0))
+					shots.append(_shot({"x": P.x + P.face * 14, "y": sy, "vx": cos(a) * m.spd, "vy": sin(a) * m.spd, "r": float(m.get("r", 8.0)),
+						"dmg": m.dmg * pw, "spr": m.spr, "pierce": m.get("pierce", false), "slow": float(m.get("slow", 0.0)) * du,
+						"poison": int(m.get("poison", 0)), "stun": float(m.get("stun", 0.0)), "life": 1.8}))
+			"charge":
+				P.charge_t = m.t
+				P.charge_spd = m.spd
+				P.charge_dmg = m.dmg * pw
+				P.charge_stun = float(m.get("stun", 0.0)) * du
+				P.charge_poison = int(m.get("poison", 0))
+				P.charge_hit = false
+				P.inv = maxf(P.inv, m.t + 0.05)
+			"leap":
+				P.dive_t = 1.0
+				P.dive_pow = pw * m.dmg / 30.0
+				P.dive_hit = false
+				P.inv = maxf(P.inv, 0.6)
+				P.face = 1 if bx > P.x else -1
+				if P.ground:
+					P.vy = -520.0
+					P.ground = false
+					P.dive_hop = true
+				else:
+					P.dive_hop = false
+					P.vy = 820.0
+			"stomp":
+				P.quake_n = int(m.n)
+				P.quake_t = 0.0
+				P.quake_pow = pw * m.dmg / 18.0
+			"zone":
+				var zx = bx if m.get("at", "boss") == "boss" else P.x
+				zones.append({"x": zx, "w": m.w, "h": m.h, "life": m.life * du, "tick": m.tick, "tcd": 0.0, "dmg": m.dmg * pw,
+					"follow": m.get("follow", false), "kind": m.kind, "slow": float(m.get("slow", 0.0)), "poison": int(m.get("poison", 0))})
+			"buff":
+				if m.has("fury"):
+					P.fury_t = maxf(P.fury_t, m.fury * du)
+				if m.has("scale"):
+					P.scale_t = maxf(P.scale_t, m.scale * du)
+					P.scale_pow = pw
+					P.tick2 = 0.0
+				if m.has("haste"):
+					P.haste_t = maxf(P.haste_t, m.haste * du)
+				if m.has("leech"):
+					P.leech_t = maxf(P.leech_t, m.leech * du)
+					P.leech_amt = 0.4 * du
+				if m.has("block"):
+					P.block_t = m.block * du
+					P.block_pow = pw
+					P.block_tick = 0.0
+				if m.has("inv"):
+					P.inv = maxf(P.inv, m.inv)
+				spawn_parts(P.x, P.y - gd.h / 2.0, Color("#ffc430"), 10)
+			"bolts":
+				for j in int(m.n):
+					shots.append(_shot({"kind": "bolt", "x": bx, "delay": 0.2 + j * m.gap, "dmg": m.dmg * pw, "stun": float(m.get("stun", 0.0)), "track": true, "life": 0.5}))
+			"meteors":
+				for j in int(m.n):
+					var x = clampf(bx + (randf_range(-1, 1) * m.spread if j > 0 else 0.0), AW0 + 20, AW1 - 20)
+					shots.append(_shot({"kind": "meteor", "x": x - 50, "y": -40.0, "vx": 50.0, "vy": 760.0, "dmg": m.dmg * pw, "r": float(m.get("r", 60.0)),
+						"spr": m.spr, "life": 3.0, "delay": j * 0.2, "tx": x}))
+			"summon":
+				for j in int(m.n):
+					summon_skel(m.life * du, m.dmg * pw, P.x + (j - (m.n - 1) / 2.0) * 28)
+			"boss":
+				if m.has("dmg"):
+					hurt_boss(m.dmg * pw, "especial")
+				if B.inv <= 0:
+					if m.has("stun"):
+						B.stun = maxf(B.stun, m.stun * du)
+					if m.has("stop"):
+						B.stop_t = maxf(B.stop_t, m.stop * du)
+				if m.has("vuln"):
+					B.vuln_t = maxf(B.vuln_t, m.vuln * du)
+				if m.has("slow"):
+					B.slow_t = maxf(B.slow_t, m.slow * du)
+				if m.has("poison"):
+					B.poison = mini(8, B.poison + int(m.poison))
+				spawn_parts(bx, by, Color("#c08ae0"), 10)
+			"clock":
+				game.clock += m.s * du
+				game.float_text(Vector2(P.x, P.y - gd.h - 18), "+%ss" % D.fmt(m.s * du), Color("#9fd36b"), 13)
+			"blink":
+				spawn_parts(P.x, P.y - gd.h / 2.0, D.col(gd.cor), 10)
+				P.x = clamp_x(P.x + P.face * m.dist, gd.w)
+				spawn_parts(P.x, P.y - gd.h / 2.0, D.col(gd.cor), 10)
+			"nova":
+				for w in int(m.waves):
+					for j in int(m.n):
+						var a = j / float(m.n) * TAU + w * 0.2
+						shots.append(_shot({"x": P.x, "y": P.y - gd.h * 0.6, "vx": cos(a) * m.spd, "vy": sin(a) * m.spd, "r": 7.0, "dmg": m.dmg * pw,
+							"spr": m.spr, "delay": w * 0.35, "life": 1.6}))
+			"bulls":
+				for j in int(m.n):
+					var sx = AW0 + 10 if j % 2 == 0 else AW1 - 10
+					shots.append(_shot({"x": sx, "y": FY - 24, "vx": (560.0 if j % 2 == 0 else -560.0), "r": 22.0, "dmg": m.dmg * pw,
+						"spr": "fx/bull", "anim": true, "pierce": true, "delay": j * 0.3, "life": 2.6, "kind": "bull"}))
+				game.shake(0.6, 0.004)
 
 
 func stomp(pw: float, lv := 1) -> void:
@@ -1871,7 +1988,7 @@ func reward() -> void:
 	for o in gp:
 		if o.has("sk"):
 			var k: String = sk_key(o.sk)
-			var s = D.SKILLS[k]
+			var s = game.skill_info(k)
 			opts.append({"tag": "Habilidade · " + gd.nome, "t": "%s nv %d" % [s.nome, sk_lv(o.sk) + 1],
 				"d": "+35% de poder, recarga 12% menor e efeito 20% mais longo.", "f": func(): game.g_skl[k] = game.sk_level(k) + 1, "green": true})
 		else:

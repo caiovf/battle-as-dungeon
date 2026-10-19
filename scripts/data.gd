@@ -263,10 +263,79 @@ const ULTS := {
 	"ult_praga": {"nome": "Praga", "dono": "dragao_2", "icon": "ui/sk_nuvem", "desc": "Veneno no máximo e uma nuvem tóxica que segue o lendário por 6s."},
 	"ult_meteoros": {"nome": "Chuva de meteoros", "dono": "dragao_3", "icon": "ui/sk_meteoro", "desc": "Oito meteoros caem em volta do lendário."},
 }
+## ===== Alternativas de cada classe (só da própria classe) =====
+## Para cada classe: [opção extra da hab. 1, da hab. 2, da hab. 3, da suprema].
+## As alternativas usam "mechs": peças de efeito montadas em arena.gd → run_mechs.
+const CLASS_ALTS := {
+	"minotauro_0": ["m0_machado", "m0_grito", "m0_couro", "u_m0_colosso"],
+	"minotauro_1": ["m1_corte", "m1_salto", "m1_frenesi", "u_m1_carnificina"],
+	"minotauro_2": ["m2_pedra", "m2_tremor", "m2_granito", "u_m2_fortaleza"],
+	"minotauro_3": ["m3_lancas", "m3_trote", "m3_marca", "u_m3_manada"],
+	"lich_0": ["l0_virote", "l0_vazio", "l0_maldicao", "u_l0_ceifador"],
+	"lich_1": ["l1_caveiras", "l1_ossada", "l1_pacto", "u_l1_rei_morto"],
+	"lich_2": ["l2_estilhacos", "l2_prisao", "l2_armadura", "u_l2_inverno"],
+	"lich_3": ["l3_ponteiros", "l3_acelerar", "l3_hora", "u_l3_paradoxo"],
+	"dragao_0": ["d0_bola", "d0_rasante", "d0_chamas", "u_d0_sol"],
+	"dragao_1": ["d1_faiscas", "d1_relampago", "d1_nuvem", "u_d1_furacao"],
+	"dragao_2": ["d2_cuspe", "d2_bote", "d2_toxina", "u_d2_ninho"],
+	"dragao_3": ["d3_cauda", "d3_brasas", "d3_escamas", "u_d3_cataclismo"],
+}
+const ALT_SKILLS := {
+	"m0_machado": {"nome": "Machado arremessado", "cd": 4.5, "icon": "ui/sk_arremesso", "desc": "arremessa o machado, que atravessa o lendário", "mechs": [{"m": "proj", "spr": "fx/axe_spin", "spd": 620.0, "dmg": 24.0, "r": 12.0, "pierce": true}]},
+	"m0_grito": {"nome": "Grito de guerra", "cd": 7.0, "icon": "ui/sk_rugido", "desc": "atordoa o lendário por 1s e dá 3s de fúria", "mechs": [{"m": "boss", "stun": 1.0}, {"m": "buff", "fury": 3.0}]},
+	"m0_couro": {"nome": "Couro de touro", "cd": 11.0, "icon": "ui/sk_postura", "desc": "5s perdendo menos tempo e queimando quem chega perto", "mechs": [{"m": "buff", "scale": 5.0}]},
+	"m1_corte": {"nome": "Corte cruzado", "cd": 3.5, "icon": "ui/sk_furia", "desc": "avanço curto com dois cortes", "mechs": [{"m": "charge", "t": 0.22, "spd": 720.0, "dmg": 30.0}]},
+	"m1_salto": {"nome": "Salto brutal", "cd": 6.0, "icon": "ui/sk_terremoto", "desc": "salta e despenca sobre o lendário", "mechs": [{"m": "leap", "dmg": 34.0}]},
+	"m1_frenesi": {"nome": "Frenesi", "cd": 12.0, "icon": "ui/sk_sede", "desc": "6s de fúria: +50% de dano e golpes mais rápidos", "mechs": [{"m": "buff", "fury": 6.0}]},
+	"m2_pedra": {"nome": "Pedra arremessada", "cd": 4.0, "icon": "ui/sk_pisao", "desc": "arremessa uma rocha que atordoa um instante", "mechs": [{"m": "proj", "spr": "fx/rock", "spd": 480.0, "dmg": 28.0, "r": 14.0, "stun": 0.4}]},
+	"m2_tremor": {"nome": "Tremor", "cd": 6.0, "icon": "ui/sk_terremoto", "desc": "duas ondas de choque seguidas", "mechs": [{"m": "stomp", "n": 2, "dmg": 18.0}]},
+	"m2_granito": {"nome": "Pele de granito", "cd": 12.0, "icon": "ui/sk_postura", "desc": "6s perdendo menos tempo, com aura que machuca", "mechs": [{"m": "buff", "scale": 6.0}]},
+	"m3_lancas": {"nome": "Chuva de lanças", "cd": 6.0, "icon": "ui/sk_arremesso", "desc": "três lanças caem do alto sobre o lendário", "mechs": [{"m": "meteors", "n": 3, "dmg": 16.0, "spread": 80.0, "spr": "fx/spear", "r": 40.0}]},
+	"m3_trote": {"nome": "Trote", "cd": 5.0, "icon": "ui/sk_investida_longa", "desc": "4s muito mais rápido, intocável no começo", "mechs": [{"m": "buff", "haste": 4.0, "inv": 0.5}]},
+	"m3_marca": {"nome": "Marca do caçador", "cd": 9.0, "icon": "ui/sk_drenar", "desc": "o lendário leva +30% de dano por 5s", "mechs": [{"m": "boss", "vuln": 5.0}]},
+	"l0_virote": {"nome": "Virote sombrio", "cd": 3.0, "icon": "ui/sk_coroa", "desc": "um virote pesado de caveira", "mechs": [{"m": "proj", "spr": "fx/skull", "spd": 560.0, "dmg": 26.0, "r": 10.0}]},
+	"l0_vazio": {"nome": "Passo do vazio", "cd": 5.0, "icon": "ui/sk_drenar", "desc": "teleporta longe para a frente, intocável", "mechs": [{"m": "blink", "dist": 210.0}, {"m": "buff", "inv": 0.5}]},
+	"l0_maldicao": {"nome": "Maldição", "cd": 9.0, "icon": "ui/sk_drenar", "desc": "o lendário fica lento e leva +30% de dano por 5s", "mechs": [{"m": "boss", "vuln": 5.0, "slow": 3.0}]},
+	"l1_caveiras": {"nome": "Caveiras uivantes", "cd": 4.0, "icon": "ui/sk_coroa", "desc": "três caveiras em leque", "mechs": [{"m": "proj", "spr": "fx/skull", "n": 3, "spread": 0.2, "spd": 520.0, "dmg": 12.0}]},
+	"l1_ossada": {"nome": "Ossada", "cd": 6.0, "icon": "ui/sk_erguer", "desc": "ergue um esqueleto forte por 10s", "mechs": [{"m": "summon", "n": 1, "life": 10.0, "dmg": 8.0}]},
+	"l1_pacto": {"nome": "Pacto sombrio", "cd": 10.0, "icon": "ui/sk_drenar", "desc": "5s em que cada acerto devolve tempo", "mechs": [{"m": "buff", "leech": 5.0}]},
+	"l2_estilhacos": {"nome": "Estilhaços", "cd": 4.0, "icon": "ui/sk_lanca_gelo", "desc": "leque de 5 lascas que deixam lento", "mechs": [{"m": "proj", "spr": "fx/shard", "n": 5, "spread": 0.18, "spd": 600.0, "dmg": 8.0, "slow": 1.5}]},
+	"l2_prisao": {"nome": "Prisão de gelo", "cd": 8.0, "icon": "ui/sk_bloco", "desc": "congela o lendário por 1,2s", "mechs": [{"m": "boss", "stop": 1.2, "dmg": 12.0}]},
+	"l2_armadura": {"nome": "Armadura glacial", "cd": 11.0, "icon": "ui/sk_bloco", "desc": "5s perdendo menos tempo, com aura gelada", "mechs": [{"m": "buff", "scale": 5.0}]},
+	"l3_ponteiros": {"nome": "Ponteiros", "cd": 4.0, "icon": "ui/sk_parar", "desc": "três ponteiros que atravessam o lendário", "mechs": [{"m": "proj", "spr": "fx/clockhand", "n": 3, "spread": 0.12, "spd": 700.0, "dmg": 10.0, "pierce": true}]},
+	"l3_acelerar": {"nome": "Acelerar", "cd": 7.0, "icon": "ui/sk_rebobinar", "desc": "4s muito mais rápido", "mechs": [{"m": "buff", "haste": 4.0}]},
+	"l3_hora": {"nome": "Hora certa", "cd": 10.0, "icon": "ui/sk_parar", "desc": "devolve 3s ao relógio e atordoa o lendário", "mechs": [{"m": "clock", "s": 3.0}, {"m": "boss", "stun": 0.8}]},
+	"d0_bola": {"nome": "Bola de fogo", "cd": 4.0, "icon": "ui/sk_meteoro", "desc": "uma bola de fogo grande", "mechs": [{"m": "proj", "spr": "fx/orb_fire", "spd": 480.0, "dmg": 28.0, "r": 12.0}]},
+	"d0_rasante": {"nome": "Rasante", "cd": 5.0, "icon": "ui/sk_asas_fogo", "desc": "voa rente ao chão atravessando o lendário", "mechs": [{"m": "charge", "t": 0.35, "spd": 760.0, "dmg": 26.0}]},
+	"d0_chamas": {"nome": "Chão em chamas", "cd": 9.0, "icon": "ui/sk_baforada", "desc": "o chão sob o lendário queima por 4s", "mechs": [{"m": "zone", "kind": "fire", "at": "boss", "w": 130.0, "h": 60.0, "life": 4.0, "tick": 0.3, "dmg": 3.0}]},
+	"d1_faiscas": {"nome": "Faíscas", "cd": 3.5, "icon": "ui/sk_raio", "desc": "três faíscas que dão choque", "mechs": [{"m": "proj", "spr": "fx/orb_storm", "n": 3, "spread": 0.25, "spd": 600.0, "dmg": 10.0, "stun": 0.15}]},
+	"d1_relampago": {"nome": "Relâmpago", "cd": 5.0, "icon": "ui/sk_raio", "desc": "avança como um raio e atordoa", "mechs": [{"m": "charge", "t": 0.2, "spd": 900.0, "dmg": 22.0, "stun": 0.5}]},
+	"d1_nuvem": {"nome": "Nuvem carregada", "cd": 9.0, "icon": "ui/sk_tempestade", "desc": "quatro raios caem aos poucos sobre o lendário", "mechs": [{"m": "bolts", "n": 4, "gap": 0.6, "dmg": 11.0, "stun": 0.2}]},
+	"d2_cuspe": {"nome": "Cuspe ácido", "cd": 3.5, "icon": "ui/sk_nuvem", "desc": "três gotas que envenenam", "mechs": [{"m": "proj", "spr": "fx/drop_acid", "n": 3, "spread": 0.15, "spd": 520.0, "dmg": 8.0, "poison": 2}]},
+	"d2_bote": {"nome": "Bote duplo", "cd": 5.0, "icon": "ui/sk_ferrao", "desc": "bote rápido que envenena bastante", "mechs": [{"m": "charge", "t": 0.25, "spd": 800.0, "dmg": 18.0, "poison": 3}]},
+	"d2_toxina": {"nome": "Toxina", "cd": 9.0, "icon": "ui/sk_nuvem", "desc": "envenena e deixa o lendário frágil por 4s", "mechs": [{"m": "boss", "poison": 4, "vuln": 4.0}]},
+	"d3_cauda": {"nome": "Golpe de cauda", "cd": 4.5, "icon": "ui/sk_rugido", "desc": "avanço curto e pesado que atordoa", "mechs": [{"m": "charge", "t": 0.18, "spd": 650.0, "dmg": 40.0, "stun": 0.6}]},
+	"d3_brasas": {"nome": "Chuva de brasas", "cd": 6.0, "icon": "ui/sk_meteoro", "desc": "três brasas caem em volta do lendário", "mechs": [{"m": "meteors", "n": 3, "dmg": 14.0, "spread": 120.0, "spr": "fx/orb_fire", "r": 50.0}]},
+	"d3_escamas": {"nome": "Escamas antigas", "cd": 12.0, "icon": "ui/sk_escamas", "desc": "6s perdendo menos tempo e devolve 2s", "mechs": [{"m": "buff", "scale": 6.0}, {"m": "clock", "s": 2.0}]},
+}
+const ALT_ULTS := {
+	"u_m0_colosso": {"nome": "Machado colossal", "icon": "ui/sk_arremesso", "desc": "Um machado gigante cai sobre o lendário e o deixa atordoado.", "mechs": [{"m": "meteors", "n": 1, "dmg": 70.0, "spread": 0.0, "spr": "fx/axe_spin", "r": 90.0}, {"m": "boss", "stun": 1.5}]},
+	"u_m1_carnificina": {"nome": "Carnificina", "icon": "ui/sk_sede", "desc": "6s de fúria em que cada acerto devolve tempo.", "mechs": [{"m": "buff", "fury": 6.0, "leech": 6.0}]},
+	"u_m2_fortaleza": {"nome": "Fortaleza", "icon": "ui/sk_postura", "desc": "5s bloqueando tudo e devolvendo o dano; recupera 4s.", "mechs": [{"m": "buff", "block": 5.0}, {"m": "clock", "s": 4.0}]},
+	"u_m3_manada": {"nome": "Manada sem fim", "icon": "ui/sk_estouro", "desc": "Seis touros espectrais atropelam a arena.", "mechs": [{"m": "bulls", "n": 6, "dmg": 24.0}]},
+	"u_l0_ceifador": {"nome": "Ceifador", "icon": "ui/sk_coroa", "desc": "Duas rajadas de 16 caveiras e o lendário atordoado.", "mechs": [{"m": "nova", "waves": 2, "n": 16, "spr": "fx/skull", "spd": 480.0, "dmg": 10.0}, {"m": "boss", "stun": 1.0}]},
+	"u_l1_rei_morto": {"nome": "Rei dos mortos", "icon": "ui/sk_erguer", "desc": "Três esqueletos fortes e 6s de aura que protege.", "mechs": [{"m": "summon", "n": 3, "life": 12.0, "dmg": 10.0}, {"m": "buff", "scale": 6.0}]},
+	"u_l2_inverno": {"nome": "Inverno eterno", "icon": "ui/sk_nevasca", "desc": "8s de nevasca enorme sobre o lendário, que fica lento.", "mechs": [{"m": "zone", "kind": "snow", "at": "boss", "follow": true, "w": 260.0, "h": 240.0, "life": 8.0, "tick": 0.25, "dmg": 5.0, "slow": 0.6}, {"m": "boss", "slow": 8.0}]},
+	"u_l3_paradoxo": {"nome": "Paradoxo", "icon": "ui/sk_eco", "desc": "Para o tempo por 2,5s e dispara duas rajadas de ponteiros.", "mechs": [{"m": "boss", "stop": 2.5}, {"m": "nova", "waves": 2, "n": 12, "spr": "fx/clockhand", "spd": 560.0, "dmg": 9.0}]},
+	"u_d0_sol": {"nome": "Sol negro", "icon": "ui/sk_meteoro", "desc": "Uma esfera de fogo imensa cai sobre o lendário.", "mechs": [{"m": "meteors", "n": 1, "dmg": 80.0, "spread": 0.0, "spr": "fx/orb_fire", "r": 120.0}, {"m": "boss", "stun": 1.0}]},
+	"u_d1_furacao": {"nome": "Olho do furacão", "icon": "ui/sk_tempestade", "desc": "Dez raios rápidos sobre o lendário.", "mechs": [{"m": "bolts", "n": 10, "gap": 0.2, "dmg": 12.0, "stun": 0.1}]},
+	"u_d2_ninho": {"nome": "Ninho de serpes", "icon": "ui/sk_nuvem", "desc": "Veneno no máximo e uma área venenosa enorme por 8s.", "mechs": [{"m": "boss", "poison": 8}, {"m": "zone", "kind": "poison", "at": "boss", "w": 240.0, "h": 140.0, "life": 8.0, "tick": 0.4, "dmg": 4.0, "poison": 1}]},
+	"u_d3_cataclismo": {"nome": "Cataclismo", "icon": "ui/sk_meteoro", "desc": "Doze meteoros e três ondas de choque.", "mechs": [{"m": "meteors", "n": 12, "dmg": 20.0, "spread": 200.0, "spr": "fx/meteor", "r": 60.0}, {"m": "stomp", "n": 3, "dmg": 18.0}]},
+}
 const ULT_CHARGE_START := 35.0   # barra de poder ao começar a luta (cheia = 100)
 ## Custos em pontos de talento da classe em uso.
-const SKILL_UNLOCK_COST := 3     # liberar uma habilidade de outra classe antes de liberar a classe
-const ULT_UNLOCK_COST := 4
+const SKILL_UNLOCK_COST := 3     # liberar a habilidade alternativa da classe
+const ULT_UNLOCK_COST := 4       # liberar a suprema alternativa da classe
 const SKILL_UP_COST := [2, 3]    # aprimorar uma habilidade de forma permanente (nível +1, depois +2)
 const WAVE_COUNTDOWN := 5.0   # segundos para se arrumar antes de cada onda (o relógio não corre)
 const MISSIONS := {

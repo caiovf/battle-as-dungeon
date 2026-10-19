@@ -172,7 +172,15 @@ def spear_proj():
     return c.outline()
 
 
+def axe_spin():
+    c = Can(16, 16)
+    c.line(3, 13, 12, 4, 'B'); c.line(4, 13, 13, 4, 'b')
+    c.tri([(9, 1), (15, 7), (11, 3)], 'i'); c.ell(12, 4, 3, 3.5, 'i'); c.ell(12, 4, 1.6, 2, 'I')
+    return c.outline()
+
+
 def build(save):
+    save('fx/axe_spin', axe_spin())
     import arena_art
     save('fx/wave_fire', arena_art.fx_wave('o', 'Z'))
     save('fx/arrow', arrow())

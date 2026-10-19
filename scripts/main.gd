@@ -370,98 +370,83 @@ func mission_add(k: String, n := 1) -> void:
 
 
 # ===== habilidades equipadas (posições 1, 2, 3 e suprema) =====
-## Lista de cada posição: as habilidades que as 4 classes do guardião usam naquela posição.
-## Habilidade 1 só troca com habilidade 1, e assim por diante; a suprema só com outra suprema.
-static func slot_pool(g: String, slot: int) -> Array:
-	var out = []
+## Opções de cada posição de uma classe: a habilidade da própria classe e a alternativa dela.
+## Habilidade 1 só troca com habilidade 1, e assim por diante; a suprema só com a outra suprema.
+## Nada é compartilhado entre classes.
+static func slot_pool(g: String, ci: int, slot: int) -> Array:
+	var ck = "%s_%d" % [g, ci]
+	var def = ""
 	if slot == 3:
 		for u in D.ULTS:
-			if D.ULTS[u].dono.begins_with(g + "_"):
-				out.append(u)
-		return out
-	for c in D.CLASSES[g]:
-		if not out.has(c.skills[slot]):
-			out.append(c.skills[slot])
-	return out
+			if D.ULTS[u].dono == ck:
+				def = u
+	else:
+		def = D.CLASSES[g][ci].skills[slot]
+	return [def, D.CLASS_ALTS[ck][slot]]
 
 
-## Classe dona da habilidade (a primeira classe que a usa naquela posição).
-static func skill_owner(g: String, slot: int, k: String) -> int:
-	if slot == 3:
-		return int(D.ULTS[k].dono.get_slice("_", 1))
-	for i in 4:
-		if D.CLASSES[g][i].skills[slot] == k:
-			return i
-	return 0
+## Dados de qualquer habilidade (base, alternativa ou suprema).
+static func skill_info(k: String) -> Dictionary:
+	for t in [D.SKILLS, D.ALT_SKILLS, D.ULTS, D.ALT_ULTS]:
+		if t.has(k):
+			return t[k]
+	return {"nome": k, "desc": "", "cd": 5.0}
 
 
-func skill_open(g: String, slot: int, k: String) -> bool:
-	if meta.sku.has("%s:%s" % [g, k]):
-		return true
-	var o = skill_owner(g, slot, k)
-	return o == 0 or (meta.cls.has("%s_%d" % [g, o]) and _cls_chain(g, o))
+static func skill_icon(k: String) -> String:
+	var i = skill_info(k)
+	if i.has("mechs") or D.ULTS.has(k):
+		return i.icon
+	return "ui/sk_" + k
 
 
-func _cls_chain(g: String, i: int) -> bool:
-	for j in range(1, i + 1):
-		if not meta.cls.has("%s_%d" % [g, j]):
-			return false
-	return true
+func skill_open(g: String, ci: int, slot: int, k: String) -> bool:
+	return slot_pool(g, ci, slot)[0] == k or meta.sku.has("%s_%d:%s" % [g, ci, k])
 
 
 ## Habilidades equipadas de uma classe: [hab. 1, hab. 2, hab. 3, suprema].
 func loadout(g: String, ci: int) -> Array:
 	var k = "%s_%d" % [g, ci]
-	var c = D.CLASSES[g][ci]
-	var def = [c.skills[0], c.skills[1], c.skills[2], ""]
-	for u in D.ULTS:
-		if D.ULTS[u].dono == k:
-			def[3] = u
-	var l = meta.load.get(k, def)
-	if not (l is Array) or l.size() != 4:
-		l = def
+	var l = meta.load.get(k, [])
 	var out = []
 	for i in 4:
-		var x = str(l[i])
-		out.append(x if slot_pool(g, i).has(x) and skill_open(g, i, x) else def[i])
+		var pool = slot_pool(g, ci, i)
+		var x = str(l[i]) if (l is Array and l.size() == 4) else ""
+		out.append(x if pool.has(x) and skill_open(g, ci, i, x) else pool[0])
 	return out
 
 
 func equip(g: String, ci: int, slot: int, k: String) -> void:
-	if not slot_pool(g, slot).has(k) or not skill_open(g, slot, k):
+	if not slot_pool(g, ci, slot).has(k) or not skill_open(g, ci, slot, k):
 		return
 	var l = loadout(g, ci)
-	# a mesma habilidade não pode ficar em duas posições
-	for i in 3:
-		if i != slot and l[i] == k:
-			return
 	l[slot] = k
 	meta.load["%s_%d" % [g, ci]] = l
 	save_meta()
 
 
-## Libera uma habilidade de outra classe gastando pontos da classe em uso.
+## Libera a alternativa de uma posição gastando pontos da classe.
 func skill_unlock(g: String, ci: int, slot: int, k: String) -> void:
 	var cost = D.ULT_UNLOCK_COST if slot == 3 else D.SKILL_UNLOCK_COST
 	var ck = "%s_%d" % [g, ci]
-	if skill_open(g, slot, k) or tal_points(ck) < cost:
+	if skill_open(g, ci, slot, k) or tal_points(ck) < cost or not slot_pool(g, ci, slot).has(k):
 		return
-	meta.sku.append("%s:%s" % [g, k])
+	meta.sku.append("%s:%s" % [ck, k])
 	meta.spent[ck] = int(meta.spent.get(ck, 0)) + cost
 	save_meta()
 
 
-## Nível permanente da habilidade (0 a 2), somado ao nível ganho na run.
-func skill_perm(g: String, k: String) -> int:
-	return int(meta.skp.get("%s:%s" % [g, k], 0))
+## Nível permanente da habilidade naquela classe (0 a 2), somado ao nível ganho na run.
+func skill_perm(g: String, ci: int, k: String) -> int:
+	return int(meta.skp.get("%s_%d:%s" % [g, ci, k], 0))
 
 
 func skill_upgrade(g: String, ci: int, k: String) -> void:
-	var lv = skill_perm(g, k)
+	var lv = skill_perm(g, ci, k)
 	var ck = "%s_%d" % [g, ci]
 	if lv >= D.SKILL_UP_COST.size() or tal_points(ck) < D.SKILL_UP_COST[lv]:
 		return
-	meta.skp["%s:%s" % [g, k]] = lv + 1
+	meta.skp["%s:%s" % [ck, k]] = lv + 1
 	meta.spent[ck] = int(meta.spent.get(ck, 0)) + D.SKILL_UP_COST[lv]
 	save_meta()
 
@@ -527,7 +512,7 @@ func talent_fx(k: String) -> Dictionary:
 func tal_text(g: String, ci: int, s: String) -> String:
 	var l = loadout(g, ci)
 	for i in 3:
-		s = s.replace("{s%d}" % i, D.SKILLS[l[i]].nome)
+		s = s.replace("{s%d}" % i, skill_info(l[i]).nome)
 	return s
 
 

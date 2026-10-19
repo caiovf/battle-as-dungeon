@@ -558,7 +558,7 @@ func _render_skills(g: String, ci: int) -> void:
 	var hv = VBoxContainer.new()
 	hv.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	hv.add_child(_label("Habilidades · %s" % c.nome, 26, C_FG, "PixelifySans-SemiBold.woff2"))
-	var sub = _label("Cada posição só troca com a mesma posição. Habilidades de outras classes liberam junto com a classe, ou antes, com pontos. Aprimorar vale para sempre. Pontos livres desta classe: %d." % pts, 13, C_BRASS if pts > 0 else C_MUTE)
+	var sub = _label("Cada posição tem a habilidade da classe e uma alternativa exclusiva dela; só troca com a mesma posição. Libere a alternativa e aprimore com pontos desta classe (valem para sempre). Pontos livres: %d." % pts, 13, C_BRASS if pts > 0 else C_MUTE)
 	sub.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	hv.add_child(sub)
 	head.add_child(hv)
@@ -577,11 +577,11 @@ func _render_skills(g: String, ci: int) -> void:
 		tag.custom_minimum_size = Vector2(118, 0)
 		tag.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 		row.add_child(tag)
-		for sk in game.slot_pool(g, slot):
-			var info = D.ULTS[sk] if slot == 3 else D.SKILLS[sk]
+		for sk in game.slot_pool(g, ci, slot):
+			var info = game.skill_info(sk)
 			var eq: bool = lo[slot] == sk
-			var op: bool = game.skill_open(g, slot, sk)
-			var dup: bool = slot < 3 and not eq and lo.slice(0, 3).has(sk)
+			var op: bool = game.skill_open(g, ci, slot, sk)
+			var dup = false
 			var col = C_MOSS if eq else (C_BRASS if op else C_LINE)
 			var p = PanelContainer.new()
 			p.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -590,14 +590,14 @@ func _render_skills(g: String, ci: int) -> void:
 			v.add_theme_constant_override("separation", 2)
 			var top = HBoxContainer.new()
 			var ic = TextureRect.new()
-			ic.texture = Art.icon(info.icon if slot == 3 else "ui/sk_" + sk, 1)
+			ic.texture = Art.icon(game.skill_icon(sk), 1)
 			ic.custom_minimum_size = Vector2(22, 22)
 			ic.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 			ic.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 			if not op:
 				ic.modulate = Color(0.4, 0.4, 0.45)
 			top.add_child(ic)
-			var lv = game.skill_perm(g, sk)
+			var lv = game.skill_perm(g, ci, sk)
 			top.add_child(_label(info.nome + ("  +%d" % lv if lv > 0 else ""), 14, C_FG if op else C_MUTE, "PixelifySans-SemiBold.woff2"))
 			v.add_child(top)
 			var d = _label(info.desc, 11, C_FG if op else C_MUTE)
@@ -633,9 +633,7 @@ func _render_skills(g: String, ci: int) -> void:
 				cb = func():
 					game.skill_unlock(g, ci, sl, skk)
 					render_classes()
-				var own = D.CLASSES[g][game.skill_owner(g, slot, sk)].nome
-				var o = _label("Vem de: " + own, 10, C_MUTE)
-				v.add_child(o)
+				pass
 			var b = _button(btxt, cb, 12)
 			b.disabled = dis
 			v.add_child(b)
@@ -799,8 +797,8 @@ func render_classes() -> void:
 		var sk = []
 		var lo2: Array = game.loadout(g, i)
 		for k in lo2.slice(0, 3):
-			sk.append(D.SKILLS[k].nome)
-		lines.append("Habilidades: " + ", ".join(sk) + ". Suprema: " + D.ULTS[lo2[3]].nome + ".")
+			sk.append(game.skill_info(k).nome)
+		lines.append("Habilidades: " + ", ".join(sk) + ". Suprema: " + game.skill_info(lo2[3]).nome + ".")
 		lines.append("Masmorra: " + c.bonus.desc)
 		if not open:
 			if prev_ok:

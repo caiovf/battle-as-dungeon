@@ -44,9 +44,9 @@ func setup() -> void:
 	for i in 3:
 		var ang: float = [232.0, 262.0, 292.0][i]
 		buttons.append({"id": "s%d" % i, "action": "g_s%d" % i, "pos": atk + _polar(ang, 168) * u, "r": 36.0 * u,
-			"icon": "ui/sk_" + sks[i], "label": D.SKILLS[sks[i]].nome.get_slice(" ", 0), "skill": i})
+			"icon": game.skill_icon(sks[i]), "label": game.skill_info(sks[i]).nome.get_slice(" ", 0), "skill": i})
 	buttons.append({"id": "ult", "action": "g_ult", "pos": atk + _polar(212, 255) * u, "r": 42.0 * u,
-		"icon": D.ULTS[lo[3]].icon, "label": "SUPREMA", "skill": -1})
+		"icon": game.skill_icon(lo[3]), "label": "SUPREMA", "skill": -1})
 	joy_home = Vector2(150 * u, vs.y - 130 * u)
 	joy_base = joy_home
 	joy_knob = joy_home
