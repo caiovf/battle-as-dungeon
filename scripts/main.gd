@@ -7,6 +7,7 @@ const Art = preload("res://scripts/art.gd")
 const UI = preload("res://scripts/ui.gd")
 const ArenaScript = preload("res://scripts/arena.gd")
 const BoardScript = preload("res://scripts/board.gd")
+const Web = preload("res://scripts/web.gd")
 
 const T := 40
 const COLS := 18
@@ -132,6 +133,10 @@ var cards: Array = []
 
 func _ready() -> void:
 	randomize()
+	Web.setup()
+	# celular: tela de jogo menor (960×540) para tudo ficar maior e legível
+	if Web.is_mobile() or "--mobile" in OS.get_cmdline_user_args():
+		get_window().content_scale_size = Vector2i(960, 540)
 	_setup_input()
 	_load_meta()
 	board = BoardScript.new()

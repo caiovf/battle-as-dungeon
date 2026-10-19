@@ -4,6 +4,7 @@ extends CanvasLayer
 
 const D = preload("res://scripts/data.gd")
 const Art = preload("res://scripts/art.gd")
+const Web = preload("res://scripts/web.gd")
 
 const C_BG := Color("#140c1c")
 const C_PANEL := Color("#241a2e")
@@ -30,7 +31,7 @@ var know_flow: HFlowContainer
 var know_sig := ""
 var duel_flow: HFlowContainer
 var duel_box: VBoxContainer
-var duel_sep: VSeparator
+var duel_sep: Separator
 var guard_btn: Button
 var gbtn_flash := 0.0
 var cls_modal: Control
@@ -59,6 +60,12 @@ var reset_armed := false
 var pad: Control
 var fonts := {}
 var arena_mode := false
+var mobile := false        # celular: layout compacto, mapa grande e aviso para deitar o aparelho
+var rotate_box: Control
+var last_dock_h := 0.0
+var poll_t := 0.0
+var last_fs := false
+var fs_btn: Button
 
 
 func _font(n: String) -> Font:
@@ -144,6 +151,7 @@ func _swatch(c: Color) -> ImageTexture:
 
 # ===== construção =====
 func build() -> void:
+	mobile = Web.is_mobile() or "--mobile" in OS.get_cmdline_user_args()
 	root = Control.new()
 	root.set_anchors_preset(Control.PRESET_FULL_RECT)
 	root.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -186,7 +194,8 @@ func build() -> void:
 	guard_btn.add_theme_color_override("font_color", C_ICE)
 	guard_btn.visible = false
 	top.add_child(guard_btn)
-	top.add_child(_button("Tela cheia", toggle_fullscreen, 14))
+	fs_btn = _button("Tela cheia", toggle_fullscreen, 14)
+	top.add_child(fs_btn)
 	var gb = _button("Grimório", show_grim, 20)
 	gb.name = "GrimBtn"
 	if _font("PixelifySans-SemiBold.woff2"):
@@ -229,24 +238,26 @@ func build() -> void:
 	ks.border_width_left = 3
 	ks.border_color = C_LINE
 	know_panel.add_theme_stylebox_override("panel", ks)
-	var kh = HBoxContainer.new()
-	kh.add_theme_constant_override("separation", 12)
+	var kh = BoxContainer.new()
+	kh.vertical = mobile
+	kh.add_theme_constant_override("separation", 6 if mobile else 12)
+	know_panel.clip_contents = true
 	var kv = VBoxContainer.new()
 	kv.add_theme_constant_override("separation", 4)
 	kv.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	kv.size_flags_stretch_ratio = 1.25
-	kv.add_child(_label("O que os heróis sabem da masmorra", 17, C_FG, "PixelifySans-SemiBold.woff2"))
+	kv.add_child(_label("O que os heróis sabem da masmorra", 14 if mobile else 17, C_FG, "PixelifySans-SemiBold.woff2"))
 	know_flow = HFlowContainer.new()
 	know_flow.add_theme_constant_override("h_separation", 8)
 	know_flow.add_theme_constant_override("v_separation", 6)
 	kv.add_child(know_flow)
 	kh.add_child(kv)
-	duel_sep = VSeparator.new()
+	duel_sep = HSeparator.new() if mobile else VSeparator.new()
 	kh.add_child(duel_sep)
 	duel_box = VBoxContainer.new()
 	duel_box.add_theme_constant_override("separation", 4)
 	duel_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	duel_box.add_child(_label("O que os lendários sabem do guardião", 17, C_ICE, "PixelifySans-SemiBold.woff2"))
+	duel_box.add_child(_label("O que os lendários sabem do guardião", 14 if mobile else 17, C_ICE, "PixelifySans-SemiBold.woff2"))
 	duel_flow = HFlowContainer.new()
 	duel_flow.add_theme_constant_override("h_separation", 8)
 	duel_flow.add_theme_constant_override("v_separation", 6)
@@ -300,6 +311,7 @@ func build() -> void:
 	_build_overlay()
 	_build_grim()
 	_build_classes()
+	_build_rotate()
 	get_viewport().size_changed.connect(layout)
 	set_tab("traps")
 
@@ -456,7 +468,39 @@ func show_over(text: String) -> void:
 
 
 func modal_open() -> bool:
-	return grim.visible or cls_modal.visible
+	return grim.visible or cls_modal.visible or rotate_box.visible
+
+
+## Aviso para deitar o celular (o jogo é só paisagem).
+func _build_rotate() -> void:
+	rotate_box = Control.new()
+	rotate_box.set_anchors_preset(Control.PRESET_FULL_RECT)
+	rotate_box.mouse_filter = Control.MOUSE_FILTER_STOP
+	var bg = ColorRect.new()
+	bg.color = Color("#0e0814")
+	bg.set_anchors_preset(Control.PRESET_FULL_RECT)
+	rotate_box.add_child(bg)
+	var cc = CenterContainer.new()
+	cc.set_anchors_preset(Control.PRESET_FULL_RECT)
+	rotate_box.add_child(cc)
+	var v = VBoxContainer.new()
+	v.add_theme_constant_override("separation", 18)
+	v.alignment = BoxContainer.ALIGNMENT_CENTER
+	cc.add_child(v)
+	var ic = TextureRect.new()
+	ic.texture = Art.icon("tiles/heart", 6)
+	ic.stretch_mode = TextureRect.STRETCH_KEEP_CENTERED
+	v.add_child(ic)
+	var t = _label("Deite o celular", 44, C_BRASS, "PixelifySans-SemiBold.woff2")
+	t.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	v.add_child(t)
+	var d = _label("A Masmorra Relógio é jogada na horizontal.", 22, C_MUTE)
+	d.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	d.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	d.custom_minimum_size.x = 260
+	v.add_child(d)
+	rotate_box.visible = false
+	root.add_child(rotate_box)
 
 
 # ===== classes do guardião (estilo Grand Chase) =====
@@ -724,6 +768,8 @@ func set_tab(t: String) -> void:
 	tab_traps.add_theme_color_override("font_color", C_BRASS if t == "traps" else C_MUTE)
 	tab_mon.add_theme_color_override("font_color", C_BRASS if t == "mon" else C_MUTE)
 	_sel_text()
+	if mobile and root:
+		layout.call_deferred()
 
 
 func _sel_text() -> void:
@@ -811,6 +857,10 @@ func build_bench() -> void:
 
 
 # ===== painel do que os heróis sabem =====
+	if mobile and root:
+		layout.call_deferred()
+
+
 func render_know() -> void:
 	if not game:
 		return
@@ -895,6 +945,18 @@ func hint(msg: String, warn := false, secs := 5.0) -> void:
 
 
 func _process(delta: float) -> void:
+	if mobile and root:
+		# a altura da bandeja só se acerta depois que os textos quebram linha; e a tela cheia muda sem aviso
+		poll_t -= delta
+		var relayout = not arena_mode and absf(dock.get_combined_minimum_size().y - last_dock_h) > 1.0
+		if poll_t <= 0:
+			poll_t = 0.5
+			var fs = Web.is_fullscreen()
+			if fs != last_fs:
+				last_fs = fs
+				relayout = true
+		if relayout:
+			layout()
 	if gbtn_flash > 0:
 		gbtn_flash -= delta
 		guard_btn.modulate = Color(1, 1, 1).lerp(Color(1.6, 1.4, 0.6), 0.5 + 0.5 * sin(gbtn_flash * 8.0)) if gbtn_flash > 0 else Color.WHITE
@@ -939,6 +1001,14 @@ func sync() -> void:
 	bell_btn.disabled = game.phase != "wave" or game.bell_cd > 0
 	bell_btn.text = ("Badalada %.1fs" % game.bell_cd) if game.bell_cd > 0 else "Badalada −%ds" % game.bell_cost()
 	speed_btn.text = "%d×" % game.speed
+	if mobile:
+		var ev_v: bool = on
+		var co_v: bool = game.combo >= 2
+		var gv_v: bool = game.guardian != ""
+		if chips.event.panel.visible != ev_v or chips.combo.panel.visible != co_v or chips.evo.panel.visible != gv_v:
+			chips.event.panel.visible = ev_v
+			chips.combo.panel.visible = co_v
+			chips.evo.panel.visible = gv_v
 
 
 func toggle_pause() -> void:
@@ -948,6 +1018,16 @@ func toggle_pause() -> void:
 
 
 func toggle_fullscreen() -> void:
+	if Web.on():
+		if Web.is_fullscreen():
+			Web.leave_fullscreen()
+		elif Web.can_fullscreen():
+			Web.request_fullscreen()
+		elif Web.is_ios():
+			hint("No iPhone o Safari não deixa sites em tela cheia. Toque em Compartilhar e depois em Adicionar à Tela de Início: aberto pelo ícone, o jogo ocupa a tela toda.", false, 9.0)
+		else:
+			hint("Este navegador não permite tela cheia. Tente pelo Chrome.", false, 5.0)
+		return
 	var m = DisplayServer.window_get_mode()
 	if m == DisplayServer.WINDOW_MODE_FULLSCREEN or m == DisplayServer.WINDOW_MODE_EXCLUSIVE_FULLSCREEN:
 		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
@@ -1038,22 +1118,33 @@ func layout() -> void:
 		return
 	var vs = root.get_viewport_rect().size
 	var m = 8.0
-	top.position = Vector2(m, m)
-	top.size = Vector2(vs.x - 2 * m, 64)
-	# chips extras somem em telas estreitas
-	chips.rate.panel.visible = vs.x >= 1150
-	chips.kills.panel.visible = vs.x >= 1250
-	chips.evo.panel.visible = vs.x >= 1050
-	var y0 = 80.0
+	# margens seguras (notch do iPhone deitado)
+	var ins = Web.safe_insets(vs.x) if mobile else [0.0, 0.0, 0.0]
+	var ml: float = maxf(m, ins[0])
+	var mr: float = maxf(m, ins[1])
+	rotate_box.visible = mobile and vs.x < vs.y
+	if fs_btn:
+		fs_btn.visible = not (mobile and last_fs)
+	top.position = Vector2(ml, m)
+	# chips extras somem em telas estreitas (no celular fica só o essencial)
+	chips.rate.panel.visible = vs.x >= 1150 and not mobile
+	chips.kills.panel.visible = vs.x >= 1250 and not mobile
+	chips.event.panel.visible = not mobile or game.ev.id != ""
+	chips.combo.panel.visible = not mobile or game.combo >= 2
+	chips.evo.panel.visible = vs.x >= 1050 or (mobile and game.guardian != "")
+	top.size = Vector2(vs.x - ml - mr, 0)
+	top.reset_size()
+	top.size.x = vs.x - ml - mr
+	var y0 = top.position.y + maxf(top.size.y, 50.0) + m
 	var board: Node2D = board_holder.get_child(0) if board_holder.get_child_count() > 0 else null
 	var frame: Panel = root.get_node("Frame")
 	if arena_mode:
 		# arena ocupa a tela toda; os controles ficam por cima, semitransparentes
-		var s = minf((vs.x - 2 * m) / 720.0, (vs.y - y0 - m) / 480.0)
+		var s = minf((vs.x - ml - mr) / 720.0, (vs.y - y0 - m) / 480.0)
 		s = _snap(s)
 		var bw = 720.0 * s
 		var bh = 480.0 * s
-		var bx = (vs.x - bw) / 2.0
+		var bx = ml + (vs.x - ml - mr - bw) / 2.0
 		board_holder.position = Vector2(bx, y0)
 		if board:
 			board.scale = Vector2(s, s)
@@ -1066,6 +1157,31 @@ func layout() -> void:
 		pad.setup()
 		know_panel.visible = false
 		dock.visible = false
+	elif mobile:
+		# celular: o mapa usa a altura toda; bandeja e "o que sabem" dividem a coluna da direita
+		pad.visible = false
+		know_panel.visible = true
+		dock.visible = true
+		var s = minf((vs.y - y0 - m) / 480.0, (vs.x - ml - mr - 320 - m) / 720.0)
+		s = _snap(s)
+		var bw = 720.0 * s
+		var bh = 480.0 * s
+		board_holder.position = Vector2(ml, y0)
+		if board:
+			board.scale = Vector2(s, s)
+		frame.position = board_holder.position
+		frame.size = Vector2(bw, bh)
+		board_holder.size = Vector2(bw, bh)
+		var cx = ml + bw + m
+		var cw = vs.x - cx - mr
+		dock.position = Vector2(cx, y0)
+		dock.size.x = cw
+		var dh: float = dock.get_combined_minimum_size().y
+		dock.size = Vector2(cw, dh)
+		last_dock_h = dh
+		know_panel.position = Vector2(cx, y0 + dh + m)
+		know_panel.size = Vector2(cw, maxf(60.0, vs.y - (y0 + dh + m) - m))
+		know_panel.visible = vs.y - (y0 + dh + m) - m > 50
 	else:
 		pad.visible = false
 		know_panel.visible = true
