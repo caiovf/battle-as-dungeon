@@ -123,10 +123,20 @@ func _process(_d: float) -> bool:
 			main.ui.tal_cls = 0
 			main.ui.render_classes()
 		504: snap("09b_talentos")
-		506:
+		505:
+			main.ui.tal_cls = -1
+			main.meta.tp["dragao_0"] = 12
+			main.ui.sk_cls = 0
+			main.ui.render_classes()
+		507: snap("09c_habilidades")
+		508:
 			main.ui.close_classes()
 			_fight("minotauro", 1, "kael")
 		540: Input.action_press("g_atk")
+		590:
+			main.arena.P.ult = 100.0
+			Input.action_press("g_ult")
+		592: Input.action_release("g_ult")
 		600: snap("10_berserker_kael")
 		602:
 			Input.action_release("g_atk")

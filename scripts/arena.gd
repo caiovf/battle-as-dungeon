@@ -63,7 +63,9 @@ func build_gd() -> Dictionary:
 	o.jumps = c.jumps
 	o.armor = c.armor
 	o.atk = c.atk
-	o.skills = c.skills
+	var lo: Array = game.loadout(game.guardian, game.g_cls)
+	o.skills = lo.slice(0, 3)
+	o.ult = lo[3]
 	o.passive = c.passive
 	o.cls = game.g_cls
 	o.pw = D.CLASS_POWER[game.g_cls].dmg
@@ -115,7 +117,7 @@ func sk_key(i: int) -> String:
 
 
 func sk_lv(i: int) -> int:
-	return game.sk_level(sk_key(i))
+	return game.sk_level(sk_key(i)) + game.skill_perm(game.guardian, sk_key(i))
 
 
 func sk_pow(i: int) -> float:
@@ -131,7 +133,7 @@ func sk_cd(i: int) -> float:
 
 
 func dmg_mul() -> float:
-	return (1.0 + game.evo_pct()) * gd.pw * (1.5 if P.fury_t > 0 else 1.0) * (1.0 + 0.04 * gd.t_pass * P.rage)
+	return (1.0 + game.evo_pct()) * gd.pw * (1.5 if P.fury_t > 0 else 1.0) * (2.0 if P.get("king_t", 0.0) > 0 else 1.0) * (1.0 + 0.04 * gd.t_pass * P.rage)
 
 
 func spawn_parts(x: float, y: float, col: Color, n: int) -> void:
@@ -217,7 +219,8 @@ func start(h) -> void:
 		"spin_t": 0.0, "spin_pow": 1.0, "spin_tick": 0.0, "leech_t": 0.0, "leech_amt": 0.5,
 		"block_t": 0.0, "block_pow": 1.0, "block_tick": 0.0, "quake_n": 0, "quake_t": 0.0, "quake_pow": 1.0,
 		"ice_t": 0.0, "fly_t": 0.0, "haste_t": 0.0, "wing_t": 0.0, "wing_pow": 1.0, "wing_hit": false, "wing_drop": 0.0,
-		"echo_n": 0, "rage": 0, "harvest": 0, "root_t": 0.0, "lost": []}
+		"echo_n": 0, "rage": 0, "harvest": 0, "root_t": 0.0, "lost": [],
+		"ult": D.ULT_CHARGE_START, "king_t": 0.0, "ult_charges": 0}
 	B = {"x": W - 150.0, "y": FY, "vx": 0.0, "vy": 0.0, "face": -1, "hp": mx * carry, "max": mx, "act": {}, "idle": 1.0,
 		"guard": 0.0, "inv": 0.0, "flash": 0.0, "tele": 0.0, "ground": true, "phase2": B_phase2(mx * carry, mx), "last": "",
 		"stun": 0.0, "mark_t": 0.0, "mark_lv": 1, "vis_atk": 0.0, "atk_anim": 0.0, "hurt_t": 0.0, "run_d": 0.0,
@@ -251,7 +254,7 @@ func stop() -> void:
 # ===== entrada =====
 func _read_input() -> void:
 	press = {}
-	for a in ["g_jump", "g_dash", "g_s0", "g_s1", "g_s2"]:
+	for a in ["g_jump", "g_dash", "g_s0", "g_s1", "g_s2", "g_ult"]:
 		if Input.is_action_just_pressed(a):
 			press[a] = true
 
@@ -450,6 +453,71 @@ func summon_skel(life: float, dmg: float, x: float) -> void:
 	spawn_parts(x, FY - 10, Color("#c08ae0"), 10)
 
 
+## Habilidade suprema: gasta a barra de poder cheia.
+func cast_ult() -> void:
+	var l = L()
+	var pw = dmg_mul() * (1.0 + 0.15 * game.skill_perm(game.guardian, gd.ult))
+	var bx: float = B.x
+	var by: float = B.y - l.h / 2.0
+	P.ult = 0.0
+	P.cast_vis = 0.5
+	use.especial += 1
+	hitstop = maxf(hitstop, 0.12)
+	game.shake(0.3, 0.008)
+	game.float_text(Vector2(W / 2, H / 2 - 60), D.ULTS[gd.ult].nome.to_upper(), Color("#ffc430"), 24)
+	for r in 3:
+		vfx.append({"spr": "", "ring": true, "x": P.x, "y": P.y - gd.h / 2.0, "t": -r * 0.1, "dur": 0.5, "flip": false, "scale": 1.6, "rot": 0.0, "col": Color("#ffc430")})
+	match gd.ult:
+		"ult_rei":
+			P.king_t = 6.0
+		"ult_massacre":
+			P.spin_t = 3.0
+			P.spin_pow = 3.0 * pw
+			P.leech_t = maxf(P.leech_t, 3.0)
+			P.leech_amt = 0.4
+		"ult_avalanche":
+			for j in 6:
+				shots.append(_shot({"kind": "meteor", "x": bx + (j - 2.5) * 40, "y": -40.0, "vy": 760.0, "dmg": 22 * pw, "r": 60.0, "spr": "fx/rock", "life": 3.0, "delay": j * 0.18, "tx": bx + (j - 2.5) * 40}))
+			B.stun = maxf(B.stun, 1.8)
+		"ult_chifres":
+			P.ult_charges = 3
+			P.charge_t = 0.0
+		"ult_apocalipse":
+			for w in 3:
+				for j in 14:
+					var a = j / 14.0 * TAU + w * 0.2
+					shots.append(_shot({"x": P.x, "y": P.y - gd.h * 0.6, "vx": cos(a) * 520, "vy": sin(a) * 520, "r": 7.0, "dmg": 8 * pw, "spr": "fx/shard", "delay": w * 0.35, "life": 1.6}))
+		"ult_exercito":
+			for j in 6:
+				summon_skel(10.0, 6.0 * pw, P.x + (j - 2.5) * 26)
+		"ult_era_gelo":
+			hurt_boss(40 * pw, "especial")
+			B.stop_t = 3.0
+			B.slow_t = 6.0
+			spawn_parts(bx, by, Color("#c8f0ff"), 30)
+		"ult_fim_tempos":
+			B.stop_t = 4.0
+			game.clock += 10.0
+			game.float_text(Vector2(P.x, P.y - gd.h - 18), "+10s", Color("#f2d488"), 16)
+		"ult_inferno":
+			P.breath_t = 3.0
+			P.breath_pow = 3.0 * pw
+			P.tick = 0.0
+			P.inv = maxf(P.inv, 3.0)
+		"ult_furia_ceus":
+			for j in 6:
+				shots.append(_shot({"kind": "bolt", "x": bx, "delay": 0.2 + j * 0.28, "dmg": 20 * pw, "stun": 0.3, "track": true, "life": 0.5}))
+		"ult_praga":
+			B.poison = 8
+			zones.append({"x": bx, "w": 170.0, "h": 140.0, "life": 6.0, "tick": 0.4, "tcd": 0.0, "dmg": 3.0 * pw, "follow": true, "kind": "poison", "slow": 0.0, "poison": 1})
+		"ult_meteoros":
+			for j in 8:
+				var x = clampf(bx + randf_range(-150, 150), AW0 + 20, AW1 - 20)
+				if j % 3 == 0:
+					x = bx
+				shots.append(_shot({"kind": "meteor", "x": x - 60, "y": -40.0, "vx": 60.0, "vy": 720.0, "dmg": 26 * pw, "r": 70.0, "spr": "fx/meteor", "life": 3.0, "delay": j * 0.25, "tx": x}))
+
+
 func stomp(pw: float, lv := 1) -> void:
 	for dir in [-1, 1]:
 		shots.append(_shot({"x": P.x, "y": P.y - 14, "vx": dir * 420.0, "r": 13.0, "dmg": 18 * pw, "life": 1.6, "col": Color("#d6c3a5"), "ground": true}))
@@ -467,7 +535,7 @@ func start_basic() -> void:
 	var sp = 0.7 if P.fury_t > 0 else 1.0
 	P.atk_ph = "anti"
 	P.atk_pt = a.get("anti", 0.05) * sp
-	P.atk_cd = a.cd * sp * gd.t_atkcd
+	P.atk_cd = a.cd * sp * gd.t_atkcd * (0.6 if P.king_t > 0 else 1.0)
 	P.hit_b = false
 
 
@@ -557,8 +625,16 @@ func player_step(dt: float) -> void:
 	P.root_t -= dt
 	for i in 3:
 		P.cd[i] -= dt
-	for k in ["fury_t", "scale_t", "breath_t", "charge_t", "spin_t", "leech_t", "fly_t", "haste_t"]:
+	for k in ["fury_t", "scale_t", "breath_t", "charge_t", "spin_t", "leech_t", "fly_t", "haste_t", "king_t"]:
 		P[k] -= dt
+	# suprema: Chifres do Rei faz investidas seguidas
+	if P.ult_charges > 0 and P.charge_t <= 0:
+		P.ult_charges -= 1
+		P.face = -P.face if (P.x > W / 2 and P.face > 0) or (P.x < W / 2 and P.face < 0) else P.face
+		P.charge_t = 0.9
+		P.charge_spd = 760.0
+		P.charge_hit = false
+		P.inv = maxf(P.inv, 1.0)
 	if P.ice_t > 0:
 		P.ice_t -= dt
 		P.vx = 0.0
@@ -597,6 +673,9 @@ func player_step(dt: float) -> void:
 			spawn_parts(P.x, P.y, D.col(gd.cor), 5)
 	if not Input.is_action_pressed("g_jump") and P.vy < -260 and not P.dive_hop and P.wing_t <= 0:
 		P.vy = -260.0
+	# suprema
+	if press.has("g_ult") and P.ult >= 100.0 and P.kb_t <= 0 and not busy():
+		cast_ult()
 	# habilidades
 	for i in 3:
 		if press.has("g_s%d" % i) and P.cd[i] <= 0 and P.kb_t <= 0 and not busy():
@@ -812,6 +891,7 @@ func hurt_boss(dmg: float, cat: String, no_leech := false) -> bool:
 	if B.vuln_t > 0:
 		mul *= 1.3
 	B.hp -= dmg * mul
+	P.ult = minf(100.0, P.ult + clampf(dmg * mul * 0.3, 0.4, 6.0))
 	B.flash = 0.08
 	B.hurt_t = 0.18
 	if game.g_up.sangue > 0 and not no_leech:
@@ -852,8 +932,9 @@ func hurt_guard(sec: float, force := false) -> void:
 		return
 	if not force and P.inv > 0:
 		return
-	var lost = D.r1(sec * leg_scale * gd.armor * gd.def * pow(0.85, game.g_up.couraca) * (1.0 + game.fame_pct() * D.CFG.LEG_FAME_DMG) * (0.7 if P.fury_t > 0 else 1.0) * (0.6 if P.scale_t > 0 else 1.0))
+	var lost = D.r1(sec * leg_scale * gd.armor * gd.def * (0.5 if P.king_t > 0 else 1.0) * pow(0.85, game.g_up.couraca) * (1.0 + game.fame_pct() * D.CFG.LEG_FAME_DMG) * (0.7 if P.fury_t > 0 else 1.0) * (0.6 if P.scale_t > 0 else 1.0))
 	game.clock -= lost
+	P.ult = minf(100.0, P.ult + 12.0)
 	P.lost.append([t, lost])
 	stats.hits += 1
 	stats.lost += lost
@@ -2029,6 +2110,8 @@ func draw(g: CanvasItem) -> void:
 		if B.vuln_t > 0:
 			g.draw_arc(Vector2(B.x, B.y - l.h / 2.0), l.h * 0.62, 0, TAU, 20, Color(1, 0.35, 0.2, 0.5), 2)
 	# guardião
+	if P.king_t > 0:
+		g.draw_arc(Vector2(P.x, P.y - gd.h / 2.0), gd.h * 0.8, 0, TAU, 28, Color(1, 0.77, 0.19, 0.6), 4)
 	if P.fury_t > 0 or P.rage >= 5:
 		for i in 4:
 			Art.dot(g, Vector2(P.x + randf_range(-24, 24), P.y - randf() * gd.h), 4, Color("#ff4050"))
@@ -2081,6 +2164,10 @@ func draw(g: CanvasItem) -> void:
 		var rd: float = 1.0 - P.cd[i] / P.cd_max[i] if P.cd[i] > 0 else 1.0
 		g.draw_rect(Rect2(14 + i * 58, 46, 54, 8), Color("#140c1c"))
 		g.draw_rect(Rect2(16 + i * 58, 48, 50 * rd, 4), Color("#60d8f4") if rd >= 1 else Color("#24607a"))
+	# barra de poder da suprema
+	var ur = P.ult / 100.0
+	g.draw_rect(Rect2(186, 46, 54, 8), Color("#140c1c"))
+	g.draw_rect(Rect2(188, 48, 50 * ur, 4), Color("#ffc430") if ur >= 1 else Color("#8a6a20"))
 	if gd.passive == "furia_acumula" and P.rage > 0:
 		for i in P.rage:
 			g.draw_rect(Rect2(16 + i * 9, 58, 6, 6), Color("#ff4050"))
@@ -2102,6 +2189,10 @@ func _draw_hz_spr(g: CanvasItem, z: Dictionary, ctr: Vector2, now: int, mod: Col
 	else:
 		var a = atan2(z.vy, z.vx) if (z.vx != 0 or z.vy != 0) else (0.0 if z.face > 0 else PI)
 		Art.spr_c(g, z.spr, ctr.x, ctr.y, 2.0, a, mod)
+
+
+func ult_ratio() -> float:
+	return 0.0 if P.is_empty() else P.ult / 100.0
 
 
 func cd_ratio(i: int) -> float:

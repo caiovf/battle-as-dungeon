@@ -247,6 +247,27 @@ const TALENTS := [
 	{"id": "c3", "col": 2, "cost": 3, "req": "c2", "nome": "Sangue do relógio", "desc": "Perde 12% menos tempo e cada acerto básico devolve 0,1s.", "fx": {"def": 0.12, "leech": 0.1}},
 	{"id": "m", "col": -1, "cost": 4, "req": "*6", "nome": "Mestre", "desc": "", "fx": {"master": 1.0}},
 ]
+## ===== Habilidades supremas (uma por classe; trocáveis entre as do mesmo guardião) =====
+## Carregam com a barra de poder: acertar o lendário e levar golpes enchem a barra.
+const ULTS := {
+	"ult_rei": {"nome": "Rei do Labirinto", "dono": "minotauro_0", "icon": "ui/sk_furia", "desc": "6s com dano dobrado, golpes mais rápidos e metade do tempo perdido."},
+	"ult_massacre": {"nome": "Massacre", "dono": "minotauro_1", "icon": "ui/sk_redemoinho", "desc": "3s girando os machados com dano triplo; cada acerto devolve tempo."},
+	"ult_avalanche": {"nome": "Avalanche", "dono": "minotauro_2", "icon": "ui/sk_terremoto", "desc": "Seis rochas caem sobre o lendário e o deixam atordoado."},
+	"ult_chifres": {"nome": "Chifres do Rei", "dono": "minotauro_3", "icon": "ui/sk_investida_longa", "desc": "Três investidas seguidas de parede a parede, invulnerável."},
+	"ult_apocalipse": {"nome": "Apocalipse de ossos", "dono": "lich_0", "icon": "ui/sk_coroa", "desc": "Três explosões de lâminas de osso em todas as direções."},
+	"ult_exercito": {"nome": "Exército dos mortos", "dono": "lich_1", "icon": "ui/sk_erguer", "desc": "Ergue seis esqueletos que lutam por 10s."},
+	"ult_era_gelo": {"nome": "Era do gelo", "dono": "lich_2", "icon": "ui/sk_bloco", "desc": "Congela o lendário por 3s, causa dano alto e o deixa lento por 6s."},
+	"ult_fim_tempos": {"nome": "Fim dos tempos", "dono": "lich_3", "icon": "ui/sk_parar", "desc": "Para o tempo por 4s e devolve 10s ao relógio."},
+	"ult_inferno": {"nome": "Inferno", "dono": "dragao_0", "icon": "ui/sk_baforada", "desc": "3s de fogo enorme e contínuo, invulnerável enquanto cospe fogo."},
+	"ult_furia_ceus": {"nome": "Fúria dos céus", "dono": "dragao_1", "icon": "ui/sk_tempestade", "desc": "Seis raios seguidos sobre o lendário."},
+	"ult_praga": {"nome": "Praga", "dono": "dragao_2", "icon": "ui/sk_nuvem", "desc": "Veneno no máximo e uma nuvem tóxica que segue o lendário por 6s."},
+	"ult_meteoros": {"nome": "Chuva de meteoros", "dono": "dragao_3", "icon": "ui/sk_meteoro", "desc": "Oito meteoros caem em volta do lendário."},
+}
+const ULT_CHARGE_START := 35.0   # barra de poder ao começar a luta (cheia = 100)
+## Custos em pontos de talento da classe em uso.
+const SKILL_UNLOCK_COST := 3     # liberar uma habilidade de outra classe antes de liberar a classe
+const ULT_UNLOCK_COST := 4
+const SKILL_UP_COST := [2, 3]    # aprimorar uma habilidade de forma permanente (nível +1, depois +2)
 const WAVE_COUNTDOWN := 5.0   # segundos para se arrumar antes de cada onda (o relógio não corre)
 const MISSIONS := {
 	"minotauro_1": {"desc": "Acerte 250 golpes básicos com o Minotauro na sala do guardião.", "goal": 250},

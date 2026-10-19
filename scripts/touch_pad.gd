@@ -34,7 +34,8 @@ func setup() -> void:
 	var vs = get_viewport_rect().size
 	var u: float = clampf(minf(vs.x / 1280.0, vs.y / 720.0), 0.8, 1.6)   # escala dos controles
 	var g: String = game.guardian
-	var sks: Array = D.CLASSES[g][game.g_cls].skills
+	var lo: Array = game.loadout(g, game.g_cls)
+	var sks: Array = lo.slice(0, 3)
 	var atk = Vector2(vs.x - 118 * u, vs.y - 112 * u)
 	buttons = []
 	buttons.append({"id": "atk", "action": "g_atk", "pos": atk, "r": 60.0 * u, "icon": "ui/atk_%s_%d" % [g, game.g_cls], "label": "", "skill": -1})
@@ -44,6 +45,8 @@ func setup() -> void:
 		var ang: float = [232.0, 262.0, 292.0][i]
 		buttons.append({"id": "s%d" % i, "action": "g_s%d" % i, "pos": atk + _polar(ang, 168) * u, "r": 36.0 * u,
 			"icon": "ui/sk_" + sks[i], "label": D.SKILLS[sks[i]].nome.get_slice(" ", 0), "skill": i})
+	buttons.append({"id": "ult", "action": "g_ult", "pos": atk + _polar(212, 255) * u, "r": 42.0 * u,
+		"icon": D.ULTS[lo[3]].icon, "label": "SUPREMA", "skill": -1})
 	joy_home = Vector2(150 * u, vs.y - 130 * u)
 	joy_base = joy_home
 	joy_knob = joy_home
@@ -57,7 +60,7 @@ static func _polar(deg: float, dist: float) -> Vector2:
 
 
 func release_all() -> void:
-	for a in ["g_left", "g_right", "g_jump", "g_atk", "g_dash", "g_s0", "g_s1", "g_s2"]:
+	for a in ["g_left", "g_right", "g_jump", "g_atk", "g_dash", "g_s0", "g_s1", "g_s2", "g_ult"]:
 		if Input.is_action_pressed(a):
 			Input.action_release(a)
 	fingers = {}
@@ -188,12 +191,14 @@ func _draw() -> void:
 		if b.skill >= 0:
 			ready = game.arena.cd_ratio(b.skill)
 			secs = maxf(0.0, game.arena.P.cd[b.skill]) if not game.arena.P.is_empty() else 0.0
+		elif b.id == "ult":
+			ready = game.arena.ult_ratio()
 		elif b.id == "dash" and not game.arena.P.is_empty():
 			var cdv: float = game.arena.P.dash_cd
 			var mx: float = D.GUARDS[game.guardian].dash.cd
 			ready = 1.0 - clampf(cdv / mx, 0.0, 1.0) if cdv > 0 else 1.0
 		draw_circle(b.pos, r, Color(0.08, 0.05, 0.11, 0.42 if on else 0.3))
-		var ring = Color(1, 0.77, 0.19, 0.85) if b.id == "atk" else (Color(0.38, 0.85, 0.96, 0.75) if b.skill >= 0 else Color(1, 1, 1, 0.55))
+		var ring = Color(1, 0.77, 0.19, 0.85) if b.id == "atk" or (b.id == "ult" and ready >= 1) else (Color(0.38, 0.85, 0.96, 0.75) if b.skill >= 0 else Color(1, 1, 1, 0.55))
 		if on:
 			ring = Color(1, 1, 1, 0.95)
 		draw_arc(b.pos, r, 0, TAU, 40, ring, 4 if b.id == "atk" else 3)
@@ -203,6 +208,8 @@ func _draw() -> void:
 			var mod = Color(1, 1, 1, 0.9 if ready >= 1 else 0.4)
 			draw_texture_rect(t, Rect2(b.pos - Vector2(isz, isz) / 2.0, Vector2(isz, isz)), false, mod)
 		# recarga: fatia escura que diminui girando, com os segundos no meio
+		if b.id == "ult" and ready >= 1.0:
+			draw_arc(b.pos, r + 6 + sin(Time.get_ticks_msec() / 120.0) * 3, 0, TAU, 40, Color(1, 0.77, 0.19, 0.5), 3)
 		if ready < 1.0:
 			var pts = PackedVector2Array([b.pos])
 			var start = -PI / 2 + TAU * ready
@@ -218,7 +225,7 @@ func _draw() -> void:
 				draw_string(f, b.pos + Vector2(-30, 6), txt, HORIZONTAL_ALIGNMENT_CENTER, 60, 16, Color.WHITE)
 		if b.skill >= 0:
 			# nível da habilidade: pontinhos na borda de baixo
-			var lv: int = game.sk_level(D.CLASSES[game.guardian][game.g_cls].skills[b.skill])
+			var lv: int = game.arena.sk_lv(b.skill) if not game.arena.P.is_empty() else 1
 			for k in lv:
 				var px = b.pos + Vector2((k - (lv - 1) / 2.0) * 9, r - 6)
 				draw_rect(Rect2(px - Vector2(3, 3), Vector2(6, 6)), Color(1, 0.77, 0.19, 0.95))
@@ -230,5 +237,5 @@ func _draw() -> void:
 	draw_rect(Rect2(c.x + 3, c.y - 9, 6, 18), white)
 	# dica de teclado em computador
 	if not DisplayServer.is_touchscreen_available():
-		draw_string_outline(f, Vector2(0, size.y - 14), "Teclado: A/D andar · W pular · J atacar · K dash · U I O habilidades · P pausa", HORIZONTAL_ALIGNMENT_CENTER, size.x, 8, 4, Color(0.05, 0.03, 0.08, 0.8))
-		draw_string(f, Vector2(0, size.y - 14), "Teclado: A/D andar · W pular · J atacar · K dash · U I O habilidades · P pausa", HORIZONTAL_ALIGNMENT_CENTER, size.x, 8, Color(1, 1, 1, 0.5))
+		draw_string_outline(f, Vector2(0, size.y - 14), "Teclado: A/D andar · W pular · J atacar · K dash · U I O habilidades · Y suprema · P pausa", HORIZONTAL_ALIGNMENT_CENTER, size.x, 8, 4, Color(0.05, 0.03, 0.08, 0.8))
+		draw_string(f, Vector2(0, size.y - 14), "Teclado: A/D andar · W pular · J atacar · K dash · U I O habilidades · Y suprema · P pausa", HORIZONTAL_ALIGNMENT_CENTER, size.x, 8, Color(1, 1, 1, 0.5))

@@ -36,7 +36,8 @@ var guard_btn: Button
 var gbtn_flash := 0.0
 var cls_modal: Control
 var cls_box: VBoxContainer
-var tal_cls := -1          # classe aberta na árvore de talentos (-1 = lista de classes)
+var tal_cls := -1
+var sk_cls := -1           # classe aberta na tela de habilidades          # classe aberta na árvore de talentos (-1 = lista de classes)
 var dock: PanelContainer
 var bell_btn: Button
 var pause_btn: Button
@@ -544,6 +545,103 @@ func show_classes() -> void:
 func close_classes() -> void:
 	cls_modal.visible = false
 	tal_cls = -1
+	sk_cls = -1
+
+
+## Habilidades da classe: cada posição (1, 2, 3 e suprema) troca só com a mesma posição.
+func _render_skills(g: String, ci: int) -> void:
+	var c = D.CLASSES[g][ci]
+	var k = "%s_%d" % [g, ci]
+	var pts: int = game.tal_points(k)
+	var lo: Array = game.loadout(g, ci)
+	var head = HBoxContainer.new()
+	var hv = VBoxContainer.new()
+	hv.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	hv.add_child(_label("Habilidades · %s" % c.nome, 26, C_FG, "PixelifySans-SemiBold.woff2"))
+	var sub = _label("Cada posição só troca com a mesma posição. Habilidades de outras classes liberam junto com a classe, ou antes, com pontos. Aprimorar vale para sempre. Pontos livres desta classe: %d." % pts, 13, C_BRASS if pts > 0 else C_MUTE)
+	sub.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	hv.add_child(sub)
+	head.add_child(hv)
+	var bk = _button("Voltar", func():
+		sk_cls = -1
+		render_classes(), 16)
+	bk.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
+	head.add_child(bk)
+	cls_box.add_child(head)
+	var names = ["HABILIDADE 1", "HABILIDADE 2", "HABILIDADE 3", "SUPREMA"]
+	var arena_now: bool = game.phase == "arena"
+	for slot in 4:
+		var row = HBoxContainer.new()
+		row.add_theme_constant_override("separation", 6)
+		var tag = _label(names[slot], 8, C_BRASS if slot == 3 else C_MUTE, "PressStart2P.woff2")
+		tag.custom_minimum_size = Vector2(118, 0)
+		tag.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		row.add_child(tag)
+		for sk in game.slot_pool(g, slot):
+			var info = D.ULTS[sk] if slot == 3 else D.SKILLS[sk]
+			var eq: bool = lo[slot] == sk
+			var op: bool = game.skill_open(g, slot, sk)
+			var dup: bool = slot < 3 and not eq and lo.slice(0, 3).has(sk)
+			var col = C_MOSS if eq else (C_BRASS if op else C_LINE)
+			var p = PanelContainer.new()
+			p.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			p.add_theme_stylebox_override("panel", _sb(Color("#1b2a18") if eq else C_BG, col, 6, 2 if eq else 1, 6))
+			var v = VBoxContainer.new()
+			v.add_theme_constant_override("separation", 2)
+			var top = HBoxContainer.new()
+			var ic = TextureRect.new()
+			ic.texture = Art.icon(info.icon if slot == 3 else "ui/sk_" + sk, 1)
+			ic.custom_minimum_size = Vector2(22, 22)
+			ic.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+			ic.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+			if not op:
+				ic.modulate = Color(0.4, 0.4, 0.45)
+			top.add_child(ic)
+			var lv = game.skill_perm(g, sk)
+			top.add_child(_label(info.nome + ("  +%d" % lv if lv > 0 else ""), 14, C_FG if op else C_MUTE, "PixelifySans-SemiBold.woff2"))
+			v.add_child(top)
+			var d = _label(info.desc, 11, C_FG if op else C_MUTE)
+			d.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+			d.custom_minimum_size.x = 120
+			v.add_child(d)
+			var btxt = ""
+			var cb: Callable
+			var dis = arena_now
+			var skk: String = sk
+			var sl: int = slot
+			if eq:
+				if lv < D.SKILL_UP_COST.size():
+					btxt = "Aprimorar · %d pts" % D.SKILL_UP_COST[lv]
+					dis = dis or pts < D.SKILL_UP_COST[lv]
+					cb = func():
+						game.skill_upgrade(g, ci, skk)
+						render_classes()
+				else:
+					btxt = "Equipada · máx"
+					dis = true
+					cb = func(): pass
+			elif op:
+				btxt = "Já em outra posição" if dup else "Equipar"
+				dis = dis or dup
+				cb = func():
+					game.equip(g, ci, sl, skk)
+					render_classes()
+			else:
+				var cost = D.ULT_UNLOCK_COST if slot == 3 else D.SKILL_UNLOCK_COST
+				btxt = "Liberar · %d pts" % cost
+				dis = dis or pts < cost
+				cb = func():
+					game.skill_unlock(g, ci, sl, skk)
+					render_classes()
+				var own = D.CLASSES[g][game.skill_owner(g, slot, sk)].nome
+				var o = _label("Vem de: " + own, 10, C_MUTE)
+				v.add_child(o)
+			var b = _button(btxt, cb, 12)
+			b.disabled = dis
+			v.add_child(b)
+			p.add_child(v)
+			row.add_child(p)
+		cls_box.add_child(row)
 
 
 ## Árvore de talentos de uma classe: três colunas (Ataque, Habilidades, Defesa) e o talento de Mestre.
@@ -633,6 +731,9 @@ func render_classes() -> void:
 	if tal_cls >= 0:
 		_render_talents(g, tal_cls)
 		return
+	if sk_cls >= 0:
+		_render_skills(g, sk_cls)
+		return
 	var head = HBoxContainer.new()
 	var hv = VBoxContainer.new()
 	hv.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -696,9 +797,10 @@ func render_classes() -> void:
 		if c.passive != "":
 			lines.append("Passiva: " + D.PASSIVES[c.passive])
 		var sk = []
-		for k in c.skills:
+		var lo2: Array = game.loadout(g, i)
+		for k in lo2.slice(0, 3):
 			sk.append(D.SKILLS[k].nome)
-		lines.append("Habilidades: " + ", ".join(sk) + ".")
+		lines.append("Habilidades: " + ", ".join(sk) + ". Suprema: " + D.ULTS[lo2[3]].nome + ".")
 		lines.append("Masmorra: " + c.bonus.desc)
 		if not open:
 			if prev_ok:
@@ -720,6 +822,9 @@ func render_classes() -> void:
 		row.add_theme_constant_override("separation", 6)
 		pick.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		row.add_child(pick)
+		v.add_child(row)
+		row = HBoxContainer.new()
+		row.add_theme_constant_override("separation", 6)
 		if open:
 			var tk = mk
 			var pts: int = game.tal_points(tk)
@@ -729,6 +834,11 @@ func render_classes() -> void:
 			tb.add_theme_color_override("font_color", C_BRASS if pts > 0 else C_FG)
 			tb.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 			row.add_child(tb)
+			var sb2 = _button("Habilidades", func():
+				sk_cls = ii
+				render_classes(), 15)
+			sb2.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			row.add_child(sb2)
 		v.add_child(row)
 		b.add_child(v)
 		grid.add_child(b)
