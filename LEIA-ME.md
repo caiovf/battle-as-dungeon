@@ -18,7 +18,7 @@ Na primeira abertura, o Godot leva alguns segundos importando as fontes.
 - Clique numa armadilha já colocada para vendê-la.
 - Clique no coração para soar a badalada.
 - `1`–`7` escolhem a armadilha. `Q W E R T Y U I O` soltam monstros.
-- `B` badalada · `P` ou `Espaço` pausa · `G` grimório · `C` classes do guardião · `F` tela cheia.
+- `B` badalada · `P` ou `Espaço` pausa · `G` melhorias da masmorra · `C` classes do guardião · `F` tela cheia.
 
 **Luta do guardião**
 - `A`/`D` ou setas: andar.
@@ -34,6 +34,9 @@ Na primeira abertura, o Godot leva alguns segundos importando as fontes.
 
 - **Bônus na masmorra:** cada guardião dá um bônus à masmorra enquanto ele é o seu guardião (Minotauro: monstros com +25% de vida; Lich: badalada recarrega 30% mais rápido; Dragão: cada herói derrotado dá +0,5s). Cada classe soma um bônus próprio, por exemplo o Necromante faz esqueletos custarem metade e solta um de graça a cada 12s.
 - **Classes por missões:** cada guardião tem 4 classes no estilo Grand Chase. A primeira já vem liberada; as outras três saem de missões. Exemplo: o Necromante libera soltando 40 esqueletos jogando com o Lich. O progresso e as classes liberadas ficam salvos para sempre, mesmo depois que a run acaba. Troque no botão **Guardião** da barra de cima (ou `C`), fora da luta. A tela mostra cada missão e quanto falta.
+- **Poder das classes:** a 1ª é a base e cada uma das seguintes é mais forte. A 4ª dá +50% de dano e faz perder 24% menos tempo por golpe.
+- **Antes de cada onda** há 5 segundos para arrumar a masmorra; o relógio fica parado. O botão "Começar agora" pula a contagem.
+- **Lendários:** a dificuldade sobe a cada lendário que chega (mais dano e mais vida). O botão **Melhorias** (antigo grimório) gasta essência para fortalecer a masmorra e liberar armadilhas e monstros novos.
 - Cada classe muda arma, ataque básico, velocidade, pulos, armadura, passiva, as 3 habilidades e o bônus da masmorra. O nível das habilidades fica guardado mesmo trocando de classe.
 - São **13 lendários**. Cada um tem um poder no corredor e golpes próprios na arena.
 - O painel de baixo separa **o que os heróis sabem da masmorra** de **o que os lendários sabem do guardião**.
@@ -43,11 +46,11 @@ Na primeira abertura, o Godot leva alguns segundos importando as fontes.
 
 | Arquivo | O que tem |
 |---|---|
-| `scripts/data.gd` | **Todos os números de balanceamento** e as tabelas: armadilhas, monstros, heróis, eventos, grimório, guardiões, classes (`CLASSES`), habilidades (`SKILLS`) e lendários (`LEG_ARENA`). Comece por aqui. |
+| `scripts/data.gd` | **Todos os números de balanceamento** e as tabelas: armadilhas, monstros, heróis, eventos, melhorias (`PERKS`), guardiões, classes (`CLASSES`), habilidades (`SKILLS`) e lendários (`LEG_ARENA`). Comece por aqui. |
 | `scripts/main.gd` | A masmorra: caminho aleatório, ondas, adaptação dos heróis, contras escondidos, combate em grupo, fama, energia absorvida. |
 | `scripts/arena.gd` | A luta de ação: ataque em 4 tempos com hit stop, classes, habilidades, passivas, golpes dos lendários e como eles aprendem o seu jeito de lutar. |
 | `scripts/touch_pad.gd` | Controle virtual de toque da luta (analógico flutuante e botões em arco). |
-| `scripts/ui.gd` | Interface: barra do topo, bandeja, painel "O que os heróis sabem", telas de escolha, grimório, botões de toque. |
+| `scripts/ui.gd` | Interface: barra do topo, bandeja, painel "O que os heróis sabem", telas de escolha, Melhorias, botões de toque. |
 | `scripts/art.gd` | Desenha os sprites de `art/` (âncoras, animação, escala ×2 sem borrar). |
 | `art/` | Toda a pixel art em PNG: tiles, armadilhas, monstros, heróis, guardiões, lendários, cenário da arena e efeitos. |
 | `tools/gen_art.py`, `tools/rig.py`, `tools/arena_art.py`, `tools/fx_art.py`, `tools/ui_icons.py` | O "código-fonte" da arte. `rig.py` monta guardiões e lendários em camadas (corpo, braços, arma, cabeça). Mude e rode `python3 tools/gen_art.py` (precisa de Python 3 e Pillow) para gerar os PNGs de novo. |

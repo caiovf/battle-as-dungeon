@@ -66,6 +66,8 @@ func build_gd() -> Dictionary:
 	o.skills = c.skills
 	o.passive = c.passive
 	o.cls = game.g_cls
+	o.pw = D.CLASS_POWER[game.g_cls].dmg
+	o.def = D.CLASS_POWER[game.g_cls].def
 	o.key = "%s_%d" % [game.guardian, game.g_cls]
 	if game.guardian == "dragao" and game.g_cls == 3:
 		o.w = 44
@@ -115,7 +117,7 @@ func sk_cd(i: int) -> float:
 
 
 func dmg_mul() -> float:
-	return (1.0 + game.evo_pct()) * (1.5 if P.fury_t > 0 else 1.0) * (1.0 + 0.04 * P.rage)
+	return (1.0 + game.evo_pct()) * gd.pw * (1.5 if P.fury_t > 0 else 1.0) * (1.0 + 0.04 * P.rage)
 
 
 func spawn_parts(x: float, y: float, col: Color, n: int) -> void:
@@ -835,7 +837,7 @@ func hurt_guard(sec: float, force := false) -> void:
 		return
 	if not force and P.inv > 0:
 		return
-	var lost = D.r1(sec * leg_scale * gd.armor * pow(0.85, game.g_up.couraca) * (1.0 + game.fame_pct() * D.CFG.LEG_FAME_DMG) * (0.7 if P.fury_t > 0 else 1.0) * (0.6 if P.scale_t > 0 else 1.0))
+	var lost = D.r1(sec * leg_scale * gd.armor * gd.def * pow(0.85, game.g_up.couraca) * (1.0 + game.fame_pct() * D.CFG.LEG_FAME_DMG) * (0.7 if P.fury_t > 0 else 1.0) * (0.6 if P.scale_t > 0 else 1.0))
 	game.clock -= lost
 	P.lost.append([t, lost])
 	stats.hits += 1

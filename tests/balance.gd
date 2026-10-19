@@ -19,7 +19,7 @@ func _initialize() -> void:
 	if g == "":
 		g = "minotauro"
 	for clk in [100.0, 220.0]:
-		for n in [1, 2, 4, 8]:
+		for n in [1, 2, 4, 8, 13]:
 			for l in legs:
 				fights.append({"g": g, "l": l, "clock": clk, "n": n})
 
@@ -75,13 +75,13 @@ func _process(_d: float) -> bool:
 		main.fresh_state()
 		main.set_path(main.gen_path())
 		main.guardian = cur.g
-		main.g_cls = 0
+		main.g_cls = mini(3, int((cur.n - 1) / 3))   # quem chega longe costuma ter classe melhor
 		main.leg_count = cur.n - 1
 		main.fame = 15.0 * cur.n
 		main.evo = 15.0 * (cur.n - 1) + 4.0
 		main.clock = cur.clock - 10.0
 		# a cada lendário vencido o jogador costuma melhorar algo no guardião
-		main.g_up.couraca = int((cur.n - 1) / 2)
+		main.g_up.couraca = mini(4, int((cur.n - 1) / 3))
 		for k in D.CLASSES[cur.g][0].skills.slice(0, cur.n - 1):
 			main.g_skl[k] = 2
 		main.phase = "wave"

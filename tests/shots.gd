@@ -43,6 +43,7 @@ func _process(_d: float) -> bool:
 			main.summon("esqueleto")
 			main.kl["espinhos"] = 2
 			main.kl["besta"] = 3
+		60: snap("01b_contagem")
 		200: snap("02_mapa")
 		202:
 			main.ui.set_tab("mon")

@@ -197,7 +197,7 @@ func build() -> void:
 	top.add_child(guard_btn)
 	fs_btn = _button("Tela cheia", toggle_fullscreen, 14)
 	top.add_child(fs_btn)
-	var gb = _button("Grimório", show_grim, 20)
+	var gb = _button("Melhorias", show_grim, 20)
 	gb.name = "GrimBtn"
 	if _font("PixelifySans-SemiBold.woff2"):
 		gb.add_theme_font_override("font", _font("PixelifySans-SemiBold.woff2"))
@@ -600,11 +600,16 @@ func render_classes() -> void:
 		nm.custom_minimum_size.x = 120
 		tv.add_child(nm)
 		var mk = "%s_%d" % [g, i]
+		var pwr = D.CLASS_POWER[i]
+		var pl = _label("PODER %d/4" % (i + 1), 8, C_BRASS if open else C_MUTE, "PressStart2P.woff2")
+		tv.add_child(pl)
 		var stt = "ATUAL" if cur else ("LIBERADA" if open else "MISSÃO %d/%d" % [game.mission_prog(mk), D.MISSIONS[mk].goal])
 		tv.add_child(_label(stt, 8, col, "PressStart2P.woff2"))
 		top_h.add_child(tv)
 		v.add_child(top_h)
 		var lines = [c.estilo]
+		if i > 0:
+			lines.append("Mais forte: +%d%% de dano e %d%% menos tempo perdido por golpe." % [int(round((pwr.dmg - 1.0) * 100)), int(round((1.0 - pwr.def) * 100))])
 		if c.passive != "":
 			lines.append("Passiva: " + D.PASSIVES[c.passive])
 		var sk = []
@@ -670,8 +675,8 @@ func render_grim() -> void:
 	var head = HBoxContainer.new()
 	var hv = VBoxContainer.new()
 	hv.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	hv.add_child(_label("Grimório da masmorra", 30, C_FG, "PixelifySans-SemiBold.woff2"))
-	var sub = _label("Ganhe 1 essência por onda vencida. Tudo aqui vale só para esta run%s." % ((" · %d ganha%s até agora" % [game.ess_run, "s" if game.ess_run > 1 else ""]) if game.ess_run > 0 else ""), 14, C_MUTE)
+	hv.add_child(_label("Melhorias da masmorra", 30, C_FG, "PixelifySans-SemiBold.woff2"))
+	var sub = _label("Gaste essência para fortalecer a masmorra e liberar armadilhas e monstros novos. Ganhe 1 essência por onda vencida. Tudo aqui vale só para esta run%s." % ((" · %d ganha%s até agora" % [game.ess_run, "s" if game.ess_run > 1 else ""]) if game.ess_run > 0 else ""), 14, C_MUTE)
 	sub.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	hv.add_child(sub)
 	head.add_child(hv)
@@ -681,8 +686,8 @@ func render_grim() -> void:
 	grim_box.add_child(head)
 	var locked: bool = not game.in_run()
 	if locked:
-		grim_box.add_child(_label("Comece uma run para gastar essência. O jogo fica pausado enquanto o grimório está aberto.", 14, C_EMBER))
-	grim_box.add_child(_label("Melhorias da masmorra", 20, C_FG, "PixelifySans-SemiBold.woff2"))
+		grim_box.add_child(_label("Comece uma run para gastar essência. O jogo fica pausado enquanto esta tela está aberta.", 14, C_EMBER))
+	grim_box.add_child(_label("Fortalecer a masmorra", 20, C_FG, "PixelifySans-SemiBold.woff2"))
 	var gp = GridContainer.new()
 	gp.columns = 3
 	gp.add_theme_constant_override("h_separation", 8)
@@ -700,7 +705,7 @@ func render_grim() -> void:
 	grim_box.add_child(gp)
 	if hidden > 0:
 		grim_box.add_child(_label("%d melhoria%s ainda escondida%s. Elas aparecem conforme a run avança." % [hidden, "s" if hidden > 1 else "", "s" if hidden > 1 else ""], 13, C_MUTE))
-	for sec in [["Armadilhas", "trap", "Depois de liberadas, passam a aparecer como cartas de relíquia nesta run."], ["Monstros", "monster", "Depois de liberados, ficam à venda por tempo nesta run, a partir da onda indicada."]]:
+	for sec in [["Novas armadilhas", "trap", "Depois de liberadas, passam a aparecer como cartas de relíquia nesta run."], ["Novos monstros", "monster", "Depois de liberados, ficam à venda por tempo nesta run, a partir da onda indicada."]]:
 		grim_box.add_child(_label(sec[0], 20, C_FG, "PixelifySans-SemiBold.woff2"))
 		grim_box.add_child(_label(sec[2], 13, C_MUTE))
 		var g = GridContainer.new()
@@ -1010,8 +1015,12 @@ func sync() -> void:
 	pause_btn.disabled = not (game.phase in ["wave", "prep", "arena"])
 	pause_btn.text = "Continuar" if game.paused else "Pausar"
 	pause_lbl.visible = game.paused
-	bell_btn.disabled = game.phase != "wave" or game.bell_cd > 0
-	bell_btn.text = ("Badalada %.1fs" % game.bell_cd) if game.bell_cd > 0 else "Badalada −%ds" % game.bell_cost()
+	if game.phase == "wave" and game.countdown > 0:
+		bell_btn.disabled = false
+		bell_btn.text = "Começar agora (%d)" % ceili(game.countdown)
+	else:
+		bell_btn.disabled = game.phase != "wave" or game.bell_cd > 0
+		bell_btn.text = ("Badalada %.1fs" % game.bell_cd) if game.bell_cd > 0 else "Badalada −%ds" % game.bell_cost()
 	speed_btn.text = "%d×" % game.speed
 	if mobile:
 		var ev_v: bool = on

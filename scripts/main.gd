@@ -121,6 +121,7 @@ var g_up := {"couraca": 0, "agil": 0, "sangue": 0}
 var duel := {"dash": 0, "pulo": 0, "perto": 0, "longe": 0, "especial": 0}
 var lost_to := ""
 var free_t := 0.0
+var countdown := 0.0   # contagem antes da onda começar
 var tool := "espinhos"
 var hover := Vector2i(-1, -1)
 var shake_t: float = 0.0
@@ -760,6 +761,7 @@ func start_wave() -> void:
 	queue = bw.q
 	spawn_t = D.CFG.FIRST_DELAY
 	phase = "wave"
+	countdown = D.WAVE_COUNTDOWN
 	var hs = hero_scale(wave)
 	var parts = ["Onda %d: %d heróis, vida ×%s, relógio a %s×." % [wave, queue.size(), D.fmt(hs.hp), D.fmt(clock_rate())]]
 	if bw.boss != "":
@@ -809,6 +811,9 @@ func next_wave() -> void:
 
 # ===== badalada =====
 func bell() -> void:
+	if phase == "wave" and countdown > 0:
+		countdown = 0.01
+		return
 	if phase != "wave":
 		hint("A badalada só funciona com heróis na masmorra.")
 		return
@@ -1345,6 +1350,12 @@ func step(delta: float) -> void:
 	for f in fx:
 		f.life -= dt
 	fx = fx.filter(func(f): return f.life > 0)
+	if phase == "wave" and countdown > 0:
+		# tempo para se arrumar: o relógio não corre e os heróis esperam
+		countdown = maxf(0.0, countdown - minf(delta, 0.05))
+		if countdown <= 0:
+			float_text(Vector2(W / 2.0, H / 2.0), "LÁ VÊM ELES!", Color("#ff5a48"), 26)
+		return
 	var live = phase == "prep" or phase == "wave"
 	if live:
 		clock -= dt * clock_rate()
@@ -1974,6 +1985,13 @@ func _draw_dyn(g: CanvasItem) -> void:
 
 
 func _draw_texts(g: CanvasItem) -> void:
+	if phase == "wave" and countdown > 0:
+		var n = ceili(countdown)
+		var k = countdown - floorf(countdown)
+		g.draw_rect(Rect2(0, H / 2.0 - 70, W, 120), Color(0.05, 0.03, 0.08, 0.55))
+		Art.text(g, Vector2(W / 2.0, H / 2.0 - 34), "A ONDA %d COMEÇA EM" % wave, Color("#ece2d2"), 14)
+		Art.text(g, Vector2(W / 2.0, H / 2.0 + 18), str(n), Color(1, 0.77, 0.19, 0.6 + 0.4 * k), 44 + int(10 * k))
+		Art.text(g, Vector2(W / 2.0, H / 2.0 + 44), "arrume as armadilhas · o relógio está parado", Color("#9a8e7f"), 11)
 	for t in texts:
 		var c: Color = t.c
 		c.a = clampf(t.life / t.max * 1.5, 0.0, 1.0)

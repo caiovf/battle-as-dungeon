@@ -5,7 +5,7 @@ class_name Data
 const CFG := {
 	"START": 60.0,
 	"SELL": 0.5, "RESET_REFUND": 0.5,
-	"FIRST_DELAY": 3.0,
+	"FIRST_DELAY": 0.6,
 	"BELL_COST": 5, "BELL_FREEZE": 2.0, "BELL_CD": 8.0,
 	"COMBO_WINDOW": 1.2, "COMBO_STEP": 0.25, "COMBO_MAX": 2.5,
 	"GREED_MUL": 1.5,
@@ -20,12 +20,12 @@ const CFG := {
 	"SOUL_BASE": 1.0,   # energia absorvida por herói derrotado: 1s × (1 + fama%)
 	"SOUL_LEG": 10.0,   # lendário vale 10× isso
 	"LEG_RES": 0.45,    # lendário no corredor só sofre 45% do dano
-	"LEG_HP_GROWTH": 0.15,      # vida do lendário na arena a cada lendário que já caiu
+	"LEG_HP_GROWTH": 0.22,      # vida do lendário na arena a cada lendário que já caiu
 	"LEG_MAP_HP_GROWTH": 0.35,  # vida do lendário no corredor a cada lendário que já caiu
 	"ARENA_BONUS": 10.0,
 	# dano dos lendários na arena acompanha o relógio: cada golpe tira uma fatia do tempo que você tinha
 	# ao entrar na sala (relógio/LEG_DMG_REF, com expoente para guardar tempo ainda ajudar um pouco)
-	"LEG_DMG_REF": 185.0, "LEG_DMG_EXP": 0.9, "LEG_DMG_MIN": 0.5, "LEG_DMG_GROWTH": 0.04, "LEG_FAME_DMG": 0.4, "LEG_FAME_HP": 0.5,
+	"LEG_DMG_REF": 185.0, "LEG_DMG_EXP": 0.9, "LEG_DMG_MIN": 0.5, "LEG_DMG_GROWTH": 0.11, "LEG_FAME_DMG": 0.4, "LEG_FAME_HP": 0.5,
 	"LEG_ARENA_HP": 2.0,   # vida dos lendários na arena (multiplica LEG_ARENA.hp)
 	"AURA": 2.5,
 	"HERO_HP_GROWTH": 0.10, "HERO_DMG_GROWTH": 0.05, "HERO_SPD_GROWTH": 0.015, "HERO_STEAL_GROWTH": 0.15,
@@ -226,6 +226,10 @@ const LEG_ARENA := {
 # ===== Classes do guardião (estilo Grand Chase): cada classe muda arma, ataque, movimento e habilidades =====
 ## Classes 2, 3 e 4 liberam com missões permanentes (ficam salvas entre runs).
 ## stat = o que conta para a missão; goal = quanto precisa.
+## Poder de cada classe: a 1ª é a base e a 4ª a mais forte.
+## dmg multiplica todo o dano do guardião; def multiplica o tempo perdido ao levar golpes.
+const CLASS_POWER := [{"dmg": 1.0, "def": 1.0}, {"dmg": 1.15, "def": 0.92}, {"dmg": 1.3, "def": 0.85}, {"dmg": 1.5, "def": 0.76}]
+const WAVE_COUNTDOWN := 5.0   # segundos para se arrumar antes de cada onda (o relógio não corre)
 const MISSIONS := {
 	"minotauro_1": {"desc": "Acerte 250 golpes básicos com o Minotauro na sala do guardião.", "goal": 250},
 	"minotauro_2": {"desc": "Vença um lendário com o Minotauro perdendo menos de 30% do relógio na luta.", "goal": 1},
@@ -249,7 +253,7 @@ const CLASSES := {
 	"minotauro": [
 		{"nome": "Guerreiro do Labirinto", "estilo": "Equilibrado: machado pesado e investidas.", "spd": 1.0, "jump": 1.0, "jumps": 1, "armor": 0.85,
 			"atk": {"kind": "melee", "dmg": 22, "cd": 0.46, "range": 70, "hh": 54, "t": 0.14, "anti": 0.07, "rec": 0.1, "fx": "axe", "shake": 0.006}, "skills": ["investida", "pisao", "furia"], "passive": "", "bonus": {"desc": "Monstros causam +20% de dano.", "mul": {"monDmg": 1.2}}},
-		{"nome": "Berserker", "estilo": "Dois machados, golpes rápidos; cada acerto aumenta o dano até ser atingido.", "spd": 1.12, "jump": 1.0, "jumps": 1, "armor": 0.95,
+		{"nome": "Berserker", "estilo": "Dois machados, golpes rápidos; cada acerto aumenta o dano até ser atingido.", "spd": 1.12, "jump": 1.0, "jumps": 1, "armor": 0.88,
 			"atk": {"kind": "melee", "dmg": 12, "cd": 0.24, "range": 60, "hh": 48, "t": 0.09, "anti": 0.03, "rec": 0.05, "fx": "axe", "shake": 0.003}, "skills": ["redemoinho", "investida", "sede"], "passive": "furia_acumula", "bonus": {"desc": "Monstros causam +35% de dano, mas têm 10% menos vida.", "mul": {"monDmg": 1.35, "monHp": 0.9}}},
 		{"nome": "Guardião de Pedra", "estilo": "Tanque com escudo e maça: lento, aguenta muito e empurra o inimigo.", "spd": 0.85, "jump": 0.95, "jumps": 1, "armor": 0.6,
 			"atk": {"kind": "melee", "dmg": 26, "cd": 0.6, "range": 62, "hh": 56, "t": 0.16, "anti": 0.1, "rec": 0.14, "fx": "axe", "shake": 0.008}, "skills": ["postura", "chifrada", "terremoto"], "passive": "empurrao", "bonus": {"desc": "Monstros têm +40% de vida.", "mul": {"monHp": 1.4}}},
@@ -272,7 +276,7 @@ const CLASSES := {
 		{"nome": "Dragão da Tempestade", "estilo": "Pulo triplo e raios; acertos às vezes soltam faíscas.", "spd": 1.1, "jump": 1.05, "jumps": 3, "armor": 0.93,
 			"atk": {"kind": "melee", "dmg": 10, "cd": 0.2, "range": 54, "hh": 42, "t": 0.09, "anti": 0.03, "rec": 0.04, "fx": "claw", "shake": 0.002}, "skills": ["raio", "voo", "tempestade"], "passive": "faisca", "bonus": {"desc": "Bestas causam +40% de dano.", "mul": {"besta": 1.4}}},
 		{"nome": "Serpe Venenosa", "estilo": "Ferrão na cauda: envenena e desgasta aos poucos.", "spd": 1.05, "jump": 1.0, "jumps": 2, "armor": 0.88,
-			"atk": {"kind": "melee", "dmg": 8, "cd": 0.26, "range": 64, "hh": 40, "t": 0.1, "anti": 0.05, "rec": 0.05, "fx": "claw", "shake": 0.002}, "skills": ["nuvem", "ferrao", "muda"], "passive": "veneno", "bonus": {"desc": "Espinhos causam +50% de dano.", "mul": {"esp": 1.5}}},
+			"atk": {"kind": "melee", "dmg": 10, "cd": 0.26, "range": 64, "hh": 40, "t": 0.1, "anti": 0.05, "rec": 0.05, "fx": "claw", "shake": 0.002}, "skills": ["nuvem", "ferrao", "muda"], "passive": "veneno", "bonus": {"desc": "Espinhos causam +50% de dano.", "mul": {"esp": 1.5}}},
 		{"nome": "Dragão Ancião", "estilo": "Grande e pesado: cauda larga, meteoros e rugido.", "spd": 0.85, "jump": 0.92, "jumps": 1, "armor": 0.63,
 			"atk": {"kind": "melee", "dmg": 20, "cd": 0.45, "range": 84, "hh": 62, "t": 0.14, "anti": 0.08, "rec": 0.1, "fx": "axe", "shake": 0.006}, "skills": ["meteoro", "rugido", "asas_fogo"], "passive": "", "bonus": {"desc": "Cada herói derrotado dá +1s extra.", "add": {"kill": 1.0}}},
 	],
