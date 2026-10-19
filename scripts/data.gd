@@ -231,10 +231,13 @@ const LEG_ARENA := {
 const CLASS_POWER := [{"dmg": 1.0, "def": 1.0}, {"dmg": 1.15, "def": 0.92}, {"dmg": 1.3, "def": 0.85}, {"dmg": 1.5, "def": 0.76}]
 ## Árvore de talentos de cada classe (estilo Grand Chase): três ramos especializados no jeito de lutar
 ## da classe, 2 talentos em cada ramo, e o talento de Mestre (precisa de 4 talentos comprados).
-## Pontos: cada lendário vencido com a classe dá TALENT_PER_LEG pontos para ela (permanentes).
+## Pontos da classe: a 1ª vitória da classe contra o lendário nº n dá n + CLASS_FIRST_BASE pontos;
+## vencer de novo dá TALENT_PER_LEG. Somando a 1ª vitória do lendário 1 ao 12 (= 102) a classe fica
+## no máximo (13 talentos + 26 para liberar + 60 para aprimorar = 99) ao chegar no último lendário.
 ## Efeitos (fx): atk_dmg, atk_cd, atk_range, sk0/1/2_pow, sk0/1/2_cd, sk0/1/2_dur, ult_pow, ult_gain, pass (força da passiva),
 ## rage_cap, shot_n, pierce, jumps, poison_cap, skel, leech, def, spd.
-const TALENT_PER_LEG := 2
+const TALENT_PER_LEG := 0
+const CLASS_FIRST_BASE := 2
 const TALENT_TREES := {
 	"minotauro_0": {"cols": ["Machado", "Chifres", "Fúria"], "nodes": [
 		{"id": "a1", "col": 0, "cost": 1, "req": "", "nome": "Machado pesado", "desc": "+15% de dano no ataque básico.", "fx": {"atk_dmg": 0.15}},
@@ -335,9 +338,11 @@ const TALENT_TREES := {
 }
 
 ## ===== Upgrades básicos do guardião: valem para todas as 4 classes dele, inclusive a base =====
-## Pontos de guardião: cada lendário vencido com qualquer classe do guardião dá GUARD_PTS_PER_LEG.
+## Pontos de guardião: a 1ª vitória do guardião (qualquer classe) contra o lendário nº n dá n + GUARD_FIRST_BASE;
+## vencer de novo dá GUARD_PTS_PER_LEG. Lendários 1 a 12 = 90 pontos, e tudo no máximo custa 80.
 ## Custo de cada nível = 1 + nível atual / 3.
-const GUARD_PTS_PER_LEG := 2
+const GUARD_PTS_PER_LEG := 0
+const GUARD_FIRST_BASE := 1
 const BASIC_UPS := [
 	{"id": "forca", "nome": "Força", "desc": "+5% de dano em tudo por nível.", "max": 10},
 	{"id": "resist", "nome": "Resistência", "desc": "Perde 4% menos tempo por golpe, por nível.", "max": 10},

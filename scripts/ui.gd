@@ -564,7 +564,7 @@ func _render_gups(g: String) -> void:
 	var hv = VBoxContainer.new()
 	hv.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	hv.add_child(_label("Upgrades básicos · %s" % D.GUARDS[g].nome, 26, C_FG, "PixelifySans-SemiBold.woff2"))
-	var sub = _label("Valem para todas as classes do %s, inclusive a base, e ficam para sempre. Cada lendário vencido com ele dá %d pontos de guardião. Pontos livres: %d." % [D.GUARDS[g].nome, D.GUARD_PTS_PER_LEG, pts], 14, C_BRASS if pts > 0 else C_MUTE)
+	var sub = _label("Valem para todas as classes do %s, inclusive a base, e ficam para sempre. A 1ª vitória contra o lendário nº n dá n + %d pontos de guardião: chegando ao último lendário, tudo fica no máximo. Pontos livres: %d." % [D.GUARDS[g].nome, D.GUARD_FIRST_BASE, pts], 14, C_BRASS if pts > 0 else C_MUTE)
 	sub.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	hv.add_child(sub)
 	head.add_child(hv)
@@ -711,7 +711,7 @@ func _render_talents(g: String, ci: int) -> void:
 	var hv = VBoxContainer.new()
 	hv.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	hv.add_child(_label("Talentos · %s" % c.nome, 26, C_FG, "PixelifySans-SemiBold.woff2"))
-	var sub = _label("Talentos especializados desta classe. Cada lendário vencido com ela dá %d pontos; os talentos ficam para sempre. Pontos livres: %d." % [D.TALENT_PER_LEG, pts], 14, C_BRASS if pts > 0 else C_MUTE)
+	var sub = _label("Talentos especializados desta classe. A 1ª vitória da classe contra o lendário nº n dá n + %d pontos: chegando ao último lendário, a classe fica no máximo. Pontos livres: %d." % [D.CLASS_FIRST_BASE, pts], 14, C_BRASS if pts > 0 else C_MUTE)
 	sub.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	hv.add_child(sub)
 	head.add_child(hv)

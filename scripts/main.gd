@@ -67,7 +67,7 @@ class Trap:
 
 
 # ===== estado da run =====
-var meta := {"runs": 0, "best": 0, "miss": {}, "cls": [], "tal": {}, "tp": {}, "load": {}, "skp": {}, "spent": {}, "sku": [], "gup": {}, "gp": {}}
+var meta := {"runs": 0, "best": 0, "miss": {}, "cls": [], "tal": {}, "tp": {}, "load": {}, "skp": {}, "spent": {}, "sku": [], "gup": {}, "gp": {}, "fw": []}
 var heart := Vector2i(COLS - 1, 5)
 var clock: float = 60.0
 var wave: int = 1
@@ -237,6 +237,8 @@ func _load_meta() -> void:
 					meta[key] = v if v is Dictionary else {}
 				var su = d.get("sku", [])
 				meta["sku"] = su if su is Array else []
+				var fw = d.get("fw", [])
+				meta["fw"] = fw if fw is Array else []
 
 
 func save_meta() -> void:
@@ -544,6 +546,24 @@ func gp_points(g: String) -> int:
 func gp_gain(g: String, n: int) -> void:
 	meta.gp[g] = int(meta.gp.get(g, 0)) + n
 	save_meta()
+
+
+## Pontos ganhos ao vencer o lendário nº n: a 1ª vitória vale muito mais e cresce com n.
+## Devolve [pontos da classe, pontos do guardião, foi 1ª vitória da classe, do guardião].
+func leg_points(ck: String, g: String, n: int, give: bool) -> Array:
+	var fc = not meta.fw.has("%s:%d" % [ck, n])
+	var fg = not meta.fw.has("%s:%d" % [g, n])
+	var pc = (n + D.CLASS_FIRST_BASE) if fc else D.TALENT_PER_LEG
+	var pg = (n + D.GUARD_FIRST_BASE) if fg else D.GUARD_PTS_PER_LEG
+	if give:
+		if fc:
+			meta.fw.append("%s:%d" % [ck, n])
+		if fg:
+			meta.fw.append("%s:%d" % [g, n])
+		meta.tp[ck] = int(meta.tp.get(ck, 0)) + pc
+		meta.gp[g] = int(meta.gp.get(g, 0)) + pg
+		save_meta()
+	return [pc, pg, fc, fg]
 
 
 func gup_buy(g: String, id: String) -> void:
