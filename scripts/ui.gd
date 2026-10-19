@@ -36,6 +36,7 @@ var guard_btn: Button
 var gbtn_flash := 0.0
 var cls_modal: Control
 var cls_box: VBoxContainer
+var tal_cls := -1          # classe aberta na árvore de talentos (-1 = lista de classes)
 var dock: PanelContainer
 var bell_btn: Button
 var pause_btn: Button
@@ -542,6 +543,81 @@ func show_classes() -> void:
 
 func close_classes() -> void:
 	cls_modal.visible = false
+	tal_cls = -1
+
+
+## Árvore de talentos de uma classe: três colunas (Ataque, Habilidades, Defesa) e o talento de Mestre.
+func _render_talents(g: String, ci: int) -> void:
+	var c = D.CLASSES[g][ci]
+	var k = "%s_%d" % [g, ci]
+	var pts: int = game.tal_points(k)
+	var head = HBoxContainer.new()
+	var hv = VBoxContainer.new()
+	hv.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	hv.add_child(_label("Talentos · %s" % c.nome, 26, C_FG, "PixelifySans-SemiBold.woff2"))
+	var sub = _label("Cada lendário vencido com esta classe dá %d pontos. Os talentos ficam para sempre e valem em todas as runs. Pontos livres: %d." % [D.TALENT_PER_LEG, pts], 14, C_BRASS if pts > 0 else C_MUTE)
+	sub.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	hv.add_child(sub)
+	head.add_child(hv)
+	var bk = _button("Voltar", func():
+		tal_cls = -1
+		render_classes(), 16)
+	bk.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
+	head.add_child(bk)
+	if game.tal_owned(k).size() > 0:
+		var rs = _button("Refazer", func():
+			game.tal_reset(k)
+			render_classes(), 16)
+		rs.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
+		head.add_child(rs)
+	cls_box.add_child(head)
+	var cols = HBoxContainer.new()
+	cols.add_theme_constant_override("separation", 10)
+	cls_box.add_child(cols)
+	for col in 3:
+		var cv = VBoxContainer.new()
+		cv.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		cv.add_theme_constant_override("separation", 6)
+		cv.add_child(_label(D.TALENT_COLS[col].to_upper(), 9, C_MUTE, "PressStart2P.woff2"))
+		for t in D.TALENTS:
+			if t.col == col:
+				cv.add_child(_tal_node(g, ci, k, t))
+		cols.add_child(cv)
+	for t in D.TALENTS:
+		if t.col == -1:
+			cls_box.add_child(_tal_node(g, ci, k, t))
+
+
+func _tal_node(g: String, ci: int, k: String, t: Dictionary) -> Control:
+	var have: bool = game.tal_owned(k).has(t.id)
+	var can: bool = game.tal_can(k, t) and game.phase != "arena"
+	var col = C_MOSS if have else (C_BRASS if can else C_LINE)
+	var p = PanelContainer.new()
+	p.add_theme_stylebox_override("panel", _sb(Color("#1b2a18") if have else C_BG, col, 6, 2 if have else 1, 8))
+	var h = HBoxContainer.new()
+	h.add_theme_constant_override("separation", 8)
+	var v = VBoxContainer.new()
+	v.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	v.add_theme_constant_override("separation", 2)
+	v.add_child(_label(game.tal_text(g, ci, t.nome), 15, C_FG if (have or can) else C_MUTE, "PixelifySans-SemiBold.woff2"))
+	var desc = game.tal_master_desc(g, ci) if t.id == "m" else game.tal_text(g, ci, t.desc)
+	if t.req.begins_with("*") and not have:
+		desc += " Precisa de %s talentos." % t.req.substr(1)
+	var d = _label(desc, 12, C_FG if (have or can) else C_MUTE)
+	d.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	d.custom_minimum_size.x = 150
+	v.add_child(d)
+	h.add_child(v)
+	var tid: String = t.id
+	var b = _button("Ok" if have else "%d pt%s" % [t.cost, "s" if t.cost > 1 else ""], func():
+		game.tal_buy(k, tid)
+		render_classes(), 14)
+	b.disabled = have or not can
+	b.custom_minimum_size = Vector2(58, 0)
+	b.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	h.add_child(b)
+	p.add_child(h)
+	return p
 
 
 func flash_guard_btn() -> void:
@@ -552,6 +628,11 @@ func render_classes() -> void:
 	for c in cls_box.get_children():
 		c.queue_free()
 	var g: String = game.guardian
+	if cls_modal.visible:
+		get_tree().create_timer(0.03).timeout.connect(layout)
+	if tal_cls >= 0:
+		_render_talents(g, tal_cls)
+		return
 	var head = HBoxContainer.new()
 	var hv = VBoxContainer.new()
 	hv.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -635,7 +716,20 @@ func render_classes() -> void:
 		pick.pressed.connect(func():
 			game.set_class(ii)
 			render_classes())
-		v.add_child(pick)
+		var row = HBoxContainer.new()
+		row.add_theme_constant_override("separation", 6)
+		pick.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		row.add_child(pick)
+		if open:
+			var tk = mk
+			var pts: int = game.tal_points(tk)
+			var tb = _button("Talentos%s" % ((" · %d" % pts) if pts > 0 else ""), func():
+				tal_cls = ii
+				render_classes(), 15)
+			tb.add_theme_color_override("font_color", C_BRASS if pts > 0 else C_FG)
+			tb.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			row.add_child(tb)
+		v.add_child(row)
 		b.add_child(v)
 		grid.add_child(b)
 

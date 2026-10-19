@@ -67,7 +67,7 @@ class Trap:
 
 
 # ===== estado da run =====
-var meta := {"runs": 0, "best": 0, "miss": {}, "cls": []}
+var meta := {"runs": 0, "best": 0, "miss": {}, "cls": [], "tal": {}, "tp": {}}
 var heart := Vector2i(COLS - 1, 5)
 var clock: float = 60.0
 var wave: int = 1
@@ -228,6 +228,10 @@ func _load_meta() -> void:
 				meta["miss"] = ms if ms is Dictionary else {}
 				var cl = d.get("cls", [])
 				meta["cls"] = cl if cl is Array else []
+				var tl = d.get("tal", {})
+				meta["tal"] = tl if tl is Dictionary else {}
+				var tp = d.get("tp", {})
+				meta["tp"] = tp if tp is Dictionary else {}
 
 
 func save_meta() -> void:
@@ -358,6 +362,78 @@ func mission_add(k: String, n := 1) -> void:
 		hint("Missão cumprida! O %s pode virar %s, nesta run e nas próximas. Toque em Guardião (na barra de cima) para trocar." % [D.GUARDS[guardian].nome, c.nome], false, 7.0)
 		if ui:
 			ui.flash_guard_btn()
+
+
+# ===== talentos (permanentes, por classe) =====
+func tal_owned(k: String) -> Array:
+	return meta.tal.get(k, [])
+
+
+func tal_spent(k: String) -> int:
+	var n = 0
+	for t in D.TALENTS:
+		if tal_owned(k).has(t.id):
+			n += int(t.cost)
+	return n
+
+
+func tal_points(k: String) -> int:
+	return int(meta.tp.get(k, 0)) - tal_spent(k)
+
+
+func tal_can(k: String, t: Dictionary) -> bool:
+	if tal_owned(k).has(t.id) or tal_points(k) < int(t.cost):
+		return false
+	if t.req == "":
+		return true
+	if t.req.begins_with("*"):
+		return tal_owned(k).size() >= int(t.req.substr(1))
+	return tal_owned(k).has(t.req)
+
+
+func tal_buy(k: String, id: String) -> void:
+	for t in D.TALENTS:
+		if t.id == id and tal_can(k, t):
+			var o = tal_owned(k).duplicate()
+			o.append(id)
+			meta.tal[k] = o
+			save_meta()
+			return
+
+
+func tal_reset(k: String) -> void:
+	meta.tal[k] = []
+	save_meta()
+
+
+func tal_gain(k: String, n: int) -> void:
+	meta.tp[k] = int(meta.tp.get(k, 0)) + n
+	save_meta()
+
+
+## Soma dos efeitos dos talentos comprados de uma classe.
+func talent_fx(k: String) -> Dictionary:
+	var f = {}
+	for t in D.TALENTS:
+		if tal_owned(k).has(t.id):
+			for e in t.fx:
+				f[e] = float(f.get(e, 0.0)) + float(t.fx[e])
+	return f
+
+
+## Texto do talento com os nomes das habilidades da classe.
+static func tal_text(g: String, ci: int, s: String) -> String:
+	var c = D.CLASSES[g][ci]
+	for i in 3:
+		s = s.replace("{s%d}" % i, D.SKILLS[c.skills[i]].nome)
+	return s
+
+
+static func tal_master_desc(g: String, ci: int) -> String:
+	var c = D.CLASSES[g][ci]
+	if c.passive != "":
+		return "A passiva fica duas vezes mais forte (%s)." % D.PASSIVES[c.passive].trim_suffix(".").to_lower()
+	return "Todas as habilidades com +25% de poder."
 
 
 # ===== bônus do guardião e da classe na masmorra =====

@@ -2711,7 +2711,79 @@
 "h": 27,
 "w": 21
 },
+"heroes/arquimago_atk0": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/arquimago_atk1": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/arquimago_walk0": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/arquimago_walk1": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/arquimago_walk2": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/arquimago_walk3": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
 "heroes/astra": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/astra_atk0": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/astra_atk1": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/astra_walk0": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/astra_walk1": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/astra_walk2": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/astra_walk3": {
 "ax": 10.5,
 "ay": 27,
 "h": 27,
@@ -2765,7 +2837,79 @@
 "h": 27,
 "w": 21
 },
+"heroes/borin_atk0": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/borin_atk1": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/borin_walk0": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/borin_walk1": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/borin_walk2": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/borin_walk3": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
 "heroes/bram": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/bram_atk0": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/bram_atk1": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/bram_walk0": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/bram_walk1": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/bram_walk2": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/bram_walk3": {
 "ax": 10.5,
 "ay": 27,
 "h": 27,
@@ -2903,6 +3047,42 @@
 "h": 27,
 "w": 21
 },
+"heroes/campeao_atk0": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/campeao_atk1": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/campeao_walk0": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/campeao_walk1": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/campeao_walk2": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/campeao_walk3": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
 "heroes/desarmador": {
 "ax": 9.5,
 "ay": 19,
@@ -3035,6 +3215,42 @@
 "h": 27,
 "w": 21
 },
+"heroes/garrick_atk0": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/garrick_atk1": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/garrick_walk0": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/garrick_walk1": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/garrick_walk2": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/garrick_walk3": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
 "heroes/guerreiro": {
 "ax": 9.5,
 "ay": 19,
@@ -3078,6 +3294,42 @@
 "w": 19
 },
 "heroes/ignis": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/ignis_atk0": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/ignis_atk1": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/ignis_walk0": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/ignis_walk1": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/ignis_walk2": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/ignis_walk3": {
 "ax": 10.5,
 "ay": 27,
 "h": 27,
@@ -3131,6 +3383,42 @@
 "h": 27,
 "w": 21
 },
+"heroes/kael_atk0": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/kael_atk1": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/kael_walk0": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/kael_walk1": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/kael_walk2": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/kael_walk3": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
 "heroes/ladino": {
 "ax": 9.5,
 "ay": 19,
@@ -3174,6 +3462,42 @@
 "w": 19
 },
 "heroes/lyra": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/lyra_atk0": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/lyra_atk1": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/lyra_walk0": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/lyra_walk1": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/lyra_walk2": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/lyra_walk3": {
 "ax": 10.5,
 "ay": 27,
 "h": 27,
@@ -3269,7 +3593,79 @@
 "h": 27,
 "w": 21
 },
+"heroes/morgana_atk0": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/morgana_atk1": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/morgana_walk0": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/morgana_walk1": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/morgana_walk2": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/morgana_walk3": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
 "heroes/nyx": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/nyx_atk0": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/nyx_atk1": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/nyx_walk0": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/nyx_walk1": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/nyx_walk2": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/nyx_walk3": {
 "ax": 10.5,
 "ay": 27,
 "h": 27,
@@ -3365,7 +3761,79 @@
 "h": 27,
 "w": 21
 },
+"heroes/ragnar_atk0": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/ragnar_atk1": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/ragnar_walk0": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/ragnar_walk1": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/ragnar_walk2": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/ragnar_walk3": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
 "heroes/rei": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/rei_atk0": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/rei_atk1": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/rei_walk0": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/rei_walk1": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/rei_walk2": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/rei_walk3": {
 "ax": 10.5,
 "ay": 27,
 "h": 27,
@@ -3419,7 +3887,79 @@
 "h": 27,
 "w": 21
 },
+"heroes/seraphine_atk0": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/seraphine_atk1": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/seraphine_walk0": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/seraphine_walk1": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/seraphine_walk2": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/seraphine_walk3": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
 "heroes/thorne": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/thorne_atk0": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/thorne_atk1": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/thorne_walk0": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/thorne_walk1": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/thorne_walk2": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/thorne_walk3": {
 "ax": 10.5,
 "ay": 27,
 "h": 27,
@@ -3468,6 +4008,42 @@
 "w": 19
 },
 "heroes/yuki": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/yuki_atk0": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/yuki_atk1": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/yuki_walk0": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/yuki_walk1": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/yuki_walk2": {
+"ax": 10.5,
+"ay": 27,
+"h": 27,
+"w": 21
+},
+"heroes/yuki_walk3": {
 "ax": 10.5,
 "ay": 27,
 "h": 27,

@@ -519,12 +519,14 @@ HEROES = {
 
 
 # Chefes e lendários no mapa (20×20)
-def big_hero(armor, shade, cloth, skin='m', hair='h', pants='u', extra=None, cape=None):
+def big_hero(armor, shade, cloth, skin='m', hair='h', pants='u', extra=None, cape=None, fr='walk0'):
+    import rig
     c = Can(21, 27)
-    c.oy = 7
+    _, _, bob, lean = rig.MAP_FR[fr]
+    c.ox, c.oy = lean, 7 + bob
     if cape:
         c.rect(4, 8, 4, 10, cape)
-    c.rect(6, 15, 3, 4, pants); c.rect(11, 15, 3, 4, pants); c.rect(6, 19, 3, 1, 'b'); c.rect(11, 19, 4, 1, 'b')
+    rig.map_legs(c, fr, pants)
     c.rect(5, 8, 10, 7, armor); c.vl(14, 8, 14, shade); c.hl(5, 14, 14, shade); c.hl(5, 14, 13, 'b')
     c.rect(3, 9, 2, 4, cloth); c.rect(15, 9, 2, 4, cloth)
     c.rect(6, 2, 8, 6, skin); c.px(12, 4, 'k'); c.px(9, 4, 'k'); c.px(13, 7, 'M')
@@ -581,6 +583,8 @@ def build_map_sprites():
         if k in ('lyra', 'borin', 'seraphine'):
             continue
         save('heroes/' + k, big_hero(**kw))
+        for fr in ('walk0', 'walk1', 'walk2', 'walk3', 'atk0', 'atk1'):
+            save('heroes/%s_%s' % (k, fr), big_hero(fr=fr, **kw))
 
 
 # âncora x (centro do corpo) dos sprites da arena, em pixels do sprite

@@ -491,20 +491,40 @@ def legend(key, fr):
 
 # Lendário no mapa (21×27): pose parada do rig reduzida a meia altura não fica boa,
 # então o mapa usa um desenho próprio simplificado com as mesmas cores e acessórios.
-def legend_map(key):
+# quadros do mapa: pernas (esq, dir), sobe/desce do corpo e inclinação no ataque
+MAP_FR = {'walk0': (-1, 1, 0, 0), 'walk1': (0, 0, -1, 0), 'walk2': (1, -1, 0, 0), 'walk3': (0, 0, -1, 0),
+          'atk0': (0, 0, 0, -1), 'atk1': (1, -1, 0, 1)}
+
+
+def map_legs(c, fr, pants, dress=None):
+    """Pernas (ou saia) do sprite do mapa, que mudam a cada quadro de andar."""
+    dl, dr, _, _ = MAP_FR[fr]
+    c.ox, c.oy = 0, 7
+    if dress:
+        armor, armor2 = dress
+        c.tri([(10, 8), (3 + dl, 20), (17 + dr, 20)], armor); c.hl(4 + dl, 16 + dr, 19, armor2)
+        c.rect(7 + dl, 20, 2, 1, 'b'); c.rect(12 + dr, 20, 2, 1, 'b')
+    else:
+        c.rect(6 + dl, 15, 3, 4, pants); c.rect(11 + dr, 15, 3, 4, pants)
+        c.rect(6 + dl, 19, 3, 1, 'b'); c.rect(11 + dr, 19, 4, 1, 'b')
+    _, _, bob, lean = MAP_FR[fr]
+    c.ox, c.oy = lean, 7 + bob
+
+
+def legend_map(key, fr='walk0'):
     L = LEGENDS[key]
     c = Can(21, 27)
-    c.oy = 7
+    _, _, bob, lean = MAP_FR[fr]
+    c.ox, c.oy = lean, 7 + bob
     wide = L.get('wide')
     if L.get('wings'):
         c.tri([(6, 9), (0, 3), (3, 15)], 'C'); c.tri([(14, 9), (20, 3), (17, 15)], 'C')
     if L.get('cape'):
-        c.rect(4, 8, 4, 10, L['cape'])
+        c.rect(4 - (1 if fr.startswith('walk') and MAP_FR[fr][0] else 0), 8, 4, 10, L['cape'])
     if L.get('dress'):
-        c.tri([(10, 8), (3, 20), (17, 20)], L['armor']); c.hl(4, 16, 19, L['armor2'])
+        map_legs(c, fr, None, (L['armor'], L['armor2']))
     else:
-        p = L.get('pants', 'u')
-        c.rect(6, 15, 3, 4, p); c.rect(11, 15, 3, 4, p); c.rect(6, 19, 3, 1, 'b'); c.rect(11, 19, 4, 1, 'b')
+        map_legs(c, fr, L.get('pants', 'u'))
     w0 = 1 if wide else 0
     c.rect(5 - w0, 8, 10 + 2 * w0, 7, L['armor']); c.hl(5 - w0, 14 + w0, 9, L['armor2']); c.hl(5, 14, 13, L['armor2'])
     c.rect(3 - w0, 9, 2, 4, L['armor']); c.rect(15 + w0, 9, 2, 4, L['armor'])
@@ -608,6 +628,8 @@ def build(save):
         for fr in LEG_FRAMES:
             save('arena/%s_%s' % (key, fr), legend(key, fr))
         save('heroes/' + key, legend_map(key))
+        for fr in MAP_FR:
+            save('heroes/%s_%s' % (key, fr), legend_map(key, fr))
     for k in ('axe', 'claw', 'necro', 'spear', 'hero', 'hero_heavy'):
         for f in range(3):
             save('fx/slash_%s_%d' % (k, f), slash_fx(k, f))

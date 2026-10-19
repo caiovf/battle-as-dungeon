@@ -229,6 +229,24 @@ const LEG_ARENA := {
 ## Poder de cada classe: a 1ª é a base e a 4ª a mais forte.
 ## dmg multiplica todo o dano do guardião; def multiplica o tempo perdido ao levar golpes.
 const CLASS_POWER := [{"dmg": 1.0, "def": 1.0}, {"dmg": 1.15, "def": 0.92}, {"dmg": 1.3, "def": 0.85}, {"dmg": 1.5, "def": 0.76}]
+## Árvore de talentos (estilo Grand Chase): igual para todas as classes, com os nomes das habilidades de cada uma.
+## Pontos: cada lendário vencido com a classe dá TALENT_PER_LEG pontos para ela (permanentes, salvos entre runs).
+## col 0 = Ataque, 1 = Habilidades, 2 = Defesa. req = talento anterior; "*6" = precisa de 6 talentos comprados.
+## {s0} {s1} {s2} viram os nomes das habilidades da classe.
+const TALENT_PER_LEG := 2
+const TALENT_COLS := ["Ataque", "Habilidades", "Defesa"]
+const TALENTS := [
+	{"id": "a1", "col": 0, "cost": 1, "req": "", "nome": "Golpe certeiro", "desc": "+10% de dano no ataque básico.", "fx": {"atk": 0.10}},
+	{"id": "a2", "col": 0, "cost": 2, "req": "a1", "nome": "Ritmo de batalha", "desc": "Ataque básico 12% mais rápido.", "fx": {"atk_cd": 0.12}},
+	{"id": "a3", "col": 0, "cost": 3, "req": "a2", "nome": "Golpe devastador", "desc": "+20% de dano no ataque básico.", "fx": {"atk": 0.20}},
+	{"id": "b1", "col": 1, "cost": 1, "req": "", "nome": "Foco", "desc": "Habilidades recarregam 10% mais rápido.", "fx": {"sk_cd": 0.10}},
+	{"id": "b2", "col": 1, "cost": 2, "req": "b1", "nome": "Domínio: {s0}", "desc": "{s0} e {s1} com +30% de poder.", "fx": {"sk0": 0.30, "sk1": 0.30}},
+	{"id": "b3", "col": 1, "cost": 3, "req": "b2", "nome": "Domínio: {s2}", "desc": "{s2} com +40% de poder e 20% menos recarga.", "fx": {"sk2": 0.40, "sk2_cd": 0.20}},
+	{"id": "c1", "col": 2, "cost": 1, "req": "", "nome": "Couro grosso", "desc": "Perde 8% menos tempo por golpe.", "fx": {"def": 0.08}},
+	{"id": "c2", "col": 2, "cost": 2, "req": "c1", "nome": "Passos de caça", "desc": "+10% de velocidade e dash recarrega 20% mais rápido.", "fx": {"spd": 0.10, "dash": 0.20}},
+	{"id": "c3", "col": 2, "cost": 3, "req": "c2", "nome": "Sangue do relógio", "desc": "Perde 12% menos tempo e cada acerto básico devolve 0,1s.", "fx": {"def": 0.12, "leech": 0.1}},
+	{"id": "m", "col": -1, "cost": 4, "req": "*6", "nome": "Mestre", "desc": "", "fx": {"master": 1.0}},
+]
 const WAVE_COUNTDOWN := 5.0   # segundos para se arrumar antes de cada onda (o relógio não corre)
 const MISSIONS := {
 	"minotauro_1": {"desc": "Acerte 250 golpes básicos com o Minotauro na sala do guardião.", "goal": 250},

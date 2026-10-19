@@ -68,6 +68,20 @@ func build_gd() -> Dictionary:
 	o.cls = game.g_cls
 	o.pw = D.CLASS_POWER[game.g_cls].dmg
 	o.def = D.CLASS_POWER[game.g_cls].def
+	# talentos da classe
+	var tf: Dictionary = game.talent_fx("%s_%d" % [game.guardian, game.g_cls])
+	var master: bool = tf.get("master", 0.0) > 0
+	o.spd *= 1.0 + tf.get("spd", 0.0)
+	o.t_atk = 1.0 + tf.get("atk", 0.0)
+	o.t_atkcd = 1.0 - tf.get("atk_cd", 0.0)
+	o.t_skcd = 1.0 - tf.get("sk_cd", 0.0)
+	var allsk = 0.25 if master and c.passive == "" else 0.0
+	o.t_sk = [1.0 + tf.get("sk0", 0.0) + allsk, 1.0 + tf.get("sk1", 0.0) + allsk, 1.0 + tf.get("sk2", 0.0) + allsk]
+	o.t_sk2cd = 1.0 - tf.get("sk2_cd", 0.0)
+	o.def *= 1.0 - tf.get("def", 0.0)
+	o.t_dash = 1.0 - tf.get("dash", 0.0)
+	o.t_leech = tf.get("leech", 0.0)
+	o.t_pass = 2.0 if master else 1.0
 	o.key = "%s_%d" % [game.guardian, game.g_cls]
 	if game.guardian == "dragao" and game.g_cls == 3:
 		o.w = 44
@@ -105,7 +119,7 @@ func sk_lv(i: int) -> int:
 
 
 func sk_pow(i: int) -> float:
-	return 1.0 + 0.35 * (sk_lv(i) - 1)
+	return (1.0 + 0.35 * (sk_lv(i) - 1)) * gd.t_sk[i]
 
 
 func sk_dur(i: int) -> float:
@@ -113,11 +127,11 @@ func sk_dur(i: int) -> float:
 
 
 func sk_cd(i: int) -> float:
-	return D.SKILLS[sk_key(i)].cd * (1.0 - 0.12 * (sk_lv(i) - 1))
+	return D.SKILLS[sk_key(i)].cd * (1.0 - 0.12 * (sk_lv(i) - 1)) * gd.t_skcd * (gd.t_sk2cd if i == 2 else 1.0)
 
 
 func dmg_mul() -> float:
-	return (1.0 + game.evo_pct()) * gd.pw * (1.5 if P.fury_t > 0 else 1.0) * (1.0 + 0.04 * P.rage)
+	return (1.0 + game.evo_pct()) * gd.pw * (1.5 if P.fury_t > 0 else 1.0) * (1.0 + 0.04 * gd.t_pass * P.rage)
 
 
 func spawn_parts(x: float, y: float, col: Color, n: int) -> void:
@@ -453,7 +467,7 @@ func start_basic() -> void:
 	var sp = 0.7 if P.fury_t > 0 else 1.0
 	P.atk_ph = "anti"
 	P.atk_pt = a.get("anti", 0.05) * sp
-	P.atk_cd = a.cd * sp
+	P.atk_cd = a.cd * sp * gd.t_atkcd
 	P.hit_b = false
 
 
@@ -483,7 +497,7 @@ func basic_step(dt: float) -> void:
 			if overlap(box, body_b()):
 				P.hit_b = true
 				var cx: float = clampf(P.x + P.face * a.range * 0.7, B.x - L().w / 2.0, B.x + L().w / 2.0)
-				if hurt_boss(a.dmg * dmg_mul(), "perto"):
+				if hurt_boss(a.dmg * dmg_mul() * gd.t_atk, "perto"):
 					on_basic_hit(cx, P.y - a.hh * 0.55)
 					hitstop = maxf(hitstop, clampf(0.03 + a.dmg / 500.0, 0.04, 0.08))
 					game.shake(0.08, a.get("shake", 0.003))
@@ -499,7 +513,7 @@ func basic_step(dt: float) -> void:
 func fire_basic(dy: float, delay := 0.0) -> void:
 	var a = gd.atk
 	P.shot_vis = 0.14
-	shots.append(_shot({"x": P.x + P.face * 16, "y": P.y - gd.h * 0.62 + dy, "vx": P.face * a.spd, "r": 6.0, "dmg": a.dmg * dmg_mul(), "life": 1.4,
+	shots.append(_shot({"x": P.x + P.face * 16, "y": P.y - gd.h * 0.62 + dy, "vx": P.face * a.spd, "r": 6.0, "dmg": a.dmg * dmg_mul() * gd.t_atk, "life": 1.4,
 		"cat": "longe", "spr": a.spr, "basic": true, "delay": delay, "col": Color("#bfeee6")}))
 
 
@@ -511,21 +525,22 @@ func on_basic_hit(x: float, y: float) -> void:
 			P.rage = mini(10, P.rage + 1)
 		"empurrao":
 			if B.guard <= 0 and B.inv <= 0:
-				B.x = clamp_x(B.x + P.face * 34, L().w)
+				B.x = clamp_x(B.x + P.face * 34 * gd.t_pass, L().w)
 		"colheita":
 			P.harvest += 1
-			if P.harvest >= 8:
+			if P.harvest >= int(8 / gd.t_pass):
 				P.harvest = 0
 				summon_skel(7.0, 4.0 * dmg_mul(), P.x - P.face * 20)
 		"congelar":
-			B.slow_t = maxf(B.slow_t, 1.2)
+			B.slow_t = maxf(B.slow_t, 1.2 * gd.t_pass)
 		"tempo_devolvido":
-			game.clock += 0.15
+			game.clock += 0.15 * gd.t_pass
 		"faisca":
-			if randf() < 0.25:
+			if randf() < 0.25 * gd.t_pass:
 				shots.append(_shot({"kind": "bolt", "x": B.x, "delay": 0.05, "dmg": 6.0 * dmg_mul(), "stun": 0.0, "track": true, "life": 0.35}))
 		"veneno":
-			B.poison = mini(8, B.poison + 1)
+			B.poison = mini(8, B.poison + int(gd.t_pass))
+	game.clock += gd.t_leech
 	if P.leech_t > 0:
 		game.clock += P.leech_amt
 
@@ -556,7 +571,7 @@ func player_step(dt: float) -> void:
 	# dash
 	if press.has("g_dash") and P.dash_cd <= 0 and not bz and P.kb_t <= 0 and P.root_t <= 0:
 		use.dash += 1
-		P.dash_cd = gd.dash.cd
+		P.dash_cd = gd.dash.cd * gd.t_dash
 		if gd.dash.has("blink"):
 			spawn_parts(P.x, P.y - gd.h / 2.0, D.col(gd.cor), 8)
 			P.x = clamp_x(P.x + gd.dash.blink * (1 + 0.15 * up.agil) * P.face, gd.w)
@@ -1737,6 +1752,7 @@ func learn_duel() -> void:
 func reward() -> void:
 	learn_duel()
 	game.mission_add("minotauro_3")
+	game.tal_gain(gd.key, D.TALENT_PER_LEG)
 	if stats.lost < clock0 * 0.3:
 		game.mission_add("minotauro_2")
 	if use.dash == 0:
@@ -1748,7 +1764,7 @@ func reward() -> void:
 	game.phase = "reward"
 	var nome: String = D.HEROES[key].nome.get_slice(",", 0)
 	var title = "%s foi %s" % [nome, "derrotada" if D.HEROES[key].get("fem", false) else "derrotado"]
-	var txt = "O %s defendeu o coração. Energia absorvida: +%ss. +%d de essência. O guardião evoluiu para +%s de dano. Melhore o guardião ou a masmorra; o próximo lendário virá mais forte." % [gd.nome, D.fmt(soul), e, D.pct(game.evo)]
+	var txt = "O %s defendeu o coração. Energia absorvida: +%ss. +%d de essência. O guardião evoluiu para +%s de dano. +%d pontos de talento para %s. Melhore o guardião ou a masmorra; o próximo lendário virá mais forte." % [gd.nome, D.fmt(soul), e, D.pct(game.evo), D.TALENT_PER_LEG, gd.nome]
 	# opções: pelo menos uma habilidade da classe atual, mais uma do guardião e duas da masmorra
 	var sk = []
 	for i in 3:
