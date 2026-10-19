@@ -16,6 +16,6 @@ Importe o `project.godot` no Godot 4.3 (versão padrão, não a .NET) e aperte F
 
 ## No celular
 
-- O jogo é só na horizontal; com o celular em pé aparece um aviso para deitar.
+- O jogo é sempre na horizontal: com o celular em pé, ele já aparece deitado (girado), então funciona até com a trava de rotação ligada. Ao deitar o aparelho, ele se ajusta sozinho.
 - **Android (Chrome):** o primeiro toque já coloca em tela cheia e trava em paisagem.
 - **iPhone (Safari):** o Safari não deixa sites em tela cheia. Toque em *Compartilhar → Adicionar à Tela de Início* e abra pelo ícone: assim o jogo ocupa a tela toda.

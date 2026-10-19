@@ -126,6 +126,9 @@ var shake_t: float = 0.0
 var shake_amp: float = 0.0
 
 var board: Node2D
+var rot_host: SubViewportContainer   # celular: tela do jogo que pode girar
+var rot_vp: SubViewport
+var rotated := false
 var ui
 var arena
 var cards: Array = []
@@ -134,16 +137,30 @@ var cards: Array = []
 func _ready() -> void:
 	randomize()
 	Web.setup()
-	# celular: tela de jogo menor (960×540) para tudo ficar maior e legível
-	if Web.is_mobile() or "--mobile" in OS.get_cmdline_user_args():
-		get_window().content_scale_size = Vector2i(960, 540)
+	var mob: bool = Web.is_mobile() or "--mobile" in OS.get_cmdline_user_args()
 	_setup_input()
 	_load_meta()
 	board = BoardScript.new()
 	board.game = self
 	ui = UI.new()
 	ui.game = self
-	add_child(ui)
+	if mob:
+		# celular: o jogo é desenhado numa tela própria que gira 90° quando o aparelho está em pé,
+		# assim ele fica sempre deitado (funciona até com a trava de rotação ligada)
+		rot_host = SubViewportContainer.new()
+		rot_host.stretch = false
+		rot_host.mouse_filter = Control.MOUSE_FILTER_STOP
+		rot_vp = SubViewport.new()
+		rot_vp.disable_3d = true
+		rot_vp.handle_input_locally = true
+		rot_vp.size_2d_override_stretch = true
+		rot_host.add_child(rot_vp)
+		add_child(rot_host)
+		rot_vp.add_child(ui)
+		get_tree().root.size_changed.connect(_fit_rot)
+		_fit_rot()
+	else:
+		add_child(ui)
 	ui.build()
 	ui.board_holder.add_child(board)
 	arena = ArenaScript.new()
@@ -152,6 +169,34 @@ func _ready() -> void:
 	new_idle_state()
 	ui.layout()
 	ui.show_intro()
+
+
+## Ajusta a tela girada do celular ao tamanho e à orientação atuais.
+func _fit_rot() -> void:
+	if rot_host == null:
+		return
+	var win = get_window()
+	var ws = Vector2(win.size)
+	if ws.x < 2 or ws.y < 2:
+		return
+	var portrait: bool = ws.x < ws.y
+	var cs = Vector2i(540, 960) if portrait else Vector2i(960, 540)
+	if win.content_scale_size != cs:
+		win.content_scale_size = cs
+	var r = get_tree().root.get_visible_rect().size
+	var logical = Vector2(r.y, r.x) if portrait else r
+	var k: float = ws.x / maxf(1.0, r.x)            # pixels da tela por unidade
+	var phys = (logical * k).round()
+	rot_vp.size = Vector2i(phys)
+	rot_vp.size_2d_override = Vector2i(logical.round())
+	rot_host.size = phys
+	rot_host.scale = Vector2.ONE / k
+	rot_host.rotation = -PI / 2.0 if portrait else 0.0
+	rot_host.position = Vector2(0, r.y) if portrait else Vector2.ZERO
+	rotated = portrait
+	if ui:
+		ui.rotated = portrait
+		ui.layout.call_deferred()
 
 
 func _setup_input() -> void:

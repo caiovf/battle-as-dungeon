@@ -60,6 +60,7 @@ var reset_armed := false
 var pad: Control
 var fonts := {}
 var arena_mode := false
+var rotated := false       # celular em pé: o jogo está desenhado girado
 var mobile := false        # celular: layout compacto, mapa grande e aviso para deitar o aparelho
 var rotate_box: Control
 var last_dock_h := 0.0
@@ -1119,7 +1120,7 @@ func layout() -> void:
 	var vs = root.get_viewport_rect().size
 	var m = 8.0
 	# margens seguras (notch do iPhone deitado)
-	var ins = Web.safe_insets(vs.x) if mobile else [0.0, 0.0, 0.0]
+	var ins = Web.safe_insets(vs.x) if (mobile and not rotated) else [0.0, 0.0, 0.0]
 	var ml: float = maxf(m, ins[0])
 	var mr: float = maxf(m, ins[1])
 	rotate_box.visible = mobile and vs.x < vs.y
