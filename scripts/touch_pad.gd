@@ -33,6 +33,8 @@ func _ready() -> void:
 func setup() -> void:
 	var vs = get_viewport_rect().size
 	var u: float = clampf(minf(vs.x / 1280.0, vs.y / 720.0), 0.8, 1.6)   # escala dos controles
+	if _mobile():
+		u *= float(game.cfg.pad)
 	var g: String = game.guardian
 	var lo: Array = game.loadout(g, game.g_cls)
 	var sks: Array = lo.slice(0, 3)
@@ -52,6 +54,20 @@ func setup() -> void:
 	joy_knob = joy_home
 	pause_rect = Rect2(vs.x - 70 * u, 96, 56 * u, 40 * u)
 	release_all()
+
+
+func _mobile() -> bool:
+	return game != null and game.ui != null and game.ui.mobile
+
+
+## Tecla desenhada como uma teclinha de teclado.
+func _keycap(f: Font, c: Vector2, txt: String, on: bool, fs := 11) -> void:
+	var w: float = maxf(26.0, f.get_string_size(txt, HORIZONTAL_ALIGNMENT_LEFT, -1, fs).x + 12)
+	var r = Rect2(c - Vector2(w / 2.0, 13), Vector2(w, 26))
+	draw_rect(Rect2(r.position + Vector2(0, 3), r.size), Color(0.02, 0.01, 0.03, 0.7))
+	draw_rect(r, Color(1, 0.77, 0.19, 0.95) if on else Color(0.16, 0.12, 0.2, 0.92))
+	draw_rect(r, Color(1, 1, 1, 0.9) if on else Color(1, 1, 1, 0.55), false, 2)
+	draw_string(f, Vector2(r.position.x, c.y + fs * 0.38), txt, HORIZONTAL_ALIGNMENT_CENTER, w, fs, Color(0.08, 0.05, 0.11) if on else Color.WHITE)
 
 
 static func _polar(deg: float, dist: float) -> Vector2:
@@ -169,9 +185,37 @@ func _draw() -> void:
 	if game == null or buttons.is_empty():
 		return
 	var f = Art.font()
-	var white = Color(1, 1, 1, ALPHA)
-	# analógico
+	# analógico (no computador, quando ninguém toca, mostra as teclas de andar e pular)
 	var active = joy_finger != -1
+	var keys_pc: bool = not _mobile() and bool(game.cfg.show_keys)
+	if keys_pc and not active:
+		var h = joy_home
+		_keycap(f, h + Vector2(0, -34), game.key_short("g_jump"), Input.is_action_pressed("g_jump"), 13)
+		_keycap(f, h + Vector2(-44, 0), game.key_short("g_left"), Input.is_action_pressed("g_left"), 13)
+		_keycap(f, h + Vector2(44, 0), game.key_short("g_right"), Input.is_action_pressed("g_right"), 13)
+		draw_string_outline(f, h + Vector2(-80, 38), "ANDAR · PULAR", HORIZONTAL_ALIGNMENT_CENTER, 160, 8, 4, Color(0.05, 0.03, 0.08, 0.8))
+		draw_string(f, h + Vector2(-80, 38), "ANDAR · PULAR", HORIZONTAL_ALIGNMENT_CENTER, 160, 8, Color(1, 1, 1, 0.6))
+	else:
+		_draw_joy(f, active)
+	# botões
+	for b in buttons:
+		_draw_button(f, b, keys_pc)
+	# pausa
+	var white = Color(1, 1, 1, ALPHA)
+	draw_rect(pause_rect, Color(0.08, 0.05, 0.11, 0.35))
+	draw_rect(pause_rect, white, false, 2)
+	var c = pause_rect.get_center()
+	draw_rect(Rect2(c.x - 9, c.y - 9, 6, 18), white)
+	draw_rect(Rect2(c.x + 3, c.y - 9, 6, 18), white)
+	if keys_pc:
+		_keycap(f, pause_rect.position + Vector2(0, pause_rect.size.y), "P", false, 10)
+	if not _mobile():
+		var tip = "Teclas editáveis em Configurações" if keys_pc else "Teclas em Configurações"
+		draw_string_outline(f, Vector2(0, size.y - 14), tip, HORIZONTAL_ALIGNMENT_CENTER, size.x, 8, 4, Color(0.05, 0.03, 0.08, 0.8))
+		draw_string(f, Vector2(0, size.y - 14), tip, HORIZONTAL_ALIGNMENT_CENTER, size.x, 8, Color(1, 1, 1, 0.45))
+
+
+func _draw_joy(f: Font, active: bool) -> void:
 	draw_circle(joy_base, JOY_R + 14, Color(0.08, 0.05, 0.11, 0.28 if active else 0.16))
 	draw_arc(joy_base, JOY_R + 14, 0, TAU, 48, Color(1, 1, 1, 0.45 if active else 0.22), 3)
 	for i in 4:
@@ -182,60 +226,55 @@ func _draw() -> void:
 	draw_arc(joy_knob, 34, 0, TAU, 32, Color(1, 1, 1, 0.7 if active else 0.35), 3)
 	if not active:
 		draw_string(f, joy_base + Vector2(-60, JOY_R + 34), "ANDAR / PULAR", HORIZONTAL_ALIGNMENT_CENTER, 120, 8, Color(1, 1, 1, 0.35))
-	# botões
-	for b in buttons:
-		var on: bool = pressed_ids.has(b.id)
-		var r: float = b.r * (0.92 if on else 1.0)
-		var ready = 1.0
-		var secs = 0.0
-		if b.skill >= 0:
-			ready = game.arena.cd_ratio(b.skill)
-			secs = maxf(0.0, game.arena.P.cd[b.skill]) if not game.arena.P.is_empty() else 0.0
-		elif b.id == "ult":
-			ready = game.arena.ult_ratio()
-		elif b.id == "dash" and not game.arena.P.is_empty():
-			var cdv: float = game.arena.P.dash_cd
-			var mx: float = D.GUARDS[game.guardian].dash.cd
-			ready = 1.0 - clampf(cdv / mx, 0.0, 1.0) if cdv > 0 else 1.0
-		draw_circle(b.pos, r, Color(0.08, 0.05, 0.11, 0.42 if on else 0.3))
-		var ring = Color(1, 0.77, 0.19, 0.85) if b.id == "atk" or (b.id == "ult" and ready >= 1) else (Color(0.38, 0.85, 0.96, 0.75) if b.skill >= 0 else Color(1, 1, 1, 0.55))
-		if on:
-			ring = Color(1, 1, 1, 0.95)
-		draw_arc(b.pos, r, 0, TAU, 40, ring, 4 if b.id == "atk" else 3)
-		var t = Art.tex(b.icon)
-		if t:
-			var isz = r * (1.05 if b.id == "atk" else 1.15)
-			var mod = Color(1, 1, 1, 0.9 if ready >= 1 else 0.4)
-			draw_texture_rect(t, Rect2(b.pos - Vector2(isz, isz) / 2.0, Vector2(isz, isz)), false, mod)
-		# recarga: fatia escura que diminui girando, com os segundos no meio
-		if b.id == "ult" and ready >= 1.0:
-			draw_arc(b.pos, r + 6 + sin(Time.get_ticks_msec() / 120.0) * 3, 0, TAU, 40, Color(1, 0.77, 0.19, 0.5), 3)
-		if ready < 1.0:
-			var pts = PackedVector2Array([b.pos])
-			var start = -PI / 2 + TAU * ready
-			var steps = 24
-			for i in steps + 1:
-				var a = start + (TAU * (1.0 - ready)) * i / steps
-				pts.append(b.pos + Vector2(cos(a), sin(a)) * (r - 2))
-			if pts.size() >= 3:
-				draw_colored_polygon(pts, Color(0.05, 0.03, 0.08, 0.6))
-			if secs > 0.05:
-				var txt = str(int(ceil(secs)))
-				draw_string_outline(f, b.pos + Vector2(-30, 6), txt, HORIZONTAL_ALIGNMENT_CENTER, 60, 16, 5, Color(0.05, 0.03, 0.08, 0.9))
-				draw_string(f, b.pos + Vector2(-30, 6), txt, HORIZONTAL_ALIGNMENT_CENTER, 60, 16, Color.WHITE)
-		if b.skill >= 0:
-			# nível da habilidade: pontinhos na borda de baixo
-			var lv: int = game.arena.sk_lv(b.skill) if not game.arena.P.is_empty() else 1
-			for k in lv:
-				var px = b.pos + Vector2((k - (lv - 1) / 2.0) * 9, r - 6)
-				draw_rect(Rect2(px - Vector2(3, 3), Vector2(6, 6)), Color(1, 0.77, 0.19, 0.95))
-	# pausa
-	draw_rect(pause_rect, Color(0.08, 0.05, 0.11, 0.35))
-	draw_rect(pause_rect, white, false, 2)
-	var c = pause_rect.get_center()
-	draw_rect(Rect2(c.x - 9, c.y - 9, 6, 18), white)
-	draw_rect(Rect2(c.x + 3, c.y - 9, 6, 18), white)
-	# dica de teclado em computador
-	if not DisplayServer.is_touchscreen_available():
-		draw_string_outline(f, Vector2(0, size.y - 14), "Teclado: A/D andar · W pular · J atacar · K dash · U I O habilidades · Y suprema · P pausa", HORIZONTAL_ALIGNMENT_CENTER, size.x, 8, 4, Color(0.05, 0.03, 0.08, 0.8))
-		draw_string(f, Vector2(0, size.y - 14), "Teclado: A/D andar · W pular · J atacar · K dash · U I O habilidades · Y suprema · P pausa", HORIZONTAL_ALIGNMENT_CENTER, size.x, 8, Color(1, 1, 1, 0.5))
+
+
+func _draw_button(f: Font, b: Dictionary, keys_pc: bool) -> void:
+	var on: bool = pressed_ids.has(b.id) or Input.is_action_pressed(b.action)
+	var r: float = b.r * (0.92 if on else 1.0)
+	var ready = 1.0
+	var secs = 0.0
+	if b.skill >= 0:
+		ready = game.arena.cd_ratio(b.skill)
+		secs = maxf(0.0, game.arena.P.cd[b.skill]) if not game.arena.P.is_empty() else 0.0
+	elif b.id == "ult":
+		ready = game.arena.ult_ratio()
+	elif b.id == "dash" and not game.arena.P.is_empty():
+		var cdv: float = game.arena.P.dash_cd
+		var mx: float = D.GUARDS[game.guardian].dash.cd
+		ready = 1.0 - clampf(cdv / mx, 0.0, 1.0) if cdv > 0 else 1.0
+	draw_circle(b.pos, r, Color(0.08, 0.05, 0.11, 0.42 if on else 0.3))
+	var ring = Color(1, 0.77, 0.19, 0.85) if b.id == "atk" or (b.id == "ult" and ready >= 1) else (Color(0.38, 0.85, 0.96, 0.75) if b.skill >= 0 else Color(1, 1, 1, 0.55))
+	if on:
+		ring = Color(1, 1, 1, 0.95)
+	draw_arc(b.pos, r, 0, TAU, 40, ring, 4 if b.id == "atk" else 3)
+	var t = Art.tex(b.icon)
+	if t:
+		var isz = r * (1.05 if b.id == "atk" else 1.15)
+		var mod = Color(1, 1, 1, 0.9 if ready >= 1 else 0.4)
+		draw_texture_rect(t, Rect2(b.pos - Vector2(isz, isz) / 2.0, Vector2(isz, isz)), false, mod)
+	# recarga: fatia escura que diminui girando, com os segundos no meio
+	if b.id == "ult" and ready >= 1.0:
+		draw_arc(b.pos, r + 6 + sin(Time.get_ticks_msec() / 120.0) * 3, 0, TAU, 40, Color(1, 0.77, 0.19, 0.5), 3)
+	if ready < 1.0:
+		var pts = PackedVector2Array([b.pos])
+		var start = -PI / 2 + TAU * ready
+		var steps = 24
+		for i in steps + 1:
+			var a = start + (TAU * (1.0 - ready)) * i / steps
+			pts.append(b.pos + Vector2(cos(a), sin(a)) * (r - 2))
+		if pts.size() >= 3:
+			draw_colored_polygon(pts, Color(0.05, 0.03, 0.08, 0.6))
+		if secs > 0.05:
+			var txt = str(int(ceil(secs)))
+			draw_string_outline(f, b.pos + Vector2(-30, 6), txt, HORIZONTAL_ALIGNMENT_CENTER, 60, 16, 5, Color(0.05, 0.03, 0.08, 0.9))
+			draw_string(f, b.pos + Vector2(-30, 6), txt, HORIZONTAL_ALIGNMENT_CENTER, 60, 16, Color.WHITE)
+	if b.skill >= 0:
+		# nível da habilidade: pontinhos na borda de baixo
+		var lv: int = game.arena.sk_lv(b.skill) if not game.arena.P.is_empty() else 1
+		for k in lv:
+			var px = b.pos + Vector2((k - (lv - 1) / 2.0) * 9, r - 6)
+			draw_rect(Rect2(px - Vector2(3, 3), Vector2(6, 6)), Color(1, 0.77, 0.19, 0.95))
+	if keys_pc:
+		var kt: String = game.key_short(b.action)
+		if kt != "":
+			_keycap(f, b.pos + Vector2(-b.r * 0.72, -b.r * 0.72), kt, on, 11)

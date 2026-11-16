@@ -15,6 +15,17 @@ const ROWS := 12
 const W := 720
 const H := 480
 const META_PATH := "user://meta.json"
+const CFG_PATH := "user://config.json"
+## Teclas padrão da luta (até 3 por ação). O jogador pode trocar em Configurações.
+const KEYS_DEFAULT := {
+	"g_left": [KEY_A, KEY_LEFT], "g_right": [KEY_D, KEY_RIGHT], "g_jump": [KEY_W, KEY_SPACE, KEY_UP],
+	"g_atk": [KEY_J, KEY_X], "g_dash": [KEY_K, KEY_SHIFT, KEY_C], "g_s0": [KEY_U, KEY_1], "g_s1": [KEY_I, KEY_2],
+	"g_s2": [KEY_O, KEY_3, KEY_L], "g_ult": [KEY_Y, KEY_4],
+}
+const KEY_ACTIONS := [["g_left", "Andar para a esquerda"], ["g_right", "Andar para a direita"], ["g_jump", "Pular"],
+	["g_atk", "Atacar"], ["g_dash", "Dash"], ["g_s0", "Habilidade 1"], ["g_s1", "Habilidade 2"], ["g_s2", "Habilidade 3"], ["g_ult", "Suprema"]]
+## Teclas fixas do jogo, que não podem ir para a luta.
+const KEYS_RESERVED := [KEY_ESCAPE, KEY_P, KEY_F]
 
 
 class Hero:
@@ -202,17 +213,136 @@ func _fit_rot() -> void:
 
 
 func _setup_input() -> void:
-	var keys = {
-		"g_left": [KEY_LEFT, KEY_A], "g_right": [KEY_RIGHT, KEY_D], "g_jump": [KEY_UP, KEY_W, KEY_SPACE],
-		"g_atk": [KEY_J, KEY_X], "g_dash": [KEY_K, KEY_SHIFT, KEY_C], "g_s0": [KEY_U, KEY_1], "g_s1": [KEY_I, KEY_2], "g_s2": [KEY_O, KEY_3, KEY_L], "g_ult": [KEY_Y, KEY_4],
-	}
-	for a in keys:
+	_load_cfg()
+	apply_keys()
+
+
+# ===== configurações (tremor, teclas, botões de toque) =====
+var cfg := {"keys": {}, "shake": 1.0, "show_keys": true, "pad": 1.0}
+
+
+func _load_cfg() -> void:
+	if not FileAccess.file_exists(CFG_PATH):
+		return
+	var f = FileAccess.open(CFG_PATH, FileAccess.READ)
+	if f == null:
+		return
+	var d = JSON.parse_string(f.get_as_text())
+	if not (d is Dictionary):
+		return
+	cfg.shake = clampf(float(d.get("shake", 1.0)), 0.0, 1.0)
+	cfg.show_keys = bool(d.get("show_keys", true))
+	cfg.pad = clampf(float(d.get("pad", 1.0)), 0.8, 1.3)
+	var k = d.get("keys", {})
+	if k is Dictionary:
+		for a in KEYS_DEFAULT:
+			if k.get(a) is Array:
+				cfg.keys[a] = k[a].slice(0, 3).map(func(x): return int(x))
+
+
+func save_cfg() -> void:
+	var f = FileAccess.open(CFG_PATH, FileAccess.WRITE)
+	if f:
+		f.store_string(JSON.stringify(cfg))
+
+
+func set_cfg(key: String, v) -> void:
+	cfg[key] = v
+	save_cfg()
+
+
+## Teclas de uma ação (as do jogador ou as padrão).
+func keys_of(a: String) -> Array:
+	return cfg.keys.get(a, KEYS_DEFAULT[a])
+
+
+func apply_keys() -> void:
+	for a in KEYS_DEFAULT:
 		if not InputMap.has_action(a):
 			InputMap.add_action(a)
-		for k in keys[a]:
-			var e = InputEventKey.new()
-			e.physical_keycode = k
-			InputMap.action_add_event(a, e)
+		InputMap.action_erase_events(a)
+		for k in keys_of(a):
+			if int(k) > 0:
+				var e = InputEventKey.new()
+				e.physical_keycode = int(k)
+				InputMap.action_add_event(a, e)
+
+
+## Põe a tecla kc na posição slot da ação a. A tecla sai de qualquer outra ação que a usava.
+func bind_key(a: String, slot: int, kc: int) -> void:
+	for b in KEYS_DEFAULT:
+		var l = keys_of(b).duplicate()
+		if b != a and l.has(kc):
+			l.erase(kc)
+			cfg.keys[b] = l
+	var mine = keys_of(a).duplicate()
+	var old = mine.find(kc)
+	if slot < mine.size():
+		mine[slot] = kc
+	else:
+		mine.append(kc)
+	if old >= 0 and old != slot:
+		mine.remove_at(old)
+	cfg.keys[a] = mine.slice(0, 3)
+	apply_keys()
+	save_cfg()
+
+
+func clear_key(a: String, slot: int) -> void:
+	var l = keys_of(a).duplicate()
+	if slot < l.size() and l.size() > 1:   # toda ação fica com pelo menos uma tecla
+		l.remove_at(slot)
+	cfg.keys[a] = l
+	apply_keys()
+	save_cfg()
+
+
+func reset_keys() -> void:
+	cfg.keys = {}
+	apply_keys()
+	save_cfg()
+
+
+## Nome curto de uma tecla, em português.
+static func key_name(kc: int) -> String:
+	match kc:
+		KEY_LEFT: return "Seta esq."
+		KEY_RIGHT: return "Seta dir."
+		KEY_UP: return "Seta cima"
+		KEY_DOWN: return "Seta baixo"
+		KEY_SPACE: return "Espaço"
+		KEY_ENTER: return "Enter"
+		KEY_BACKSPACE: return "Apagar"
+		KEY_CTRL: return "Ctrl"
+		KEY_ALT: return "Alt"
+		KEY_SHIFT: return "Shift"
+		KEY_TAB: return "Tab"
+		KEY_CAPSLOCK: return "Caps"
+	var s = OS.get_keycode_string(kc)
+	return s if s != "" else "?"
+
+
+## Nome curtíssimo (para o selo em cima do botão da luta).
+func key_short(a: String) -> String:
+	var l = keys_of(a)
+	if l.is_empty():
+		return ""
+	var kc = int(l[0])
+	match kc:
+		KEY_LEFT: return "<"
+		KEY_RIGHT: return ">"
+		KEY_UP: return "^"
+		KEY_DOWN: return "v"
+		KEY_SPACE: return "Esp"
+		KEY_SHIFT: return "Shift"
+	return key_name(kc)
+
+
+## Apaga recordes, missões, classes, talentos e pontos, e recomeça o jogo.
+func wipe_progress() -> void:
+	if FileAccess.file_exists(META_PATH):
+		DirAccess.remove_absolute(ProjectSettings.globalize_path(META_PATH))
+	get_tree().reload_current_scene()
 
 
 # ===== meta (recorde e runs) =====
@@ -679,6 +809,9 @@ func float_text(p: Vector2, s: String, c: Color, size := 15) -> void:
 
 
 func shake(secs: float, amp: float) -> void:
+	amp *= float(cfg.shake)
+	if amp <= 0.0:
+		return
 	shake_t = maxf(shake_t, secs)
 	shake_amp = maxf(shake_amp, amp)
 

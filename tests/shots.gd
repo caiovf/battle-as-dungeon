@@ -141,6 +141,12 @@ func _process(_d: float) -> bool:
 		514: snap("09e_classes_pontos")
 		515:
 			main.ui.close_classes()
+			main.ui.show_settings()
+			main.ui.bind_wait = ["g_s1", 0]
+			main.ui.render_settings()
+		518: snap("09f_config")
+		519:
+			main.ui.close_settings()
 			_fight("minotauro", 1, "kael")
 		540: Input.action_press("g_atk")
 		590:

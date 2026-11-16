@@ -35,6 +35,12 @@ var duel_sep: Separator
 var guard_btn: Button
 var gbtn_flash := 0.0
 var cls_modal: Control
+var set_modal: Control       # configurações
+var set_box: VBoxContainer
+var bind_wait: Array = []    # [ação, posição] esperando a nova tecla
+var wipe_ask := false
+var set_msg := ""
+var cfg_btn: Button
 var cls_box: VBoxContainer
 var tal_cls := -1
 var sk_cls := -1
@@ -207,6 +213,8 @@ func build() -> void:
 	top.add_child(guard_btn)
 	fs_btn = _button("Tela cheia", toggle_fullscreen, 14)
 	top.add_child(fs_btn)
+	cfg_btn = _button("Config" if mobile else "Configurações", show_settings, 14)
+	top.add_child(cfg_btn)
 	var gb = _button("Melhorias", show_grim, 20)
 	gb.name = "GrimBtn"
 	if _font("PixelifySans-SemiBold.woff2"):
@@ -322,6 +330,7 @@ func build() -> void:
 	_build_overlay()
 	_build_grim()
 	_build_classes()
+	_build_settings()
 	_build_rotate()
 	get_viewport().size_changed.connect(layout)
 	set_tab("traps")
@@ -486,7 +495,7 @@ func show_over(text: String) -> void:
 
 
 func modal_open() -> bool:
-	return grim.visible or cls_modal.visible or rotate_box.visible
+	return grim.visible or cls_modal.visible or set_modal.visible or rotate_box.visible
 
 
 ## Aviso para deitar o celular (o jogo é só paisagem).
@@ -519,6 +528,169 @@ func _build_rotate() -> void:
 	v.add_child(d)
 	rotate_box.visible = false
 	root.add_child(rotate_box)
+
+
+# ===== configurações =====
+func _build_settings() -> void:
+	set_modal = Control.new()
+	set_modal.set_anchors_preset(Control.PRESET_FULL_RECT)
+	set_modal.mouse_filter = Control.MOUSE_FILTER_STOP
+	var dim = ColorRect.new()
+	dim.color = Color(0.03, 0.024, 0.02, 0.88)
+	dim.set_anchors_preset(Control.PRESET_FULL_RECT)
+	set_modal.add_child(dim)
+	var p = PanelContainer.new()
+	p.name = "Box"
+	p.add_theme_stylebox_override("panel", _sb(C_PANEL, C_BRASS, 10, 1, 14))
+	set_modal.add_child(p)
+	set_box = VBoxContainer.new()
+	set_box.add_theme_constant_override("separation", 8 if mobile else 6)
+	p.add_child(set_box)
+	set_modal.visible = false
+	root.add_child(set_modal)
+
+
+func show_settings() -> void:
+	set_msg = ""
+	bind_wait = []
+	wipe_ask = false
+	render_settings()
+	set_modal.visible = true
+	layout()
+	get_tree().create_timer(0.05).timeout.connect(layout)
+
+
+func close_settings() -> void:
+	set_modal.visible = false
+	bind_wait = []
+	wipe_ask = false
+
+
+## Linha com um nome à esquerda e botões de escolha à direita (o atual fica marcado).
+func _choice_row(title: String, desc: String, opts: Array, cur, cb: Callable) -> void:
+	var row = HBoxContainer.new()
+	row.add_theme_constant_override("separation", 6)
+	var lv = VBoxContainer.new()
+	lv.add_theme_constant_override("separation", 0)
+	lv.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	lv.add_child(_label(title, 16 if mobile else 15, C_FG, "PixelifySans-SemiBold.woff2"))
+	if desc != "":
+		lv.add_child(_label(desc, 12, C_MUTE))
+	row.add_child(lv)
+	for o in opts:
+		var v = o[1]
+		var b = _button(o[0], func(): cb.call(v), 15 if mobile else 14)
+		b.custom_minimum_size = Vector2(96 if mobile else 84, 34 if mobile else 28)
+		if str(v) == str(cur):
+			b.add_theme_stylebox_override("normal", _sb(Color("#2a2118"), C_BRASS))
+			b.add_theme_color_override("font_color", C_BRASS)
+		row.add_child(b)
+	set_box.add_child(row)
+
+
+func render_settings() -> void:
+	for c in set_box.get_children():
+		set_box.remove_child(c)
+		c.queue_free()
+	var head = HBoxContainer.new()
+	var t = _label("Configurações", 26, C_FG, "PixelifySans-SemiBold.woff2")
+	t.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	head.add_child(t)
+	head.add_child(_button("Fechar", close_settings, 16))
+	set_box.add_child(head)
+	_choice_row("Tremor da tela", "Balanço da tela nos golpes fortes.", [["Desligado", 0.0], ["Fraco", 0.5], ["Normal", 1.0]], float(game.cfg.shake), func(v):
+		game.set_cfg("shake", v)
+		render_settings())
+	if mobile:
+		_choice_row("Botões da luta", "Tamanho dos botões de toque.", [["Pequenos", 0.85], ["Normais", 1.0], ["Grandes", 1.2]], float(game.cfg.pad), func(v):
+			game.set_cfg("pad", v)
+			render_settings())
+	else:
+		_choice_row("Teclas na luta", "Mostra a tecla em cada botão durante a luta.", [["Mostrar", true], ["Esconder", false]], bool(game.cfg.show_keys), func(v):
+			game.set_cfg("show_keys", v)
+			render_settings())
+	_choice_row("Tela cheia", "", [["Alternar", 1]], 0, func(_v): toggle_fullscreen())
+	if not mobile:
+		set_box.add_child(HSeparator.new())
+		var kh = HBoxContainer.new()
+		var kt = VBoxContainer.new()
+		kt.add_theme_constant_override("separation", 0)
+		kt.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		kt.add_child(_label("Controles da luta", 18, C_ICE, "PixelifySans-SemiBold.woff2"))
+		var info = "Aperte a nova tecla. Esc cancela, Backspace tira a tecla." if not bind_wait.is_empty() else (set_msg if set_msg != "" else "Clique numa tecla para trocar. Cada ação pode ter até 3 teclas; se a tecla já era de outra ação, ela sai de lá.")
+		kt.add_child(_label(info, 12, C_BRASS if (not bind_wait.is_empty() or set_msg != "") else C_MUTE))
+		kh.add_child(kt)
+		var rb = _button("Restaurar padrão", func():
+			game.reset_keys()
+			bind_wait = []
+			render_settings(), 13)
+		rb.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		kh.add_child(rb)
+		set_box.add_child(kh)
+		var grid = GridContainer.new()
+		grid.columns = 4
+		grid.add_theme_constant_override("h_separation", 6)
+		grid.add_theme_constant_override("v_separation", 3)
+		for pair in game.KEY_ACTIONS:
+			var a: String = pair[0]
+			var nl = _label(pair[1], 14)
+			nl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			grid.add_child(nl)
+			var ks: Array = game.keys_of(a)
+			for slot in 3:
+				var waiting = bind_wait.size() == 2 and bind_wait[0] == a and bind_wait[1] == slot
+				var txt = "Aperte..." if waiting else (game.key_name(int(ks[slot])) if slot < ks.size() else "+")
+				var aa = a
+				var ss = slot
+				var b = _button(txt, func():
+					bind_wait = [aa, mini(ss, game.keys_of(aa).size())]
+					render_settings(), 13)
+				b.custom_minimum_size = Vector2(118, 24)
+				if waiting:
+					b.add_theme_stylebox_override("normal", _sb(Color("#2a2118"), C_BRASS))
+					b.add_theme_color_override("font_color", C_BRASS)
+				elif slot >= ks.size():
+					b.add_theme_color_override("font_color", C_MUTE)
+				grid.add_child(b)
+		set_box.add_child(grid)
+		set_box.add_child(_label("Fixas: P pausa · F tela cheia · Esc fecha janelas. Na masmorra: Espaço pausa, B badalada, G melhorias, C guardião, 1 a 7 armadilhas, Q a O monstros.", 11, C_MUTE))
+	set_box.add_child(HSeparator.new())
+	if wipe_ask:
+		_choice_row("Apagar todo o progresso?", "Recordes, missões, classes, talentos e pontos somem para sempre.", [["Sim, apagar", "sim"], ["Cancelar", "nao"]], "", func(v):
+			if v == "sim":
+				game.wipe_progress()
+			else:
+				wipe_ask = false
+				render_settings())
+	else:
+		_choice_row("Progresso", "Recordes, missões, classes, talentos e pontos ficam salvos neste aparelho.", [["Apagar progresso", 1]], 0, func(_v):
+			wipe_ask = true
+			render_settings())
+	if set_modal.visible:
+		layout.call_deferred()
+
+
+## Captura a tecla nova quando o jogador está trocando um controle.
+func _input(event: InputEvent) -> void:
+	if bind_wait.is_empty() or not set_modal.visible:
+		return
+	if not (event is InputEventKey) or not event.pressed or event.echo:
+		return
+	get_viewport().set_input_as_handled()
+	var kc: int = event.physical_keycode
+	var a: String = bind_wait[0]
+	var slot: int = bind_wait[1]
+	bind_wait = []
+	set_msg = ""
+	if kc == KEY_ESCAPE:
+		pass
+	elif kc == KEY_BACKSPACE or kc == KEY_DELETE:
+		game.clear_key(a, slot)
+	elif game.KEYS_RESERVED.has(kc):
+		set_msg = "A tecla %s é fixa do jogo. Escolha outra." % game.key_name(kc)
+	else:
+		game.bind_key(a, slot, kc)
+	render_settings()
 
 
 # ===== classes do guardião (estilo Grand Chase) =====
@@ -1352,6 +1524,10 @@ func _unhandled_key_input(event: InputEvent) -> void:
 	if not (event is InputEventKey) or not event.pressed or event.echo:
 		return
 	var kc: int = event.physical_keycode
+	if set_modal.visible:
+		if kc == KEY_ESCAPE:
+			close_settings()
+		return
 	if grim.visible:
 		if kc == KEY_ESCAPE or kc == KEY_G:
 			close_grim()
@@ -1524,6 +1700,12 @@ func layout() -> void:
 	cbx.reset_size()
 	cbx.size.x = cw
 	cbx.position.y = maxf(16.0, (vs.y - cbx.size.y) / 2.0)
+	var sbx: Control = set_modal.get_node("Box")
+	var sw = minf(vs.x - 32, 760)
+	sbx.size = Vector2(sw, 0)
+	sbx.reset_size()
+	sbx.size.x = sw
+	sbx.position = Vector2((vs.x - sw) / 2.0, maxf(12.0, (vs.y - sbx.size.y) / 2.0))
 	var gb: Control = grim.get_node("Box")
 	var gw = minf(vs.x - 32, 980)
 	var gh = vs.y - 48

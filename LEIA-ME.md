@@ -28,6 +28,9 @@ Na primeira abertura, o Godot leva alguns segundos importando as fontes.
 - `U`, `I`, `O` (ou `1`, `2`, `3`): as 3 habilidades.
 - `Y` (ou `4`): habilidade suprema, quando a barra dourada (embaixo das recargas) enche.
 - `P`: pausa.
+- **Teclas editáveis:** em **Configurações** (botão no topo) cada ação da luta aceita até 3 teclas. Clique numa tecla e aperte a nova; `Esc` cancela e `Backspace` tira a tecla. Se a tecla já era de outra ação, ela sai de lá. `P`, `F` e `Esc` são fixas. "Restaurar padrão" volta tudo. Fica salvo em `user://config.json` (`main.gd → KEYS_DEFAULT`).
+- **No computador** cada botão da luta mostra a sua tecla, e as teclas de andar e pular aparecem no canto esquerdo e acendem quando apertadas. Dá para esconder em Configurações → Teclas na luta.
+- **Configurações** também têm: tremor da tela (desligado, fraco ou normal), tamanho dos botões de toque no celular, tela cheia e apagar o progresso (pede confirmação).
 - **No celular (estilo MOBA):** encoste o polegar em qualquer lugar da metade esquerda da tela e aparece um analógico. Arraste para os lados para andar e empurre para cima para pular. Na direita fica o botão grande de ataque, com pular, dash e as 3 habilidades em arco em volta. A recarga aparece girando no botão, com os segundos no meio, e os pontinhos dourados mostram o nível da habilidade. Tudo é semitransparente por cima da arena e aceita vários dedos ao mesmo tempo. No computador, o mouse também funciona nesses controles.
 - Para ajustar tamanho, transparência e posição dos botões, mexa no topo de `scripts/touch_pad.gd`.
 

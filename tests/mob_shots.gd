@@ -20,6 +20,9 @@ func _process(_d: float) -> bool:
 			main.ui.layout()
 		80: snap("m1_mapa")
 		82: main.ui.set_tab("mon")
+		84: main.ui.show_settings()
+		88: snap("m1b_config")
+		89: main.ui.close_settings()
 		90: snap("m2_monstros")
 		92:
 			var h = main.Hero.new()
